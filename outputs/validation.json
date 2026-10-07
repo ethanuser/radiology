@@ -1,0 +1,18 @@
+{
+  "supply_flat_2055_vs_2023": 1.2569999999999997,
+  "christensen_flat_2055": 1.257,
+  "mean_career_years": 34.56264530528786,
+  "christensen_career_years": "34.2-35.7",
+  "attrition_2023": 0.026989203536254624,
+  "kappa_entrants_per_filled_position": 1.2026596928200877,
+  "demographic_growth_2026_2055_p50": 0.15679360896381,
+  "demographic_growth_2026_2055_p10_p90": [
+    0.11624628156231243,
+    0.19902176768711932
+  ],
+  "realized_time_saved_2031_p50": 0.07590229764273837,
+  "realized_time_saved_2031_p90": 0.2332945652186795,
+  "assistive_potential_interp_draft_2031_p50": 0.1309718473395047,
+  "langlotz_5yr_hours_reduction": "33% (range 14%-49%)",
+  "baseline_no_ai_2055_p50": 0.4144712943994415
+}

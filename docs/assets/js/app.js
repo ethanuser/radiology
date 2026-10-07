@@ -1,0 +1,627 @@
+/* Page logic: data binding, citations, scrollytelling dashboard, interactive sections. */
+/* global d3, Charts */
+(async function () {
+  const { fmt, css } = Charts;
+  const F = await (await fetch("data/forecast.json")).json();
+  const years = F.years;
+  const yi = (y) => years.indexOf(y);
+  const SUM = Object.fromEntries(F.summary.map((r) => [r.year, r]));
+  const JEV = Object.fromEntries(F.jevons.table.map((r) => [r.year, r]));
+  const REG = Object.fromEntries(F.regimes.table.map((r) => [r.regime, r]));
+  const X = F.extra;
+  F.ratio0_gap = 1 - F.series.R.p50[0];
+  const ROOT = { F, SUM, JEV, REG, X, VAL: F.validation };
+  const FMT = {
+    pct: fmt.pct, pct1: fmt.pct1, x2: fmt.x2, chg: fmt.chg, mult: fmt.mult,
+    int: (v) => d3.format(",.0f")(v),
+  };
+
+  // ------------------------------------------------------------------ data binding
+  function resolve(path) {
+    return path.split(".").reduce((o, k) => (o == null ? undefined : o[k]), ROOT);
+  }
+  function bind(root = document) {
+    root.querySelectorAll("[data-v]").forEach((el) => {
+      const v = resolve(el.dataset.v);
+      if (v === undefined || v === null) return;
+      const f = FMT[el.dataset.f || "x2"];
+      if (el.hasAttribute("data-count") && typeof v === "number") countUp(el, v, f);
+      else el.textContent = f(v);
+    });
+  }
+  function countUp(el, v, f) {
+    const io = new IntersectionObserver((ents) => {
+      ents.forEach((e) => {
+        if (!e.isIntersecting) return;
+        io.disconnect();
+        const t0 = performance.now(), dur = 1100;
+        const step = (t) => {
+          const k = Math.min(1, (t - t0) / dur);
+          el.textContent = f(v * d3.easeCubicOut(k));
+          if (k < 1) requestAnimationFrame(step);
+        };
+        requestAnimationFrame(step);
+      });
+    });
+    io.observe(el);
+  }
+
+  // ------------------------------------------------------------------ citations (AMA: numbered by first appearance)
+  const refOrder = [];
+  function cite(root = document) {
+    root.querySelectorAll("sup.cite[data-ref]").forEach((el) => {
+      const keys = el.dataset.ref.split(/[;,\s]+/).filter(Boolean);
+      el.replaceChildren();
+      keys.forEach((k, i) => {
+        if (!F.references[k]) return;
+        if (!refOrder.includes(k)) refOrder.push(k);
+        const n = refOrder.indexOf(k) + 1;
+        const a = document.createElement("a");
+        a.href = "#ref-" + n;
+        a.textContent = n;
+        a.title = F.references[k].ama.replace(/<[^>]+>/g, "");
+        el.appendChild(a);
+        if (i < keys.length - 1) el.appendChild(document.createTextNode(","));
+      });
+    });
+    renderRefs();
+  }
+  function renderRefs() {
+    const ol = document.getElementById("refList");
+    ol.replaceChildren();
+    refOrder.forEach((k, i) => {
+      const li = document.createElement("li");
+      li.id = "ref-" + (i + 1);
+      const r = F.references[k];
+      // reference strings are authored in model/references.py (trusted), containing only <i> and entities
+      li.innerHTML = r.ama.replace(/(https?:\/\/[^\s<]+)/g, (u) => `<a href="${u}" rel="noopener">${u}</a>`);
+      if (r.url && !r.ama.includes("doi:") && !r.ama.includes(r.url)) {
+        const a = document.createElement("a");
+        a.href = r.url; a.textContent = " Link"; a.rel = "noopener";
+        li.appendChild(a);
+      } else if (r.url && r.ama.includes("doi:")) {
+        const a = document.createElement("a");
+        a.href = r.url; a.textContent = " ↗"; a.rel = "noopener"; a.setAttribute("aria-label", "Open DOI");
+        li.appendChild(a);
+      }
+      ol.appendChild(li);
+    });
+  }
+  const citeHTML = (keys) => `<sup class="cite" data-ref="${keys}"></sup>`;
+
+  bind();
+  cite();
+
+  // ------------------------------------------------------------------ helpers
+  const S = F.series;
+  const col = () => ({ d: css("--s1"), s: css("--s2"), r: css("--s7"), a: css("--s3"), y: css("--s4"), m: css("--s5"), g: css("--s6"), red: css("--s8") });
+
+  // ------------------------------------------------------------------ hero chart
+  function heroChart() {
+    const c = col();
+    Charts.fan("#heroChart", {
+      years, height: 300, animate: true, mark: { x: 2035, label: "attending" },
+      series: [{ label: "Demand", color: c.d, q: S.D }, { label: "Supply", color: c.s, q: S.S }],
+      bands: [[10, 90]],
+    });
+  }
+
+  // ------------------------------------------------------------------ scrollytelling dashboard
+  let dash = null, curYear = 2026;
+  function dashChart() {
+    const c = col();
+    dash = Charts.fan("#dashChart", {
+      years, height: 210, reveal: curYear, endLabels: false, yDomain: [0.55, 1.85],
+      series: [{ label: "Demand", color: c.d, q: S.D }, { label: "Supply", color: c.s, q: S.S }],
+      bands: [[10, 90]], refs: [{ y: 1 }],
+    });
+  }
+  function careerTrack() {
+    const tr = document.getElementById("careerTrack");
+    tr.replaceChildren();
+    const x = (y) => ((y - 2026) / 40) * 100 + "%";
+    const segs = [[2026, 2030, "--axis", "MD"], [2030, 2035, "--s4", "Residency"], [2035, 2066, "--s1", "Attending"]];
+    segs.forEach(([a, b, c]) => {
+      const d = document.createElement("div");
+      d.className = "bar"; d.style.left = x(a); d.style.width = `calc(${x(b)} - ${x(a)} - 2px)`; d.style.background = `var(${c})`;
+      tr.appendChild(d);
+    });
+    [[2026, "M1"], [2030, "Match"], [2035, "Attending"], [2045, "+10"], [2055, "+20"], [2066, "+30"]].forEach(([y, t]) => {
+      const l = document.createElement("div");
+      l.className = "lbl"; l.style.left = x(y); l.textContent = t;
+      if (y === 2026) l.style.transform = "none";
+      if (y === 2066) l.style.transform = "translateX(-100%)";
+      tr.appendChild(l);
+    });
+    const now = document.createElement("div");
+    now.className = "now"; now.id = "careerNow"; now.style.left = x(curYear);
+    tr.appendChild(now);
+  }
+  function setYear(y, tag) {
+    curYear = y;
+    const i = yi(y);
+    const q = (k) => [S[k].p10[i], S[k].p50[i], S[k].p90[i]];
+    document.getElementById("dYear").textContent = y;
+    document.getElementById("dTag").textContent = tag;
+    const [r10, r50, r90] = q("R");
+    document.getElementById("dRatio").textContent = fmt.x2(r50);
+    document.getElementById("dRatioR").textContent = `80%: ${fmt.x2(r10)}–${fmt.x2(r90)}`;
+    const po = F.probs.p_oversupply[i];
+    document.getElementById("dOver").textContent = fmt.pct(po);
+    document.getElementById("dOverM").style.width = Math.min(100, po * 100) + "%";
+    const [t10, t50, t90] = q("time_saved");
+    document.getElementById("dSaved").textContent = fmt.pct(t50);
+    document.getElementById("dSavedR").textContent = `80%: ${fmt.pct(t10)}–${fmt.pct(t90)}`;
+    const [d10, d50, d90] = q("D");
+    document.getElementById("dDem").textContent = y === 2026 ? "1.00" : fmt.chg(d50);
+    document.getElementById("dDemR").textContent = `80%: ${fmt.x2(d10)}–${fmt.x2(d90)}`;
+    const [a10, a50, a90] = q("auto");
+    document.getElementById("dAuto").textContent = fmt.pct(a50);
+    document.getElementById("dAutoR").textContent = `80%: ${fmt.pct(a10)}–${fmt.pct(a90)}`;
+    document.getElementById("dBelow").textContent = y === 2026 ? "–" : fmt.pct(F.probs.p_demand_below_today[i]);
+    const now = document.getElementById("careerNow");
+    if (now) now.style.left = ((y - 2026) / 40) * 100 + "%";
+    if (dash) dash.setReveal(Math.max(2026.6, y));
+  }
+  const chapters = [...document.querySelectorAll(".chapter")];
+  const io = new IntersectionObserver((ents) => {
+    ents.forEach((e) => {
+      if (e.isIntersecting) {
+        chapters.forEach((c) => c.classList.toggle("on", c === e.target));
+        setYear(+e.target.dataset.year, e.target.dataset.tag);
+      }
+    });
+  }, { rootMargin: "-45% 0px -45% 0px" });
+  chapters.forEach((c) => io.observe(c));
+  chapters[0].classList.add("on");
+
+  // ------------------------------------------------------------------ model diagram
+  const NODES = {
+    base: { x: 16, y: 40, t: "1 · Baseline demand", s: "population, aging, utilization" },
+    ai: { x: 286, y: 40, t: "AI-progress factor", s: "4 regimes; drives boxes tagged", factor: true },
+    sup: { x: 556, y: 40, t: "5 · Radiologist supply", s: "cohorts, residency, attrition" },
+    prod: { x: 16, y: 160, t: "2 · AI productivity", s: "task-based time savings", ai: true },
+    dem: { x: 286, y: 160, t: "FTE demand", s: "work × time per unit" },
+    rat: { x: 556, y: 160, t: "Supply ÷ demand", s: "shortage ↔ oversupply" },
+    reg: { x: 16, y: 280, t: "4 · Regulation", s: "validation → FDA → payment", ai: true },
+    jev: { x: 286, y: 280, t: "3 · Jevons / rebound", s: "induced & offsetting work", ai: true },
+  };
+  const NW = 188, NH = 62;
+  const DETAIL = {
+    base: () => `<h4>1 · Baseline imaging demand</h4>
+      <p>Radiologist workload if AI stayed at its 2026 level. It is the product of:</p>
+      <ul><li><b>Demographics</b>: about +0.5%/yr from population growth and aging, from Neiman Institute projections${citeHTML("christensen_util")} shaded down for CBO's 2026 lower-immigration outlook.${citeHTML("cbo_2026")}</li>
+      <li><b>Per-capita utilization</b>: CT use grew 3.7–5.2%/yr and MRI 1.3–2.2%/yr in 2013–16;${citeHTML("smith_bindman_2019")} we start at 1%/yr (wide) and let growth decelerate.</li>
+      <li><b>Work per exam</b>: images per CT/MR study rose ~10× in a decade;${citeHTML("mcdonald_2015")} work per exam grows far more slowly.</li>
+      <li><b>Alternative diagnostics</b> (blood tests, AI-ECG) displace 0–15%.</li></ul>
+      <p>Median result: <b>${fmt.chg(X.baseline["2045"].p50)}</b> workload by 2045 without further AI.</p>`,
+    prod: () => `<h4>2 · AI productivity (task model)</h4>
+      <p>Following Langlotz's task-based analysis,${citeHTML("langlotz_2025")} radiologist time is split into interpretation (42%),
+      measurement & drafting (18%), consultation (13%), administration (15%) and procedures (12%). Each task has its own
+      uncertain AI time-saving ceiling, capability curve and adoption curve.</p>
+      <ul><li>Generative draft reports: −15.5% radiograph reporting time${citeHTML("huang_2025")}</li>
+      <li>AI mammography triage: −44% screen-reading workload${citeHTML("lang_2023")}</li>
+      <li>But real-world meta-analysis: no significant time saving yet${citeHTML("wenderott_2024")}</li></ul>
+      <p>AI also <b>creates</b> oversight work (2–8% of time), the reinstatement effect in Acemoglu & Restrepo's framework.${citeHTML("acemoglu_restrepo_2019")}</p>`,
+    reg: () => `<h4>4 · Regulation & adoption</h4>
+      <p>Autonomous (AI-first) reading is modeled for four tiers of difficulty. Each must pass, in sequence:
+      <b>technical capability → clinical validation → FDA authorization → liability & reimbursement → hospital adoption</b>,
+      then removes 60–95% of radiologist time per study.</p>
+      <ul><li>No U.S. autonomous radiology read authorized as of 2026;${citeHTML("fda_ai_2026")} autonomous retinal AI took 3 years from FDA to payment${citeHTML("abramoff_2018")}</li>
+      <li>Jurors penalize radiologists who disagree with AI${citeHTML("bernstein_2025")}</li></ul>
+      <p>Median year autonomy for complex CT/MR becomes payable: <b>${Math.round(X.stages_p50[2][3])}</b>.</p>`,
+    jev: () => `<h4>3 · Jevons / rebound effects</h4>
+      <p>AI can <i>create</i> work: cheaper reads, faster turnaround, faster scanners, new screening uses, and follow-up of AI-detected
+      findings. Utilization management and a shift of reads to non-radiologists push the other way. Induced exams are capped by
+      scanner and technologist capacity (CT vacancy rate 19.4%).${citeHTML("asrt_2025")}</p>
+      <p>Median offset by 2045: induced demand replaces <b>${fmt.pct(JEV[2045].offset_p50)}</b> of the labor AI saves;
+      P(true Jevons) = <b>${fmt.pct(JEV[2045].p_jevons)}</b>.</p>`,
+    dem: () => `<h4>FTE demand</h4><p>Radiologist FTEs needed = baseline work × (1 + AI-induced work) × time per unit of work
+      + new non-reading tasks. A true Jevons paradox is when this exceeds what demand would have been with AI frozen at 2026.</p>
+      <p>Median 2035: <b>${fmt.chg(SUM[2035].demand_p50)}</b> · 2045: <b>${fmt.chg(SUM[2045].demand_p50)}</b> · 2055: <b>${fmt.chg(SUM[2055].demand_p50)}</b></p>`,
+    sup: () => `<h4>5 · Radiologist supply</h4>
+      <p>A cohort model by years in practice, calibrated so that flat residency positions reproduce the Neiman Institute's
+      +25.7% growth from 2023 to 2055.${citeHTML("christensen_supply")} Mean career ≈ ${fmt.x2(F.validation.mean_career_years).slice(0, 4)} years; attrition
+      ≈ ${fmt.pct1(F.validation.attrition_2023)}/yr.</p>
+      <ul><li>Residency positions start at 1,241 (2026 Match)${citeHTML("nrmp_2026")} and grow ~1%/yr</li>
+      <li>Programs and applicants react to the market with a lag, as in the mid-1990s and mid-2010s gluts${citeHTML("sharafinski_2016")}${citeHTML("shi_2015")}</li>
+      <li>New graduates enter practice 6 years after matching</li></ul>`,
+    rat: () => `<h4>Supply ÷ demand</h4><p>Below 1 = shortage (today ≈ ${fmt.x2(F.series.R.p50[0])}); above 1.10 = meaningful oversupply.
+      The ratio feeds back (lagged) into residency positions and fill rates.</p>
+      <p>P(oversupply): 2035 <b>${fmt.pct(SUM[2035].p_oversupply)}</b> · 2045 <b>${fmt.pct(SUM[2045].p_oversupply)}</b> · 2055 <b>${fmt.pct(SUM[2055].p_oversupply)}</b></p>`,
+    ai: () => `<h4>AI-progress factor</h4><p>One latent factor moves many inputs together: faster AI means earlier capability, higher
+      task ceilings, more new applications and faster scanners. It selects one of four regimes: stall (15%), trend (55%), fast (18%),
+      transformative (12%). These weights are loosely informed by METR,${citeHTML("metr_2025")} AI 2027${citeHTML("ai2027")} and superforecasters.${citeHTML("karger_2023")}</p>`,
+  };
+  function diagram() {
+    const el = document.getElementById("diagram");
+    el.replaceChildren();
+    const svg = d3.select(el).append("svg").attr("viewBox", "0 0 790 356").attr("role", "img")
+      .attr("aria-label", "Model structure: baseline demand, AI productivity, regulation, Jevons effects and supply feed FTE demand and the supply/demand ratio");
+    const defs = svg.append("defs");
+    [["arr", css("--s1")], ["arrNeg", css("--s2")], ["arrFb", css("--muted")]].forEach(([id, c]) => {
+      defs.append("marker").attr("id", id).attr("viewBox", "0 0 10 10").attr("refX", 9).attr("refY", 5).attr("markerWidth", 7)
+        .attr("markerHeight", 7).attr("orient", "auto-start-reverse").append("path").attr("d", "M0,0 L10,5 L0,10 z").attr("fill", c);
+    });
+    const N = NODES;
+    const P = (n, fx, fy) => [N[n].x + NW * fx, N[n].y + NH * fy];
+    const flows = [
+      [P("base", 1, 0.5), P("dem", 0, 0.3), "", "baseline work"],
+      [P("prod", 1, 0.5), P("dem", 0, 0.7), "neg", ""],
+      [P("reg", 0.5, 0), P("prod", 0.5, 1), "", "AI-first share"],
+      [P("prod", 1, 0.85), P("jev", 0, 0.5), "", "cheaper reads"],
+      [P("jev", 0.5, 0), P("dem", 0.5, 1), "", "induced work"],
+      [P("dem", 1, 0.5), P("rat", 0, 0.5), "", ""],
+      [P("sup", 0.5, 1), P("rat", 0.5, 0), "", ""],
+    ];
+    flows.forEach(([a, b, cls, lab], fi) => {
+      const p = d3.path();
+      p.moveTo(...a);
+      if (Math.abs(a[1] - b[1]) < 4 || Math.abs(a[0] - b[0]) < 4) p.lineTo(...b);
+      else { const mx = (a[0] + b[0]) / 2; p.bezierCurveTo(mx, a[1], mx, b[1], b[0], b[1]); }
+      svg.append("path").attr("d", p.toString()).attr("class", "flow " + cls).attr("marker-end", `url(#${cls === "neg" ? "arrNeg" : "arr"})`);
+      if (lab) {
+        const isV = Math.abs(a[0] - b[0]) < 4;
+        const lx = isV ? a[0] + 8 : (fi === 0 ? a[0] + 8 : b[0] - 8);
+        const ly = isV ? (a[1] + b[1]) / 2 + 4 : (fi === 0 ? a[1] - 7 : b[1] - 9);
+        svg.append("text").attr("class", "flowlab").attr("x", lx).attr("y", ly)
+          .attr("text-anchor", isV || fi === 0 ? "start" : "end").text(lab);
+      }
+    });
+    svg.append("path").attr("d", `M ${N.rat.x + NW} ${N.rat.y + NH / 2} C 786 ${N.rat.y + NH / 2}, 786 ${N.sup.y + NH / 2}, ${N.sup.x + NW} ${N.sup.y + NH / 2}`)
+      .attr("class", "flow fb").attr("marker-end", "url(#arrFb)");
+    svg.append("text").attr("class", "flowlab").attr("x", 782).attr("y", 135).attr("text-anchor", "end").text("lagged signal");
+    Object.entries(N).forEach(([k, n]) => {
+      const g = svg.append("g").attr("class", "node" + (n.factor ? " factor" : "")).attr("data-k", k)
+        .attr("transform", `translate(${n.x},${n.y})`).attr("tabindex", 0).attr("role", "button").attr("aria-label", n.t)
+        .on("click", () => select(k)).on("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); select(k); } });
+      g.append("rect").attr("width", NW).attr("height", NH);
+      g.append("text").attr("x", 12).attr("y", 26).text(n.t);
+      g.append("text").attr("x", 12).attr("y", 46).attr("class", "sub").text(n.s);
+      if (n.factor) {
+        g.append("circle").attr("cx", NW - 16).attr("cy", 41).attr("r", 9).attr("fill", css("--surface")).attr("stroke", css("--s1"));
+        g.append("text").attr("x", NW - 16).attr("y", 41).attr("dy", "0.35em").attr("text-anchor", "middle").attr("class", "badge").text("AI");
+      }
+      if (n.ai) {
+        g.append("circle").attr("cx", NW - 14).attr("cy", 14).attr("r", 10).attr("fill", css("--accent-wash")).attr("stroke", css("--s1"));
+        g.append("text").attr("x", NW - 14).attr("y", 14).attr("dy", "0.35em").attr("text-anchor", "middle").attr("class", "badge").text("AI");
+      }
+    });
+    function select(k) {
+      svg.selectAll(".node").classed("sel", function () { return this.dataset.k === k; });
+      const d = document.getElementById("diagramDetail");
+      d.innerHTML = DETAIL[k]();  // authored content
+      cite(d);
+    }
+    select("prod");
+  }
+
+  // ------------------------------------------------------------------ regime chart
+  function regimeChart() {
+    const ramp = [css("--ramp-1"), css("--ramp-2"), css("--ramp-3"), css("--ramp-4")];
+    Charts.lines("#regimeChart", {
+      years, height: 280, yFmt: fmt.x2, valueFmt: fmt.x2, refs: [{ y: 1 }], mark: { x: 2035, label: "attending" },
+      series: [...F.regimes.names.map((n, r) => ({ label: `${n} (${fmt.pct(F.regimes.weights[r])})`, color: ramp[r], values: F.regimes.D_p50[r] })),
+        { label: "Supply, all worlds (median)", color: css("--s2"), values: S.S.p50, width: 1.5, dash: "4 3" }],
+      yDomain: [0.4, 1.5], legend: true,
+    });
+  }
+
+  // ------------------------------------------------------------------ main forecast charts
+  function forecastCharts() {
+    const c = col();
+    Charts.fan("#mainChart", {
+      years, height: 360, mark: { x: 2035, label: "M1 becomes attending" },
+      series: [{ label: "Demand", color: c.d, q: S.D }, { label: "Supply", color: c.s, q: S.S }], refs: [{ y: 1 }],
+    });
+    Charts.fan("#ratioChart", {
+      years, height: 300, yDomain: [0.6, 1.8], endLabels: true,
+      series: [{ label: "S ÷ D", color: c.r, q: S.R }],
+      refs: [{ y: 1, color: css("--ink-2"), label: "balance" }, { y: 1.1, color: c.red, label: "oversupply" }],
+    });
+    Charts.lines("#probChart", {
+      years, height: 300, yDomain: [0, 0.6], mark: { x: 2035, label: "attending" },
+      series: [
+        { label: "Demand below 2026 level", color: c.d, values: F.probs.p_demand_below_today },
+        { label: "Meaningful oversupply (S/D > 1.10)", color: c.s, values: F.probs.p_oversupply },
+        { label: "Demand below 80% of 2026", color: c.a, values: F.probs.p_demand_below_80 },
+        { label: "Demand below 50% of 2026", color: c.y, values: F.probs.p_demand_below_50 },
+      ], legend: true,
+    });
+  }
+
+  function headlineTable() {
+    const t = document.getElementById("headlineTable");
+    const ys = F.report_years;
+    const band = (k, f) => ys.map((y) => `${f(SUM[y][k + "_p50"])} <span class="muted">(${f(SUM[y][k + "_p10"])}–${f(SUM[y][k + "_p90"])})</span>`);
+    const rows = [
+      ["FTE demand", band("demand", fmt.x2)], ["FTE supply", band("supply", fmt.x2)], ["Supply ÷ demand", band("ratio", fmt.x2)],
+      ["AI productivity", band("productivity", fmt.x2)], ["AI-first / autonomous share", band("autonomous", fmt.pct)],
+      ["P(demand < 2026)", ys.map((y) => fmt.pct(SUM[y].p_demand_below_today))],
+      ["P(demand < 80%)", ys.map((y) => fmt.pct(SUM[y].p_demand_below_80))],
+      ["P(demand < 50%)", ys.map((y) => fmt.pct(SUM[y].p_demand_below_50))],
+      ["<b>P(meaningful oversupply)</b>", ys.map((y) => `<b>${fmt.pct(SUM[y].p_oversupply)}</b>`)],
+      ["P(severe oversupply, >1.25)", ys.map((y) => fmt.pct(SUM[y].p_severe_oversupply))],
+      ["P(shortage > 10%)", ys.map((y) => fmt.pct(SUM[y].p_shortage_10))],
+    ];
+    t.innerHTML = `<thead><tr><th>Metric</th>${ys.map((y) => `<th class="num">${y}</th>`).join("")}</tr></thead>
+      <tbody>${rows.map(([l, v]) => `<tr><td>${l}</td>${v.map((c) => `<td class="num">${c}</td>`).join("")}</tr>`).join("")}</tbody>`;
+  }
+
+  // ------------------------------------------------------------------ AI charts
+  function aiCharts() {
+    const c = col();
+    Charts.fan("#prodChart", { years, height: 280, series: [{ label: "Productivity", color: c.d, q: S.P, fmt: fmt.mult }], yDomain: [0.9, 4.2], valueFmt: fmt.mult, yFmt: (d) => d + "×", mark: { x: 2035, label: "2035" } });
+    Charts.fan("#autoChart", { years, height: 280, series: [{ label: "AI-first", color: c.a, q: S.auto, fmt: fmt.pct }], yDomain: [0, 1], valueFmt: fmt.pct, yFmt: d3.format(".0%"), mark: { x: 2035, label: "2035" } });
+    Charts.pipeline("#pipelineChart", F.pipeline);
+  }
+
+  // ------------------------------------------------------------------ Jevons
+  function jevonsCharts() {
+    const c = col();
+    const chColors = {
+      "Cheaper interpretation (price)": c.d, "Faster turnaround & availability": c.a, "Scanner throughput / latent demand": c.y,
+      "New applications & screening": c.m, "Incidental findings & follow-up": c.g, "New radiologist tasks": c.r,
+      "Utilization management (AI)": c.s, "Scope shift to non-radiologists": c.red,
+    };
+    Charts.stacked("#jevonsChart", {
+      years, height: 360, valueFmt: (v) => d3.format("+.1%")(v).replace("-", "−"), yFmt: d3.format(".0%"),
+      layers: Object.entries(F.jevons.channels).map(([k, v]) => ({ label: k, values: v, color: chColors[k] })),
+      overlays: [{ label: "Labor saved by AI productivity", values: F.jevons.labor_saved_mean, color: css("--ink"), width: 2.4 },
+        { label: "Net induced demand", values: F.jevons.induced_mean, color: css("--ink-2"), width: 2, dash: "6 4" }],
+    });
+    const j = F.jevons;
+    const idx = years.map((y, i) => i).filter((i) => years[i] >= 2028);
+    const ys = idx.map((i) => years[i]);
+    Charts.fan("#offsetChart", {
+      years: ys, height: 280, yDomain: [0, 1.4], valueFmt: fmt.pct, yFmt: d3.format(".0%"), bands: [[10, 90]],
+      series: [{ label: "Offset", color: c.m, q: { p10: idx.map((i) => j.offset_p10[i]), p25: idx.map((i) => j.offset_p10[i]), p50: idx.map((i) => j.offset_p50[i]), p75: idx.map((i) => j.offset_p90[i]), p90: idx.map((i) => j.offset_p90[i]) } }],
+      refs: [{ y: 1, color: c.red, label: "Jevons threshold" }],
+      extraLines: [],
+    });
+  }
+
+  // ------------------------------------------------------------------ drivers
+  let tornadoMetric = "pOver2045";
+  function tornadoChart() { Charts.tornado("#tornadoChart", F.tornado, tornadoMetric); }
+  document.querySelectorAll("#tornadoControls button").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll("#tornadoControls button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+    tornadoMetric = b.dataset.m; tornadoChart();
+  }));
+  let etaScope = "all";
+  function etaChart() {
+    const src = etaScope === "all" ? F.eta2 : F.eta2_excluding_transformative;
+    const rows = src.slice().sort((a, b) => b["Demand 2045"] - a["Demand 2045"]).slice(0, 12)
+      .map((r) => ({ label: r.short || r.label, value: r["Demand 2045"], ev: r.evidence, tipLabel: "η², demand 2045" }));
+    const gc = { E: css("--good"), A: css("--s1"), S: css("--serious") };
+    Charts.hbars("#etaChart", rows, { valueFmt: d3.format(".2f"), max: 0.6, colorFn: (r) => gc[r.ev], badge: (r) => r.ev });
+  }
+  document.querySelectorAll("[data-s]").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll("[data-s]").forEach((x) => x.setAttribute("aria-pressed", x === b));
+    etaScope = b.dataset.s; etaChart();
+  }));
+  function evidenceChart() {
+    const ev = F.evidence_attribution.filter((r) => r.metric === "D" && r.year === 2045);
+    const gc = { Empirical: css("--good"), Anchored: css("--s1"), Subjective: css("--serious") };
+    Charts.hbars("#evidenceChart", ev.map((r) => ({ label: `${r.grade} (${r.n_params} params)`, value: Math.max(0, r.shrink), g: r.grade, tipLabel: "interval narrows by" })),
+      { valueFmt: d3.format(".0%"), max: 0.6, colorFn: (r) => gc[r.g] });
+  }
+
+  // ------------------------------------------------------------------ composition
+  function compChart() {
+    const c = col();
+    const keys = ["interp", "draft", "consult", "admin", "proc", "oversight", "newtasks"];
+    const colors = [c.d, c.s, c.a, c.y, c.m, c.g, c.r];
+    Charts.stacked("#compChart", {
+      years, height: 340, yDomain: [0, 1], yFmt: d3.format(".0%"), valueFmt: d3.format(".0%"),
+      layers: keys.map((k, i) => ({ label: F.composition_labels[k], values: F.composition[k], color: colors[i] })),
+    });
+  }
+
+  // ------------------------------------------------------------------ M1 cards & signposts
+  function horizon() {
+    const el = document.getElementById("horizon");
+    const cards = [[2035, "At graduation"], [2045, "10 years in"], [2055, "20 years in"], [2066, "30 years in"]];
+    el.innerHTML = cards.map(([y, t]) => `<div class="hcard"><div class="y">${y}</div><div class="t">${t}</div>
+      <div class="big">${fmt.pct(SUM[y].p_oversupply)}</div><div class="cap">chance of meaningful oversupply</div>
+      <ul><li>Supply ÷ demand: <b>${fmt.x2(SUM[y].ratio_p50)}</b></li><li>FTE demand: <b>${fmt.chg(SUM[y].demand_p50)}</b> (${fmt.x2(SUM[y].demand_p10)}–${fmt.x2(SUM[y].demand_p90)})</li>
+      <li>AI time saved: <b>${fmt.pct(X.time_saved[String(y)].p50)}</b></li><li>P(demand below today): <b>${fmt.pct(SUM[y].p_demand_below_today)}</b></li></ul></div>`).join("");
+  }
+  function signposts() {
+    const t = document.getElementById("signpostTable");
+    t.innerHTML = `<thead><tr><th>If we observe…</th><th class="num">2035</th><th class="num">2045</th><th class="num">2055</th></tr></thead><tbody>` +
+      X.signposts.map((r) => `<tr><td>${r.label}<div class="muted small">${fmt.pct(r.share)} of worlds</div></td><td class="num">${fmt.pct(r.p_over_2035)}</td><td class="num">${fmt.pct(r.p_over_2045)}</td><td class="num">${fmt.pct(r.p_over_2055)}</td></tr>`).join("") +
+      `</tbody>`;
+  }
+
+  // ------------------------------------------------------------------ parameter table
+  const GROUPS = { demand: "Baseline demand", ai_capability: "AI capability", ai_tasks: "AI productivity", autonomy: "Autonomy tiers",
+    regulation: "Regulation & adoption", jevons: "Jevons / rebound", supply: "Supply" };
+  function paramTable() {
+    const sel = document.getElementById("groupFilter");
+    Object.entries(GROUPS).forEach(([k, v]) => { const o = document.createElement("option"); o.value = k; o.textContent = v; sel.appendChild(o); });
+    let grade = "all";
+    const render = () => {
+      const q = document.getElementById("paramSearch").value.toLowerCase();
+      const g = sel.value;
+      const rows = F.params.filter((p) => (grade === "all" || p.evidence === grade) && (g === "all" || p.group === g) &&
+        (!q || (p.label + p.name + p.note).toLowerCase().includes(q)));
+      const t = document.getElementById("paramTable");
+      t.replaceChildren();
+      const thead = t.createTHead().insertRow();
+      ["Component", "Parameter", "Distribution", "P10 / P50 / P90", "Grade", "Sources & notes"].forEach((h, i) => {
+        const th = document.createElement("th"); th.textContent = h; if (i === 3) th.className = "num"; thead.appendChild(th);
+      });
+      const tb = t.createTBody();
+      const nf = (v) => (Math.abs(v) >= 1000 ? d3.format("d")(v) : d3.format(".3~g")(v));
+      rows.forEach((p) => {
+        const tr = tb.insertRow();
+        tr.insertCell().textContent = GROUPS[p.group];
+        const c1 = tr.insertCell(); const b = document.createElement("b"); b.textContent = p.label; c1.appendChild(b);
+        const code = document.createElement("div"); code.className = "muted small"; code.textContent = p.name + " · " + p.unit; c1.appendChild(code);
+        tr.insertCell().textContent = p.dist;
+        const c3 = tr.insertCell(); c3.className = "num"; c3.textContent = `${nf(p.q10)} / ${nf(p.q50)} / ${nf(p.q90)}`;
+        const c4 = tr.insertCell(); const gs = document.createElement("span"); gs.className = "grade " + p.evidence; gs.textContent = p.evidence; c4.appendChild(gs);
+        const c5 = tr.insertCell();
+        if (p.sources.length) { const s = document.createElement("sup"); s.className = "cite"; s.dataset.ref = p.sources.join(","); c5.appendChild(s); c5.appendChild(document.createTextNode(" ")); }
+        const note = document.createElement("span"); note.className = "small ink2"; note.textContent = p.note; c5.appendChild(note);
+        const ld = Object.entries(p.loadings || {});
+        if (ld.length) { const l = document.createElement("div"); l.className = "small muted"; l.textContent = "Correlated via " + ld.map(([k, v]) => `${k} ${v > 0 ? "+" : ""}${v}`).join(", "); c5.appendChild(l); }
+      });
+      cite(t);
+    };
+    document.querySelectorAll("#gradeFilter button").forEach((b) => b.addEventListener("click", () => {
+      document.querySelectorAll("#gradeFilter button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+      grade = b.dataset.g; render();
+    }));
+    sel.addEventListener("change", render);
+    document.getElementById("paramSearch").addEventListener("input", render);
+    render();
+  }
+
+  // ------------------------------------------------------------------ explorer
+  let SAM = null;
+  const filt = { regime: "any", reg_lag: "any", util_g0: "any", new_max: "any", slot_g: "any" };
+  const baseW = F.regimes.weights.slice();
+  let userW = baseW.slice();
+  let terc = {};
+  async function loadSamples() {
+    if (SAM) return;
+    SAM = await (await fetch("data/samples.json")).json();
+    ["reg_lag", "util_g0", "new_max", "slot_g"].forEach((k) => {
+      const v = SAM.inputs[k].slice().sort((a, b) => a - b);
+      terc[k] = [v[Math.floor(v.length / 3)], v[Math.floor((2 * v.length) / 3)]];
+    });
+    const cnt = [0, 0, 0, 0]; SAM.inputs.regime.forEach((r) => cnt[r]++);
+    SAM.freq = cnt.map((c) => c / SAM.n);
+    explorerRender();
+  }
+  function weightsUI() {
+    const el = document.getElementById("weights");
+    el.replaceChildren();
+    F.regimes.names.forEach((n, r) => {
+      const row = document.createElement("label"); row.className = "wslider";
+      const a = document.createElement("span"); a.textContent = n;
+      const inp = document.createElement("input"); inp.type = "range"; inp.min = 0; inp.max = 100; inp.value = Math.round(userW[r] * 100);
+      inp.setAttribute("aria-label", n + " weight");
+      const v = document.createElement("span"); v.textContent = inp.value + "%";
+      inp.addEventListener("input", () => { userW[r] = +inp.value / 100; v.textContent = inp.value + "%"; explorerRender(); });
+      row.append(a, inp, v); el.appendChild(row);
+    });
+  }
+  document.getElementById("resetW").addEventListener("click", () => { userW = baseW.slice(); weightsUI(); explorerRender(); });
+  document.querySelectorAll("#filters .seg").forEach((seg) => seg.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+    seg.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b));
+    filt[seg.dataset.filter] = b.dataset.v; explorerRender();
+  })));
+  function wq(vals, w, q) {
+    const idx = vals.map((v, i) => i).sort((a, b) => vals[a] - vals[b]);
+    const tot = w.reduce((s, x) => s + x, 0);
+    let c = 0;
+    for (const i of idx) { c += w[i]; if (c >= q * tot) return vals[i]; }
+    return vals[idx[idx.length - 1]];
+  }
+  function explorerRender() {
+    if (!SAM) return;
+    const n = SAM.n, I = SAM.inputs;
+    const keep = [], w = [];
+    for (let i = 0; i < n; i++) {
+      if (filt.regime !== "any" && I.regime[i] !== +filt.regime) continue;
+      let ok = true;
+      for (const k of ["reg_lag", "util_g0", "new_max", "slot_g"]) {
+        if (filt[k] === "any") continue;
+        const v = I[k][i], [a, b] = terc[k];
+        const bin = v < a ? "lo" : v < b ? "mid" : "hi";
+        if (bin !== filt[k]) { ok = false; break; }
+      }
+      if (!ok) continue;
+      keep.push(i);
+      w.push(filt.regime === "any" ? userW[I.regime[i]] / SAM.freq[I.regime[i]] : 1);
+    }
+    const mc = document.getElementById("matchCount");
+    mc.innerHTML = keep.length < 30 ? `<b>${keep.length}</b> of ${n} worlds match. Too few for stable estimates; relax a filter.`
+      : `<b>${keep.length}</b> of ${n} simulated worlds match${filt.regime === "any" ? ", weighted by your regime weights" : ""}.`;
+    if (keep.length < 5) return;
+    const qs = (key) => {
+      const out = { p10: [], p25: [], p50: [], p75: [], p90: [] };
+      SAM.outputs[key].forEach((arr) => {
+        const vals = keep.map((i) => arr[i] / 1000);
+        [10, 25, 50, 75, 90].forEach((q) => out["p" + q].push(wq(vals, w, q / 100)));
+      });
+      return out;
+    };
+    const D = qs("D"), Sq = qs("S"), R = qs("R");
+    const prob = (key, yr, test) => {
+      const j = SAM.years.indexOf(yr); let s = 0, t = 0;
+      keep.forEach((i, k) => { t += w[k]; if (test(SAM.outputs[key][j][i] / 1000)) s += w[k]; });
+      return s / t;
+    };
+    const tiles = [
+      ["P(oversupply) 2035", fmt.pct(prob("R", 2035, (v) => v > 1.1))],
+      ["P(oversupply) 2045", fmt.pct(prob("R", 2045, (v) => v > 1.1))],
+      ["P(oversupply) 2055", fmt.pct(prob("R", 2055, (v) => v > 1.1))],
+      ["Median demand 2045", fmt.chg(D.p50[yi(2045)])],
+    ];
+    const te = document.getElementById("exTiles");
+    te.replaceChildren();
+    tiles.forEach(([l, v]) => {
+      const d = document.createElement("div"); d.className = "tile";
+      const a = document.createElement("div"); a.className = "label"; a.style.minHeight = "0"; a.textContent = l;
+      const b = document.createElement("div"); b.className = "value"; b.style.fontSize = "28px"; b.textContent = v;
+      d.append(a, b); te.appendChild(d);
+    });
+    const c = col();
+    const pick = keep.filter((_, k) => k % Math.max(1, Math.floor(keep.length / 24)) === 0).slice(0, 24);
+    Charts.fan("#exChart", {
+      years, height: 320, yDomain: [0.3, 2.0], mark: { x: 2035, label: "attending" }, bands: [[10, 90]], refs: [{ y: 1 }],
+      series: [{ label: "Demand", color: c.d, q: D }, { label: "Supply", color: c.s, q: Sq }],
+      extraLines: pick.map((i) => ({ values: SAM.outputs.D.map((arr) => arr[i] / 1000), color: c.d, opacity: 0.28, width: 0.9 })),
+    });
+    Charts.fan("#exRatio", {
+      years, height: 240, yDomain: [0.5, 2.0], bands: [[10, 90], [25, 75]],
+      series: [{ label: "S ÷ D", color: c.r, q: R }],
+      refs: [{ y: 1, color: css("--ink-2"), label: "balance" }, { y: 1.1, color: c.red, label: "oversupply" }],
+    });
+  }
+  const exIO = new IntersectionObserver((e) => { if (e.some((x) => x.isIntersecting)) { exIO.disconnect(); loadSamples(); } }, { rootMargin: "400px" });
+  exIO.observe(document.getElementById("explore"));
+  weightsUI();
+
+  // ------------------------------------------------------------------ render all + theme/resize
+  function renderAll() {
+    heroChart(); dashChart(); careerTrack(); setYear(curYear, document.getElementById("dTag").textContent);
+    diagram(); regimeChart(); forecastCharts(); headlineTable(); aiCharts(); jevonsCharts();
+    tornadoChart(); etaChart(); evidenceChart(); compChart(); explorerRender();
+  }
+  horizon(); signposts(); paramTable();
+  renderAll();
+  cite();
+
+  document.getElementById("themeBtn").addEventListener("click", () => {
+    const cur = document.documentElement.dataset.theme ||
+      (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const next = cur === "dark" ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    try { localStorage.setItem("theme", next); } catch (e) { /* storage unavailable */ }
+    renderAll();
+  });
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", renderAll);
+  let rw = 0, lastW = window.innerWidth;
+  window.addEventListener("resize", () => {
+    if (Math.abs(window.innerWidth - lastW) < 40) return;
+    lastW = window.innerWidth;
+    clearTimeout(rw); rw = setTimeout(renderAll, 200);
+  });
+
+  // progress bar + active nav
+  const prog = document.getElementById("progress");
+  const navs = [...document.querySelectorAll(".navlinks a[href^='#']")];
+  const secs = navs.map((a) => document.querySelector(a.getAttribute("href")));
+  window.addEventListener("scroll", () => {
+    const h = document.documentElement;
+    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100 + "%";
+    let act = -1;
+    secs.forEach((s, i) => { if (s && s.getBoundingClientRect().top < 120) act = i; });
+    navs.forEach((a, i) => a.classList.toggle("active", i === act));
+  }, { passive: true });
+})();
