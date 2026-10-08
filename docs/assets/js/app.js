@@ -23,12 +23,13 @@
     (r) => Math.abs(r.pOver2045_high - r.pOver2045_low));
   F.fte2026 = F.extra.supply.head_2026_p50 / F.series.R.p50[0];
   F.ratio0 = F.params.find((p) => p.name === "ratio0");
+  F.util = F.params.find((p) => p.name === "util_g0");
   // how much narrower the 2045 demand range gets if the judgment-call inputs were known exactly
   F.subj_shrink = (F.evidence_attribution.find((r) => r.metric === "D" && r.year === 2045 && r.grade === "Subjective") || {}).shrink;
   const BT = F.backtest;
   const ROOT = { F, SUM, JEV, REG, X, VAL: F.validation, BT };
   const FMT = { pct: fmt.pct, pct1: fmt.pct1, x2: fmt.x2, chg: fmt.chg, mult: fmt.mult, int: (v) => d3.format(",.0f")(v),
-    r100: (v) => d3.format(",.0f")(Math.round(v / 100) * 100), gr: (v) => fmt.pct(v - 1), pp: (v) => (v * 100).toFixed(1) + " percentage points", pts: (v) => Math.round(v * 100) + " percentage points",
+    x1: (v) => v.toFixed(1), r100: (v) => d3.format(",.0f")(Math.round(v / 100) * 100), gr: (v) => fmt.pct(v - 1), pp: (v) => (v * 100).toFixed(1) + " percentage points", pts: (v) => Math.round(v * 100) + " percentage points",
     k: (v) => d3.format(",")(Math.round(v / 1000) * 1000),
     yr: (v) => String(Math.round(v)) };
   const $ = (s) => document.querySelector(s);
@@ -336,7 +337,7 @@
   const DETAIL = {
     base: () => `<h4>1 · Baseline imaging demand</h4><p>How much radiologist work there would be if AI stayed at its 2026 level:</p>
       <ul><li><b>Demographics</b>: about +0.5%/yr from population growth and aging${citeHTML("christensen_util,cbo_2026")}</li>
-      <li><b>Imaging per person</b>: starts near 1.2%/yr (CT grew 3.7–5.2%/yr before 2016) and slows over time${citeHTML("smith_bindman_2019,rosenkrantz_2025")}</li>
+      <li><b>Imaging per person</b>: starts near ${F.util.q50.toFixed(1)}%/yr and slows over time, a judgment between recent claims-based trends and faster CT growth${citeHTML("christensen_util,smith_bindman_2019,rosenkrantz_2025")}</li>
       <li><b>Work per exam</b>: studies keep getting bigger${citeHTML("mcdonald_2015")}</li></ul>
       <p>Median: <b>${fmt.chg(X.baseline["2045"].p50)}</b> more work by 2045 without further AI. <a href="#m-baseline">Method →</a></p>`,
     prod: () => `<h4>2 · AI productivity</h4><p>Radiologist time is split into interpretation (42%), drafting and measurement (18%),

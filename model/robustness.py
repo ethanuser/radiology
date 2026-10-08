@@ -26,7 +26,7 @@ BASE_W = np.array([0.15, 0.55, 0.18, 0.12])
 
 PRIOR_SETS = {
     "main": dict(label="This site's assumptions", weights=BASE_W, util=None,
-                 note="Regime weights 15/55/18/12; imaging growth per person starts near 1.2%/yr.", sources=[]),
+                 note="Regime weights 15/55/18/12; imaging growth per person starts near 0.6%/yr.", sources=[]),
     "ai_skeptic": dict(label="AI-skeptical", weights=np.array([0.30, 0.55, 0.12, 0.03]), util=None,
                        note="Forecasting panels put far lower odds on rapid, transformative AI than AI-lab leaders do.",
                        sources=["leap_2025", "karger_2023"]),
@@ -34,8 +34,8 @@ PRIOR_SETS = {
                        note="Closer to AI-lab leaders and the AI 2027 scenario: fast or transformative AI in 60% of futures.",
                        sources=["ai2027", "metr_2026"]),
     "imaging_restraint": dict(label="Imaging restraint", weights=BASE_W, util=(0.3, 0.6),
-                              note="Imaging per person grows ~0.3%/yr (payer and Medicare cost pressure, appropriateness rules).",
-                              sources=["trustees_2026"]),
+                              note="Imaging per person grows ~0.3%/yr: close to claims-based 2018-22 trends, plus payer and Medicare cost pressure.",
+                              sources=["christensen_util", "trustees_2026"]),
     "imaging_growth": dict(label="Imaging growth", weights=BASE_W, util=(1.3, 0.8),
                            note="Imaging per person grows ~1.3%/yr, nearer recent CT growth.",
                            sources=["smith_bindman_2025", "rosenkrantz_2025"]),

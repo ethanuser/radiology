@@ -139,7 +139,7 @@
           unemployment rate: the model does not forecast pay, hours or hiring directly.</p></div>
       <div class="gcard" id="term-ai"><h4>AI-assisted vs AI-first (autonomous) reading</h4>
         <p><b>AI-assisted</b>: the radiologist reads; AI drafts, measures and flags, saving part of the time. <b>AI-first (autonomous)</b>: AI reads and
-          reports first; a radiologist audits, signs or handles escalations, which still takes about a fifth of the usual time. No future in the model has
+          reports first; a radiologist audits, signs or handles escalations, which still takes about a fifth of the usual time (far less in the transformative-AI regime). No future in the model has
           reads with no radiologist at all. <b>AI time saved</b> combines both (saving 28% of time = 1.38× as much work per hour); the <b>AI-first share</b>
           is the share of interpretive work read AI-first.</p></div>
       <div class="gcard" id="term-tiers"><h4>Tiers of exam difficulty</h4>
@@ -208,7 +208,7 @@
           <p>AI now saves a median <b data-v="X.time_saved.2035.p50" data-f="pct"></b> of radiologist time and reads <b data-v="SUM.2035.autonomous_p50" data-f="pct"></b>
             of interpretive work <a href="#term-ai">AI-first</a>, mostly tier-1 normal radiographs and negative screens. Demand is <b data-v="SUM.2035.demand_p50" data-f="x2"></b>
             and supply <b data-v="SUM.2035.supplyd_p50" data-f="x2"></b>, so supply ÷ demand is <b data-v="SUM.2035.ratio_p50" data-f="x2"></b>.</p>
-          <p>The range is already wide: a <b data-v="X.m1.p_shortage_2035" data-f="pct"></b> chance the market is still short (slightly more likely than not), and a
+          <p>The range is already wide: a <b data-v="X.m1.p_shortage_2035" data-f="pct"></b> chance the market is still short (roughly even odds), and a
             <b data-v="SUM.2035.p_oversupply" data-f="pct"></b> chance of meaningful oversupply. Most of that oversupply risk is in the
             <a href="#term-regimes">transformative-AI regime</a>, where radiologist productivity roughly doubles by 2035.<a class="mlink" href="#m-uncertainty" title="Method: regimes">§</a></p>
           <div class="callout">Outside the transformative-AI regime, the chance of oversupply in 2035 is <b data-v="X.non_tai.2035.p_over" data-f="pct"></b>.</div>
@@ -382,7 +382,7 @@
 <section class="block" id="drivers">
   <div class="wrap">
     <h2>What drives the forecast?</h2>
-    <p class="lede">Two assumptions matter far more than the rest. <b>How fast AI improves</b>: across its plausible range (10th to 90th percentile), the
+    <p class="lede">Two assumptions matter far more than the rest. <b>How fast AI improves</b>: from a low (10th percentile) to a high (90th percentile) value, the
       chance of oversupply in 2045 runs from <span data-v="F.tor.ai.pOver2045_low" data-f="pct"></span> to <span data-v="F.tor.ai.pOver2045_high" data-f="pct"></span>. <b>How fast imaging per person
       grows</b>: <span data-v="F.tor.util.pOver2045_low" data-f="pct"></span> if growth is low, <span data-v="F.tor.util.pOver2045_high" data-f="pct"></span> if it is high. A third, how much time AI saves on
       each assisted read, moves it from <span data-v="F.tor.assist.pOver2045_low" data-f="pct"></span> to <span data-v="F.tor.assist.pOver2045_high" data-f="pct"></span>. Everything else, including
@@ -398,8 +398,8 @@
     </div>
     <div class="chart-card">
       <div class="title">Which assumptions move the forecast? (a "tornado" chart)</div>
-      <div class="subtitle">Each group of assumptions is set to a low (10th percentile) and then a high (90th percentile) value while everything else stays
-        uncertain. ● marks six factors often argued about: future imaging use, new applications, scanner throughput, regulatory delay, AI-first adoption and
+      <div class="subtitle">All inputs in a group are set together to a low (10th percentile) and then a high (90th percentile) value while everything else
+        stays uncertain, so swings are larger than for a single input. ● marks six factors often argued about: future imaging use, new applications, scanner throughput, regulatory delay, AI-first adoption and
         residency response.<a class="mlink" href="#m-sensitivity" title="Method: sensitivity">§</a></div>
       <div class="controls" id="tornadoControls"><span class="lab">Outcome</span>
         <div class="seg" role="group" aria-label="Tornado outcome">
@@ -442,7 +442,7 @@
     </div>
     <div class="tablewrap"><table id="robustTable"></table></div>
     <div class="narrow" style="margin:0">
-      <p><b>What holds and what doesn't.</b> The direction holds in every row: low-to-moderate oversupply risk in 2035, rising over a career. The exact
+      <p><b>What holds and what doesn't.</b> The direction holds in every row: oversupply risk is lower in 2035 than later and rises over a career. The exact
         numbers do not: the 2045 figure ranges from <span data-v="F.robust.band.2045.lo" data-f="pct"></span>–<span data-v="F.robust.band.2045.hi" data-f="pct"></span>. Assumptions about AI speed and imaging growth move it most; the structural variants matter
         less, except for the Jevons result, which depends heavily on how much new demand AI creates. These ranges are sensitivity bands, not confidence
         intervals.</p>
@@ -597,7 +597,7 @@
     <p>The "§" links above point here. The <a href="report.html">full report</a> has every equation, table and source.</p>
     <h3 id="m-baseline">Baseline demand</h3>
     <p>Radiologist work grows with demographics (+0.52%/yr, from projections<sup class="cite" data-ref="christensen_util"></sup> adjusted for lower immigration<sup class="cite" data-ref="cbo_2026"></sup>),
-      imaging per person (starting at 1.2%/yr and slowing<sup class="cite" data-ref="smith_bindman_2019,rosenkrantz_2025"></sup>) and work per exam (0.4%/yr, slowing<sup class="cite" data-ref="mcdonald_2015"></sup>),
+      imaging per person (starting near <span data-v="F.util.q50" data-f="x1"></span>%/yr and slowing, a judgment above recent claims-based trends<sup class="cite" data-ref="smith_bindman_2019,rosenkrantz_2025"></sup>) and work per exam (0.4%/yr, slowing<sup class="cite" data-ref="mcdonald_2015"></sup>),
       minus up to 15% displaced by blood tests and other alternatives. Today's shortage (supply ÷ demand: median <span data-v="F.series.R.p50.0" data-f="x2"></span>, 80% range <span data-v="F.ratio0.q10" data-f="x2"></span>–<span data-v="F.ratio0.q90" data-f="x2"></span>), a judgment, comes from
       workforce projections and market signals.<sup class="cite" data-ref="rula_2026,zamani_2026,parikh_2026"></sup> <a href="report.html#sec-baseline">Report §4.1</a></p>
     <h3 id="m-ai">AI time savings</h3>
@@ -608,7 +608,7 @@
       AI also adds oversight work.<sup class="cite" data-ref="humlum_2025"></sup> Adoption speeds up while there is a shortage. <a href="report.html#sec-ai">Report §4.2</a></p>
     <h3 id="m-pipeline">Regulation and adoption</h3>
     <p>Each of the four <a href="#term-tiers">tiers</a> must pass validation, FDA authorization, and liability and payment acceptance before adoption can begin,
-      and an AI-first study still needs about a fifth of the radiologist's time for audit and sign-off. Lags are anchored on MASAI (~5 years),<sup class="cite" data-ref="gommers_2026"></sup>
+      and an AI-first study still needs about a fifth of the radiologist's time for audit and sign-off (far less in the transformative-AI regime). Lags are anchored on MASAI (~5 years),<sup class="cite" data-ref="gommers_2026"></sup>
       the scarcity of clinical validation,<sup class="cite" data-ref="chouffani_2024"></sup> autonomous retinal AI (3 years from FDA to payment),<sup class="cite" data-ref="abramoff_2018"></sup>
       liability research,<sup class="cite" data-ref="mello_2024,bernstein_2025"></sup> and the spread of computer-aided detection and electronic health records.<sup class="cite" data-ref="lehman_2015,adler_milstein_2017"></sup>
       Tier sizes come from autonomous-AI studies.<sup class="cite" data-ref="plesner_2023,plesner_2024,lauritzen_2024"></sup> <a href="report.html#sec-pipeline">Report §4.3</a></p>
@@ -627,7 +627,7 @@
       anchored or subjective (<a href="#assumptions">see all</a>). <a href="report.html#sec-uncertainty">Report §4.6</a></p>
     <h3 id="m-validation">Validation</h3>
     <p>The supply model reproduces published projections, unit tests check the accounting identities, and a <a href="#track">2016→2025 backtest</a>
-      compares the method with official projections, trend extrapolation and expert claims. <a href="report.html#sec-validation">Report §6</a></p>
+      compares a simplified version of the method with official projections, trend extrapolation and their average. <a href="report.html#sec-validation">Report §6</a></p>
     <h3 id="m-sensitivity">Sensitivity analysis</h3>
     <p>Tornado: each assumption group is pinned at its 10th and then its 90th percentile (8,000 runs each). η²: the share of output variance explained by each
       input. Evidence attribution: how much the ranges shrink if each class of input were known exactly. <a href="report.html#sec-sensitivity">Report §8</a></p>

@@ -141,7 +141,7 @@ P = Param  # brevity
 PARAMS: list[Param] = [
     # ======================================= 1. BASELINE IMAGING DEMAND (no AI) ===============================
     P("dem_rate", "demand", "Demographic (population + aging) growth of radiologist work, 2026-2045",
-      "normal", dict(mu=0.52, sd=0.10, lo=0.15, hi=0.9), "%/yr", "E",
+      "normal", dict(mu=0.52, sd=0.10, lo=0.15, hi=0.9), "%/yr", "A",
       ["christensen_util", "cbo_2026"],
       "Christensen et al project +16.9% to +26.9% exams by modality 2023-2055 from population growth and aging alone "
       "(≈0.49-0.75%/yr) using Census 2023 projections. CBO's 2026 outlook has slower population growth "
@@ -150,15 +150,16 @@ PARAMS: list[Param] = [
       "uniform", dict(lo=0.4, hi=0.9), "ratio", "A", ["cbo_2026"],
       "CBO projects population growth slowing to zero by 2056; aging continues to add imaging per capita."),
     P("util_g0", "demand", "Per-capita (age/sex-adjusted) utilization growth, 2026",
-      "normal", dict(mu=0.8, sd=0.7, lo=-1.5, hi=3.5), "%/yr", "A",
+      "normal", dict(mu=0.6, sd=0.7, lo=-1.5, hi=3.5), "%/yr", "A",
       ["christensen_util", "rula_2026", "smith_bindman_2019", "rosenkrantz_2025", "smith_bindman_2025"],
       "National 2018-22 claims (Christensen et al): projected total utilization in 2055 vs 2023 is +16.9% to +26.9% by modality "
       "from population growth and aging alone, and -5.6% to +45.2% if each modality's recent per-person trend continues to 2030 "
       "(radiography and nuclear medicine falling, CT and MRI rising). The Neiman Institute's 2026 update projects +17% (MRI) to "
       "+25% (CT) by 2055. Older health-system data show faster CT growth (3.7-5.2%/yr, 2013-16) and ED CT per Medicare "
-      "beneficiary nearly doubled 2013-2023. We centre work-weighted per-person growth at 0.8%/yr (CT/MRI-heavy work mix), "
-      "decaying toward ~0.2%/yr; demographics × per-person use then gives a median +33% for 2026-2055, in the upper-middle "
-      "of the published range.",
+      "beneficiary nearly doubled 2013-2023. Each end of the trend range is a single modality (CT up, nuclear medicine down), "
+      "so a work-weighted claims-based figure is lower than CT's. We centre per-person growth at 0.6%/yr, decaying toward "
+      "~0.2%/yr: above the claims-based trends because 2018-22 includes the COVID dip and we let growth continue past 2030, "
+      "and below CT's own trend. This is a judgment; the 'imaging restraint' and 'imaging growth' prior sets bracket it.",
       {"z_dem": 0.7}),
     P("util_ginf", "demand", "Long-run per-capita utilization growth (asymptote)",
       "normal", dict(mu=0.2, sd=0.5, lo=-1.5, hi=2.5), "%/yr", "S", ["smith_bindman_2019", "christensen_util"],
@@ -307,7 +308,7 @@ PARAMS: list[Param] = [
       "beta", dict(a=4, b=6), "share", "S", [],
       "Fee schedules are administered and revalued slowly; commercial prices are sticky."),
     P("elasticity", "jevons", "Price elasticity of imaging demand",
-      "triangular", dict(lo=-0.6, mode=-0.2, hi=-0.05), "elasticity", "E",
+      "triangular", dict(lo=-0.6, mode=-0.2, hi=-0.05), "elasticity", "A",
       ["manning_1987", "aron_dine_2013", "brot_goldberg_2017"],
       "RAND HIE ≈ −0.2 for medical care, with respect to the patient's out-of-pocket price; professional-fee cuts mostly "
       "fall on payers, so this channel is if anything overstated. Deductible shocks cut imaging alongside other services."),
@@ -319,7 +320,7 @@ PARAMS: list[Param] = [
       "lognormal", dict(median=0.18, sigma=0.7), "share", "S",
       ["kwee_2025", "bandi_2024", "lee_2026", "cms_pfs_2026", "hernstrom_2025"],
       "Of 2024 imaging studies with direct patient-care impact, 49% would increase radiologist workload and <1% would "
-      "decrease it; AI studies were ~14x more likely to add work. Examples: opportunistic CT screening, lung screening "
+      "decrease it; AI studies were about 14 times higher odds of adding work (odds ratio 14.3). Examples: opportunistic CT screening, lung screening "
       "(18% uptake in 2022), AI coronary plaque analysis (Category I CPT 75577 from 2026).",
       {"z_ai": 0.5, "z_dem": 0.3}),
     P("new_T0", "jevons", "Midpoint year of new-application uptake (M=1)", "normal", dict(mu=2038, sd=4.0), "year", "S"),
@@ -352,8 +353,9 @@ PARAMS: list[Param] = [
 
     # ======================================= 5. RADIOLOGIST SUPPLY =============================================
     P("attr_mult", "supply", "Attrition hazard multiplier (post-COVID ≈ high end)",
-      "uniform", dict(lo=0.85, hi=1.20), "multiplier", "E", ["christensen_supply", "rula_2026", "parikh_2026"],
-      "Attrition rose from ≈1.9%/yr pre-COVID to ≈3%/yr post-COVID; persistence would cost ≈3,100 radiologists by 2055. "
+      "uniform", dict(lo=0.85, hi=1.20), "multiplier", "A", ["christensen_supply", "rula_2026", "parikh_2026"],
+      "Measured attrition rose from 1.1%/yr (2014) to 2.0% (2019) and 2.5% (2022). The modeled rate (≈2.3-3.2%/yr) sits at or above "
+      "these; with flat positions the high end reproduces the Neiman update's +20.9% supply growth by 2055 under post-COVID attrition. "
       "Turnover between practices also roughly doubled (adjusted odds 1.96, 2022 vs 2013)."),
     P("slot_g", "supply", "Trend growth in DR residency positions (before market response)",
       "normal", dict(mu=1.0, sd=0.8, lo=-1.0, hi=3.0), "%/yr", "A", ["christensen_supply", "nrmp_2026"],

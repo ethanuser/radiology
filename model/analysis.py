@@ -243,6 +243,12 @@ def validation(s: dict, o: dict) -> dict:
         c = np.r_[KAPPA * FILLED_HIST[2024], (c - c * HAZARD)[:-1]]
         surv_years.append(c.sum())
     flat_2055 = c.sum() / STOCK_2023
+    # independent check: Neiman 2026 update projects +20.9% by 2055 if post-COVID attrition persists (flat positions)
+    c_hi = COHORT_2023.copy()
+    hz_hi = np.clip(HAZARD * 1.2, 0, 1)
+    for year in range(2024, 2056):
+        c_hi = np.r_[KAPPA * FILLED_HIST[2024], (c_hi - c_hi * hz_hi)[:-1]]
+    flat_2055_high_attr = c_hi.sum() / STOCK_2023
     mean_career = np.cumprod(np.r_[1.0, 1 - HAZARD[:-1]]).sum()
     attr_2023 = (COHORT_2023 * HAZARD).sum() / COHORT_2023.sum()
     # (2) demographics-only growth 2026-2055 vs Christensen 2023-2055 range (+16.9% to +26.9%)
@@ -253,6 +259,9 @@ def validation(s: dict, o: dict) -> dict:
     return {
         "supply_flat_2055_vs_2023": flat_2055,
         "christensen_flat_2055": 1.257,
+        "supply_flat_2055_high_attrition": flat_2055_high_attr,
+        # approximate no-AI market path: supply from the main run against demand with AI frozen at 2026
+        "noai_ratio_p50": {str(y): float(np.median(o["Sd"][:, yi(y)] / o["B"][:, yi(y)])) for y in (2035, 2055)},
         "mean_career_years": mean_career,
         "christensen_career_years": "34.2-35.7",
         "attrition_2023": attr_2023,

@@ -185,7 +185,7 @@ def fig_tornado(tor, out, metric="D2045_p50", title="Median FTE demand in 2045",
     ax.legend(handles=[Patch(color=BLUE, label="Assumption group at its 10th percentile"),
                        Patch(color=ORANGE, label="Assumption group at its 90th percentile")],
               loc="lower right", fontsize=8)
-    ax.text(0.0, -0.13 if len(df) > 8 else -0.2, "● = assumption the question asked about specifically; faded = other groups",
+    ax.text(0.0, -0.13 if len(df) > 8 else -0.2, "● = six commonly debated assumptions; faded = other groups",
             transform=ax.transAxes, fontsize=8, color=INK2)
     ax.grid(axis="y", visible=False)
     _save(fig, out, fname)
@@ -296,7 +296,7 @@ def fig_regimes(o, out):
     ax.set_xlabel("Year")
     ax.set_ylabel("FTEs (2026 demand = 1)")
     ax.set_title("Median demand by AI-progress regime")
-    ax.legend(loc="lower left", fontsize=8.5)
+    ax.legend(loc="upper left", fontsize=8.5)
     _mark(ax)
     _save(fig, out, "fig11_regimes")
 
@@ -350,6 +350,7 @@ def fig_backtest(bt, out: Path):
         ax.plot(q["p50"], k, "o", color=BLUE, ms=7, mec=SURFACE, mew=1.5, label="Structured model (median, 50%/80%)" if k == 0 else None)
         ax.plot(r["bls"], k + 0.22, "s", color=ORANGE, ms=7, mec=SURFACE, label="BLS 2016-26 projection" if k == 0 else None)
         ax.plot(r["trend"], k - 0.22, "^", color=AQUA, ms=8, mec=SURFACE, label="Prior-decade trend" if k == 0 else None)
+        ax.plot(r["combo"], k + 0.4, "X", color=VIOLET, ms=8, mec=SURFACE, label="BLS + trend average, no AI layer" if k == 0 else None)
         ax.plot(r["actual"], k, "D", color=INK, ms=8, mec=SURFACE, label="Actual (2025)" if k == 0 else None)
     ax.axvline(1, color=AXIS, lw=1)
     ax.set_yticks(range(len(occ)), [r["label"] for r in occ])
@@ -360,16 +361,19 @@ def fig_backtest(bt, out: Path):
     ax.invert_yaxis()
     ax = axes[1]
     rad = bt["radiology"]
-    names = ["Structured model", "Coin flip", "Hinton's 2016 claim\n(illustrative 5%)"]
-    vals = [rad["p_shortage"], 0.5, rad["hinton_p_shortage"]]
-    ax.barh(range(3), [v * 100 for v in vals], color=[BLUE, AXIS, RED], height=0.5)
+    sens = rad["sensitivity"]
+    names = ["Protocol as specified", "Without the AI layer", "Demand growth 1.5%/yr", "3-year adoption lag", "2016 began in a 10% surplus"]
+    vals = [rad["p_shortage"], sens["no_ai_layer"], sens["demand_1_5pct"], sens["lag_3yr"], sens["start_ratio_1_10"]]
+    ax.barh(range(len(vals)), [v * 100 for v in vals], color=[BLUE] + [AXIS] * (len(vals) - 1), height=0.55)
     for i, v in enumerate(vals):
         ax.text(v * 100 + 2, i, f"{v * 100:.0f}%", va="center", fontsize=9)
-    ax.set_yticks(range(3), names)
+    ax.axvline(50, color=INK2, lw=1, ls="--")
+    ax.text(51, -0.45, "coin flip", fontsize=8, color=INK2, va="bottom")
+    ax.set_yticks(range(len(vals)), names)
     ax.set_xlim(0, 100)
-    ax.set_xlabel("P(shortage in 2025) from a 2016 forecast (%)")
-    ax.set_ylabel("Forecaster")
-    ax.set_title("Radiology in 2025: shortage (observed)")
+    ax.set_xlabel("P(shortage in 2025), forecast with 2016 information (%)")
+    ax.set_ylabel("Radiology hindcast variant")
+    ax.set_title("Radiology hindcast variants")
     ax.invert_yaxis()
     _save(fig, out, "fig13_backtest")
 
@@ -388,7 +392,7 @@ def fig_robustness(rb, out):
     ax.axhline(len(rb["priors"]) - 0.5, color=AXIS, lw=1, ls="--")
     ax.set_yticks(range(len(rows)), [r[0] for r in rows])
     ax.invert_yaxis()
-    ax.set_xlim(0, 60)
+    ax.set_xlim(0, 100)
     ax.set_xlabel("P(meaningful oversupply), % of simulated futures")
     ax.set_ylabel("Prior set (●) or model structure (◆)")
     ax.set_title("Oversupply probability under alternative choices")

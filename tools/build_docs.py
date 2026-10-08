@@ -413,16 +413,17 @@ def readme_block() -> str:
              row("**P(meaningful oversupply, S/D > 1.10)**", [f"**{pct(sm[y]['p_oversupply'])}**" for y in ys]),
              row("P(true Jevons paradox)", [pct(jv[y]["p_jevons"]) for y in ys])]
     m1 = x["m1"]
-    para = (f"**In one paragraph:** for someone entering practice in the mid-2030s, the market is most likely still short "
+    para = (f"**In one paragraph:** for someone entering practice in the mid-2030s, the market is more likely than not still short "
             f"({pct(m1['p_shortage_2035'])} chance in 2035), with a {pct(sm[2035]['p_oversupply'])} chance of meaningful oversupply. "
             f"Most of that risk sits in a 12%-weighted \"transformative AI\" branch; without it the risk is "
             f"{pct(x['non_tai']['2035']['p_over'])}. Risk grows over a career ({pct(sm[2045]['p_oversupply'])} by 2045, "
             f"{pct(sm[2055]['p_oversupply'])} by 2055) as autonomous reading clears regulation and payment. A true Jevons paradox, "
-            f"where AI-induced imaging outweighs the labor AI saves, is unlikely (≈{pct(jv[2045]['p_jevons'])} in 2045): induced "
+            f"where AI-induced imaging outweighs the labor AI saves, is unlikely under the main assumptions (≈{pct(jv[2045]['p_jevons'])} in 2045): induced "
             f"demand offsets about {pct(jv[2045]['offset_p50'])} of the savings. A 2016→2025 backtest gave the method a "
-            f"{pct(bt['radiology']['p_shortage'])} chance of today's shortage, and for three other automation-exposed occupations "
-            f"it was slightly more accurate than BLS projections and trend extrapolation (mean log error "
-            f"{num(bt['mae_log']['model'])} vs {num(bt['mae_log']['bls'])} and {num(bt['mae_log']['trend'])}). The direction is robust, the "
+            f"{pct(bt['radiology']['p_shortage'])} chance of today's shortage, driven by supply-versus-demand fundamentals rather than AI; for "
+            f"three other automation-exposed occupations, the simple average of BLS projections and trend extrapolation (mean log "
+            f"error {num(bt['mae_log']['combo'])}) beat the full method ({num(bt['mae_log']['model'])}), so the backtest is a weak "
+            f"sanity check. The direction is robust, the "
             f"digits are not: under alternative priors and model structures the 2045 oversupply probability ranges from "
             f"{pct(rb['band']['2045']['lo'])} to {pct(rb['band']['2045']['hi'])}, so read the numbers as model-conditioned judgment, "
             f"not a calibrated forecast (report §8.4).")
