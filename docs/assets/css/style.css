@@ -304,3 +304,11 @@ details.datatable summary { cursor: pointer; color: var(--ink-2); padding: 4px 0
   .diagram::after { content: "← swipe →"; display: block; text-align: center; font-family: var(--sans); font-size: 12px; color: var(--muted); }
   .report { padding: 20px 16px 60px; font-size: 16.5px; }
 }
+
+/* jump-back pill (report + site) */
+.backpill { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%); z-index: 90; font-family: var(--sans);
+  font-size: 14px; font-weight: 600; background: var(--ink); color: var(--page); border: 0; border-radius: 999px;
+  padding: 10px 18px; box-shadow: var(--shadow); cursor: pointer; }
+.backpill[hidden] { display: none; }
+.flash { animation: flashbg 1.6s ease-out; }
+@keyframes flashbg { 0% { background: var(--accent-wash); } 100% { background: transparent; } }

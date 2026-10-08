@@ -8,6 +8,7 @@ import pandas as pd
 from scipy import stats
 
 from .params import PARAM_INDEX, PARAMS, REGIME_NAMES, SHORT, TASKS
+from .stages import STAGES
 from .sampling import sample
 from .simulate import REPORT_YEARS, YEARS, simulate
 
@@ -176,6 +177,7 @@ GROUPS = {
     "Price elasticity & pass-through": [("elasticity", -1), ("pass_through", +1), ("pc_share", +1), ("access", +1)],
     "Attrition": [("attr_mult", +1)],
     "Today's shortage (2026 S/D)": [("ratio0", +1)],
+    "Shortage-driven AI adoption": [("adopt_pressure", +1)],
 }
 FOCUS_GROUPS = ["Future imaging utilization", "AI-first / autonomous adoption", "Regulatory delay",
                 "New imaging applications", "Scanner throughput & capacity", "Residency adjustment"]
@@ -328,6 +330,19 @@ def extra_metrics(s: dict, o: dict) -> dict:
         "p_any_decline_faster_than_attrition_non_tai": (dec[o["regime"] != 3][:, career] > attr).any(1).mean(),
         "p_any_decline_2x_attrition_2035_2066": (dec[:, career] > 2 * attr).any(1).mean(),
     }
+    stage_rows = []
+    for key, label, start in STAGES:
+        row = {"key": key, "label": label, "start": start}
+        for k, off in (("entry", 0), ("y10", 10), ("y20", 20), ("y30", 30)):
+            yr = min(start + off, 2066)
+            row[f"{k}_year"] = yr
+            row[f"{k}_p_over"] = over[:, yi(yr)].mean()
+            row[f"{k}_p_short"] = (R[:, yi(yr)] < 1).mean()
+            row[f"{k}_p_below"] = (D[:, yi(yr)] < 1).mean()
+            row[f"{k}_D_p50"] = np.median(D[:, yi(yr)])
+        row["p_any_over_career"] = over[:, yi(start):].any(1).mean()
+        stage_rows.append(row)
+    x["stages"] = stage_rows
     x["supply"] = {
         "head_2026_p50": np.median(o["head"][:, 0]), "head_2035_p50": np.median(o["head"][:, yi(2035)]),
         "positions_2035_p50": np.median(o["positions"][:, yi(2035)]),

@@ -8,7 +8,8 @@ import numpy as np
 
 from .analysis import OVERSUPPLY, SEVERE, yi
 from .params import PARAMS, REGIME_NAMES, SHORT, TASK_LABELS, TASK_MEANS, TASKS
-from .references import REFERENCES
+from .references import REFERENCES, format_ama, href
+from .stages import STAGES
 from .simulate import REPORT_YEARS, YEARS
 
 QSET = (5, 10, 25, 50, 75, 90, 95)
@@ -78,7 +79,8 @@ def forecast_json(s, o, summary, probs, jev, regimes, tor, eta, ev, val) -> dict
                               "evidence": p.evidence, "sources": p.sources, "note": p.note,
                               "loadings": p.loadings, "q10": _r(q10, 3), "q50": _r(q50, 3), "q90": _r(q90, 3)})
     out["task_means"] = dict(zip(TASKS, _r(TASK_MEANS)))
-    out["references"] = {k: v for k, v in REFERENCES.items()}
+    out["references"] = {k: {"html": format_ama(k, "html"), "href": href(k)} for k in REFERENCES}
+    out["stages"] = [{"key": k, "label": lab, "start": st} for k, lab, st in STAGES]
     return out
 
 

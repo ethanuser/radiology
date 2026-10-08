@@ -24,11 +24,11 @@
     </a>
     <div class="navlinks">
       <a href="index.html">Interactive forecast</a>
-      <a href="#summary">Summary</a>
-      <a href="#3-model-structure">Model</a>
-      <a href="#6-results">Results</a>
-      <a href="#7-sensitivity-analysis">Sensitivity</a>
-      <a href="#8-interpretation-for-an-m1-considering-radiology-in-2026">For an M1</a>
+      <a href="#sec-evidence">Evidence</a>
+      <a href="#sec-model">Model</a>
+      <a href="#sec-results">Results</a>
+      <a href="#sec-sensitivity">Sensitivity</a>
+      <a href="#sec-careers">Career stages</a>
       <a href="#references">References</a>
     </div>
     <a class="iconbtn" href="https://github.com/ethanuser/radiology" aria-label="Source on GitHub">GitHub</a>
@@ -37,10 +37,12 @@
 <main class="report">
 <!--CONTENT-->
 </main>
+<button class="backpill" id="backPill" type="button" hidden>↩ Back to where you were</button>
 <footer><div class="wrap">Generated from <code>report/REPORT.src.md</code> by <code>tools/build_docs.py</code>. Numbers come from the model outputs in the repository.</div></footer>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"
   onload="renderMathInElement(document.querySelector('main'), {delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError:false})"></script>
+<script src="assets/js/backnav.js"></script>
 <script type="module">
   import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
   const dark = (document.documentElement.dataset.theme || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")) === "dark";

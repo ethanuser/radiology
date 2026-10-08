@@ -6,7 +6,7 @@ from scipy import stats
 from model.analysis import run, validation
 from model.params import PARAM_INDEX, PARAMS
 from model.sampling import sample
-from model.simulate import YEARS
+from model.simulate import YEARS, simulate
 
 
 @pytest.fixture(scope="module")
@@ -88,3 +88,18 @@ def test_regime_weights():
 def test_overrides_pin_parameters():
     s = sample(1000, seed=1, overrides={"util_g0": 0.9})
     assert np.allclose(s["util_g0"], PARAM_INDEX["util_g0"].ppf(np.array([0.9]))[0])
+
+
+def test_adoption_feedback_off_matches_single_pass():
+    from model.simulate import _simulate_once
+    s = sample(2000, seed=21, overrides={"adopt_pressure": 1e-9})
+    o2 = simulate(s)
+    o1 = _simulate_once(s, np.zeros_like(o2["D"]))
+    assert np.allclose(o1["D"], o2["D"], atol=1e-6)
+
+
+def test_every_reference_has_link_and_formats():
+    from model.references import REFERENCES, format_ama, href
+    for k in REFERENCES:
+        assert href(k).startswith("http"), k
+        assert format_ama(k, "md") and format_ama(k, "html")

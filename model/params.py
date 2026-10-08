@@ -149,10 +149,12 @@ PARAMS: list[Param] = [
       "uniform", dict(lo=0.4, hi=0.9), "ratio", "A", ["cbo_2026"],
       "CBO projects population growth slowing to zero by 2056; aging continues to add imaging per capita."),
     P("util_g0", "demand", "Per-capita (age/sex-adjusted) utilization growth, 2026",
-      "normal", dict(mu=1.0, sd=0.8, lo=-1.5, hi=3.5), "%/yr", "A",
-      ["smith_bindman_2019", "christensen_util", "smith_bindman_2025"],
-      "US CT use grew 3.7%/yr (adults, 2013-16) and MRI 1.3-2.2%/yr (2005-16); nuclear medicine declined. "
-      "Christensen's recent-trend scenario spans -5.6% to +45.2% by 2055 across modalities. Work-weighted centre ≈1%/yr.",
+      "normal", dict(mu=1.2, sd=0.8, lo=-1.5, hi=3.5), "%/yr", "A",
+      ["smith_bindman_2019", "christensen_util", "rosenkrantz_2025", "smith_bindman_2025"],
+      "Age-specific US CT use grew 3.7-5.2%/yr (2013-16) and MRI 1.3-2.2%/yr (2005-16); nuclear medicine declined. "
+      "Emergency-department CT per 100 Medicare beneficiaries nearly doubled 2013-2023 (18.7→36.5) while ED visits fell. "
+      "Christensen's recent-trend scenario spans -5.6% to +45.2% by 2055 across modalities. Work-weighted centre ≈1.2%/yr; "
+      "the sd spans flat Medicare per-beneficiary use to sustained CT-led growth.",
       {"z_dem": 0.7}),
     P("util_ginf", "demand", "Long-run per-capita utilization growth (asymptote)",
       "normal", dict(mu=0.3, sd=0.6, lo=-1.5, hi=2.5), "%/yr", "S", ["smith_bindman_2019"],
@@ -171,23 +173,29 @@ PARAMS: list[Param] = [
       "uniform", dict(lo=2035, hi=2055), "year", "S"),
     P("ratio0", "demand", "Supply ÷ demand for radiologist FTEs in 2026 (current shortage)",
       "triangular", dict(lo=0.85, mode=0.93, hi=0.99), "ratio", "A",
-      ["rula_2026", "doximity_2026", "nrmp_2026"],
+      ["rula_2026", "zamani_2026", "parikh_2026", "doximity_2026", "nrmp_2026"],
       "HRSA (via Neiman HPI) puts radiology at ≈90% adequacy in 2038; compensation rose 6.6% in a year and DR positions "
-      "keep expanding — consistent with a moderate (not extreme) current shortage."),
+      "keep expanding. Average exams read per radiologist-day were flat 2018-2024 (+0.6%) but the busiest quartile read 31% "
+      "more, and practice turnover rose from 5.3% to 8.5% (2013-2022): a real but uneven, moderate shortage."),
 
     # ======================================= 2. AI CAPABILITY & ASSISTIVE PRODUCTIVITY =========================
     P("ai_u", "ai_capability", "AI progress speed (quantile → timeline multiplier M)",
-      "ai_mixture", {}, "multiplier", "S", ["metr_2025", "metr_2026", "ai2027", "karger_2023"],
-      "Loose guidance only. M multiplies the number of years from 2026 until each capability arrives.",
+      "ai_mixture", {}, "multiplier", "S", ["metr_2025", "metr_2026", "ai2027", "grace_2025", "leap_2025", "karger_2023"],
+      "Loose guidance only; M multiplies the years from 2026 until each capability arrives. AI researchers put 50% odds on "
+      "machines outperforming humans at every task by 2047 but on full automation of occupations only by 2116; expert "
+      "panels put far lower odds on near-term transformative AI than lab leaders. Fast + transformative = 30% of worlds.",
       {"z_ai": 1.0}),
     P("cap_draft_T0", "ai_capability", "Midpoint year: reliable draft reports & automated measurements (M=1)",
-      "normal", dict(mu=2028.0, sd=1.5), "year", "A", ["huang_2025", "langlotz_2025"],
-      "Generative draft reporting already gave +15.5% documentation efficiency on radiographs in a 24k-study prospective cohort."),
+      "normal", dict(mu=2028.0, sd=1.5), "year", "A", ["huang_2025", "hong_2025", "tanno_2025", "aidoc_2026", "langlotz_2025"],
+      "Generative draft reporting gave +15.5% documentation efficiency on 24k radiographs in live use; AI-drafted chest "
+      "radiograph reports cut reading time 42% in a reader study; generative chest-radiograph drafting tools received FDA "
+      "Breakthrough designations in 2026."),
     P("cap_admin_T0", "ai_capability", "Midpoint year: protocoling, scheduling, QA and admin automation (M=1)",
       "normal", dict(mu=2030.5, sd=2.0), "year", "A", ["langlotz_2025"]),
     P("cap_interp_T0", "ai_capability", "Midpoint year: AI assistance that materially speeds interpretation (M=1)",
-      "normal", dict(mu=2033, sd=3.0), "year", "A", ["wenderott_2024", "agarwal_2023", "rajpurkar_2023"],
-      "Real-world meta-analysis finds no significant time savings yet; radiologists under-use AI predictions."),
+      "normal", dict(mu=2033, sd=3.0), "year", "A", ["wenderott_2024", "yu_2024", "agarwal_2023", "rajpurkar_2023"],
+      "Real-world meta-analysis finds no significant time savings yet; effects of AI assistance vary widely across "
+      "radiologists and erroneous AI output hurts performance; radiologists under-weight AI predictions."),
     P("cap_consult_T0", "ai_capability", "Midpoint year: AI support for clinical synthesis/communication (M=1)",
       "normal", dict(mu=2034, sd=3.0), "year", "S", ["langlotz_2025"]),
     P("cap_proc_T0", "ai_capability", "Midpoint year: meaningful automation of procedural/physical work (M=1)",
@@ -195,11 +203,14 @@ PARAMS: list[Param] = [
     P("cap_width", "ai_capability", "Capability S-curve width (logistic scale; 10→90% ≈ 4.4×)",
       "uniform", dict(lo=2.0, hi=4.0), "years", "S"),
     P("m_interp", "ai_tasks", "Max time saved on interpretation by assistive AI (radiologist still reads)",
-      "beta", dict(a=6, b=14), "share", "A", ["langlotz_2025", "eisemann_2025", "agarwal_2023"], "", {"z_ai": 0.4}),
+      "beta", dict(a=6, b=14), "share", "A", ["langlotz_2025", "lauritzen_2024", "eisemann_2025", "yu_2024"],
+      "Population mammography with AI triage cut reading workload 33.5% (Denmark) and 44% (MASAI) in double-reading "
+      "programmes; in single-reader US practice the assistive saving on interpretation is smaller.", {"z_ai": 0.4}),
     P("m_draft", "ai_tasks", "Max time saved on measurement & report drafting",
-      "beta", dict(a=12, b=8), "share", "A", ["huang_2025", "langlotz_2025"],
-      "Northwestern's draft-report tool saved 15.5% of total radiograph reporting time (up to 40% for some readers); "
-      "if drafting/measurement is ~30% of reading time, that is already ~50% of this sub-task.", {"z_ai": 0.4}),
+      "beta", dict(a=12, b=8), "share", "A", ["huang_2025", "hong_2025", "li_2026", "liu_2026", "langlotz_2025"],
+      "Measured savings span 0% to 42% of reading time: +15.5% (live radiographs), −42% (chest-radiograph reader study), "
+      "−0.46 min per impression (multicentre LLM study), and no sustained gain at one of two CT sites. If drafting and "
+      "measurement are ~30% of reading time, current tools already capture roughly half of this sub-task.", {"z_ai": 0.4}),
     P("m_consult", "ai_tasks", "Max time saved on clinical synthesis/consultation/communication",
       "beta", dict(a=5, b=15), "share", "A", ["langlotz_2025"],
       "Langlotz: record summarization −30% tech/provider communication; non-routine communication −30%; patient explanation −30%.",
@@ -210,21 +221,32 @@ PARAMS: list[Param] = [
     P("m_proc", "ai_tasks", "Max time saved on physical/procedural work",
       "beta", dict(a=1.5, b=17), "share", "S", [], "", {"z_ai": 0.4}),
     P("adopt_mid", "ai_tasks", "Midpoint year of effective clinical adoption of assistive AI",
-      "normal", dict(mu=2029.5, sd=2.0, lo=2027, hi=2040), "year", "A", ["wu_2024", "fda_ai_2026", "huang_2025", "lehman_2015"],
-      "≈1,100 radiology AI devices cleared by 2025 but claims-based use was concentrated in a handful of products. "
-      "Precedent: mammography CAD (FDA 1998, CMS payment 2002) reached most US screening exams within ~6 years.",
+      "normal", dict(mu=2029.5, sd=2.0, lo=2027, hi=2040), "year", "A",
+      ["wu_2024", "allen_2021", "rcr_2026", "fda_ai_2026", "lehman_2015"],
+      "≈1,100 radiology AI devices cleared by 2025 but claims-based use was concentrated in a handful of products; 33.5% "
+      "of US radiologists reported using any AI in 2020, and 75% of UK departments used AI clinically in 2025 without "
+      "an overall workload reduction. Precedent: mammography CAD reached most US screening exams within ~6 years of payment.",
       {"z_reg": 0.4, "z_ai": -0.3}),
+    P("adopt_pressure", "ai_tasks", "Shortage acceleration of AI adoption (extra adoption-clock speed per unit ln(D/S))",
+      "uniform", dict(lo=0.0, hi=4.0), "multiplier", "S", ["rula_2026", "rcr_2026"],
+      "Practices adopt labour-saving AI faster when radiologists are scarce. At a 7% shortage and the midpoint value (2), "
+      "assistive and autonomous adoption clocks run ~14% faster. Applied only while demand exceeds supply."),
     P("adopt_width", "ai_tasks", "Assistive adoption S-curve width", "uniform", dict(lo=1.5, hi=3.5), "years", "S"),
     P("adopt_max", "ai_tasks", "Saturation share of work done with assistive AI", "beta", dict(a=18, b=2), "share", "S"),
     P("ovh_max", "ai_tasks", "New oversight work created by AI (governance, auditing, validation), share of time",
-      "uniform", dict(lo=0.02, hi=0.08), "share", "S", ["langlotz_2025", "acemoglu_restrepo_2019"],
-      "Langlotz explicitly does not model AI monitoring/oversight time; this is the reinstatement term inside the reading room."),
+      "uniform", dict(lo=0.02, hi=0.08), "share", "S", ["langlotz_2025", "humlum_2025", "acemoglu_restrepo_2019"],
+      "Langlotz does not model AI monitoring/oversight time. In Danish administrative data, chatbot adoption created new "
+      "integration and oversight tasks that offset most of a ~3% time saving."),
 
     # ======================================= 3. AUTONOMY & THE REGULATORY PIPELINE =============================
     P("w1", "autonomy", "Tier 1 share of interpretive work: normal/negative radiographs & screening exams",
-      "triangular", dict(lo=0.06, mode=0.10, hi=0.15), "share", "A", ["oxipit_2022", "lang_2023"]),
+      "triangular", dict(lo=0.04, mode=0.07, hi=0.12), "share", "A",
+      ["plesner_2023", "plesner_2024", "lauritzen_2024", "gommers_2026", "oxipit_2022"],
+      "AI could autonomously report 7.8% of all posteroanterior chest radiographs at >99% sensitivity (2023) and ~17.5% at "
+      "99% sensitivity with a tuned threshold (2024); AI triage let about two-thirds of Danish screening mammograms be single-read (33.5% fewer reads). "
+      "Radiographs and screening mammography are ~20-25% of radiologist work, so tier 1 is ≈4-12% of interpretive work."),
     P("w2", "autonomy", "Tier 2 share: all radiographs, screening mammography, standardized follow-ups",
-      "triangular", dict(lo=0.12, mode=0.20, hi=0.28), "share", "A", ["langlotz_2025"],
+      "triangular", dict(lo=0.10, mode=0.17, hi=0.25), "share", "A", ["langlotz_2025"],
       "Langlotz delegation assumptions: mammography 50%, radiography 40%, other modalities 3%."),
     P("w3", "autonomy", "Tier 3 share: complex diagnostic CT/MR/US/NM",
       "triangular", dict(lo=0.35, mode=0.47, hi=0.57), "share", "S", [], "", {"z_ai": 0.2}),
@@ -235,16 +257,20 @@ PARAMS: list[Param] = [
     P("tcap3_T0", "autonomy", "Tier 3 technical capability year (M=1)", "normal", dict(mu=2040, sd=5.0), "year", "S"),
     P("tcap4_T0", "autonomy", "Tier 4 (residual hardest work) capability year (M=1)", "normal", dict(mu=2052, sd=8.0), "year", "S"),
     P("lval", "regulation", "Clinical-validation lag (prospective, multi-site) after capability; tier-1 median",
-      "lognormal", dict(median=2.5, sigma=0.4), "years", "A", ["lang_2023", "hernstrom_2025"],
-      "MASAI ran 2021-2025 from randomisation to primary readout. Tiers 2-4 multiply by 1.2/1.5/1.8.",
+      "lognormal", dict(median=2.5, sigma=0.4), "years", "A", ["gommers_2026", "lang_2023", "chouffani_2024"],
+      "MASAI randomised from April 2021; its interval-cancer endpoint was published in January 2026 (~5 years). 43% of "
+      "FDA-authorised AI devices had no published clinical validation and only 4% had randomised trials. "
+      "Tiers 2-4 multiply by 1.2/1.5/1.8.",
       {"z_reg": 0.3, "z_ai": -0.3}),
     P("lfda", "regulation", "FDA authorization lag for autonomous claims; tier-2 median",
-      "lognormal", dict(median=2.0, sigma=0.5), "years", "A", ["fda_ai_2026", "abramoff_2018"],
-      "No autonomous radiology read is FDA-authorized as of 2026; the IDx-DR De Novo (2018) is the main autonomous precedent. "
-      "Tier multipliers 0.75/1.0/1.5/2.0.",
+      "lognormal", dict(median=2.0, sigma=0.5), "years", "A",
+      ["fda_ai_2026", "fda_draft_2025", "aidoc_2026", "deephealth_2026", "abramoff_2018"],
+      "As of October 2026 no autonomous radiology read is FDA-authorized; generative report drafting has reached FDA "
+      "Breakthrough designation (2026) and one 510(k) report-generating tool keeps the radiologist in control; FDA's AI "
+      "lifecycle guidance remains a draft. IDx-DR (2018) is the main autonomous precedent. Tier multipliers 0.75/1.0/1.5/2.0.",
       {"z_reg": 0.7, "z_ai": -0.3}),
     P("lpay", "regulation", "Liability + reimbursement + scope-of-practice acceptance lag; tier-2 median",
-      "lognormal", dict(median=4.0, sigma=0.6), "years", "A", ["abramoff_2018", "bernstein_2025", "wu_2024"],
+      "lognormal", dict(median=4.0, sigma=0.6), "years", "A", ["abramoff_2018", "bernstein_2025", "mello_2024", "cms_pfs_2026"],
       "Autonomous retinal AI: FDA 2018 → Category I CPT 92229 in 2021. Mock jurors penalize radiologists who disagree with AI. "
       "Medicare professional-component billing presumes physician interpretation. Tier multipliers 0.75/1.0/1.4/1.8.",
       {"z_reg": 0.7, "z_ai": -0.3}),
@@ -262,8 +288,9 @@ PARAMS: list[Param] = [
     P("amax4", "regulation", "Eventual uptake of tier-4 autonomy", "beta", dict(a=8, b=12), "share", "S", [], "",
       {"z_reg": -0.4, "z_ai": 0.3}),
     P("f_sub", "regulation", "Share of interpretation+drafting time actually removed per AI-first/autonomous study",
-      "uniform", dict(lo=0.60, hi=0.95), "share", "S", ["agarwal_2023"],
-      "Residual human time: sampling QA, sign-off, escalations, liability review.", {"z_ai": 0.3}),
+      "uniform", dict(lo=0.60, hi=0.95), "share", "S", ["agarwal_2023", "tanno_2025"],
+      "Residual human time: sampling QA, sign-off, escalations, liability review. Clinically significant errors still "
+      "appeared in 22.8% of AI-only versus 14.0% of human-only chest-radiograph reports in a 2025 evaluation.", {"z_ai": 0.3}),
 
     # ======================================= 4. JEVONS / REBOUND ================================================
     P("pc_share", "jevons", "Professional (interpretation) share of the all-in price of an imaging exam",
@@ -282,9 +309,10 @@ PARAMS: list[Param] = [
       "1995-2007). Applied to the share of radiologist time saved."),
     P("new_max", "jevons", "New AI-enabled imaging applications by 2066 (share of baseline work, before capacity limits)",
       "lognormal", dict(median=0.18, sigma=0.7), "share", "S",
-      ["bandi_2024", "lee_2026", "cms_pfs_2026", "hernstrom_2025"],
-      "Opportunistic CT screening, higher lung-screening uptake (18% in 2022), coronary plaque AI (new Category I code), "
-      "AI-triaged screening programmes, quantitative follow-up imaging.",
+      ["kwee_2025", "bandi_2024", "lee_2026", "cms_pfs_2026", "hernstrom_2025"],
+      "Of 2024 imaging studies with direct patient-care impact, 49% would increase radiologist workload and <1% would "
+      "decrease it; AI studies were ~14x more likely to add work. Examples: opportunistic CT screening, lung screening "
+      "(18% uptake in 2022), AI coronary plaque analysis (Category I CPT 75577 from 2026).",
       {"z_ai": 0.5, "z_dem": 0.3}),
     P("new_T0", "jevons", "Midpoint year of new-application uptake (M=1)", "normal", dict(mu=2038, sd=4.0), "year", "S"),
     P("new_width", "jevons", "New-application S-curve width", "uniform", dict(lo=3, hi=6), "years", "S"),
@@ -310,14 +338,15 @@ PARAMS: list[Param] = [
     P("scope_max", "jevons", "Reads shifting to non-radiologists with AI support by 2066",
       "triangular", dict(lo=0.0, mode=0.03, hi=0.10), "share", "S"),
     P("nt_max", "jevons", "New radiologist tasks created alongside AI (reinstatement), share of 2026 FTE",
-      "triangular", dict(lo=0.0, mode=0.04, hi=0.12), "share", "S", ["acemoglu_restrepo_2019", "autor_2024"],
+      "triangular", dict(lo=0.0, mode=0.04, hi=0.12), "share", "S", ["acemoglu_restrepo_2019", "autor_2024", "kwee_2025"],
       "e.g. AI governance roles, theranostics, quantitative-imaging consults, multidisciplinary precision-medicine work.",
       {"z_ai": 0.3}),
 
     # ======================================= 5. RADIOLOGIST SUPPLY =============================================
     P("attr_mult", "supply", "Attrition hazard multiplier (post-COVID ≈ high end)",
-      "uniform", dict(lo=0.85, hi=1.20), "multiplier", "E", ["christensen_supply", "rula_2026"],
-      "Attrition rose from ≈1.9%/yr pre-COVID to ≈3%/yr post-COVID; persistence would cost ≈3,100 radiologists by 2055."),
+      "uniform", dict(lo=0.85, hi=1.20), "multiplier", "E", ["christensen_supply", "rula_2026", "parikh_2026"],
+      "Attrition rose from ≈1.9%/yr pre-COVID to ≈3%/yr post-COVID; persistence would cost ≈3,100 radiologists by 2055. "
+      "Turnover between practices also roughly doubled (adjusted odds 1.96, 2022 vs 2013)."),
     P("slot_g", "supply", "Trend growth in DR residency positions (before market response)",
       "normal", dict(mu=1.0, sd=0.8, lo=-1.0, hi=3.0), "%/yr", "A", ["christensen_supply", "nrmp_2026"],
       "DR positions rose from 1,132 (2022) to 1,241 (2026), ≈2.3%/yr; GME caps limit sustained growth."),
@@ -332,8 +361,9 @@ PARAMS: list[Param] = [
     P("resid_lag", "supply", "Information/perception lag before the pipeline reacts", "uniform", dict(lo=1, hi=3), "years", "A",
       ["sharafinski_2016"]),
     P("fear", "supply", "Applicant deterrence from visible AI progress (max fill-rate loss)",
-      "uniform", dict(lo=0.0, hi=0.08), "share", "A", ["nrmp_2026"],
-      "DR PGY-1 applicants fell 14% over 2023-2026 even as positions hit records and still filled 97.6%."),
+      "uniform", dict(lo=0.0, hi=0.08), "share", "A", ["nrmp_2026", "reeder_2022"],
+      "DR PGY-1 applicants fell 14% over 2023-2026 even as positions hit records and still filled 97.6%. In a 32-school "
+      "survey, radiology's first-choice share fell from 21.4% to 17.7% when students considered AI."),
     P("fte_drift", "supply", "Drift in FTE per radiologist (part-time, generational preferences)",
       "normal", dict(mu=-0.10, sd=0.15), "%/yr", "S"),
 ]
@@ -389,7 +419,7 @@ SHORT = {
     "f_sub": "Labor removed per AI-first read", "pc_share": "Professional share of price", "pass_through": "Cost pass-through",
     "elasticity": "Price elasticity of imaging", "access": "Turnaround/availability rebound",
     "new_max": "New AI-enabled applications", "new_T0": "New-application timing", "new_width": "New-application ramp",
-    "lambda_new": "Radiologist intensity of new work", "iota": "Incidental-finding follow-up",
+    "lambda_new": "Radiologist intensity of new work", "adopt_pressure": "Shortage-driven AI adoption", "iota": "Incidental-finding follow-up",
     "latent": "Latent (rationed) demand", "thru_H": "Scanner throughput gain", "thru_T0": "Throughput timing",
     "cap_invest": "Capacity investment", "um_max": "AI utilization management", "scope_max": "Scope shift to non-radiologists",
     "nt_max": "New radiologist tasks", "attr_mult": "Attrition rate", "slot_g": "Residency slot growth",

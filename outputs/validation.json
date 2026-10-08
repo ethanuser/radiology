@@ -10,9 +10,9 @@
     0.11624628156231243,
     0.19902176768711932
   ],
-  "realized_time_saved_2031_p50": 0.07590229764273837,
-  "realized_time_saved_2031_p90": 0.2332945652186795,
-  "assistive_potential_interp_draft_2031_p50": 0.1309718473395047,
+  "realized_time_saved_2031_p50": 0.08711047576962233,
+  "realized_time_saved_2031_p90": 0.2533655234695427,
+  "assistive_potential_interp_draft_2031_p50": 0.13058422941335857,
   "langlotz_5yr_hours_reduction": "33% (range 14%-49%)",
-  "baseline_no_ai_2055_p50": 0.4144712943994415
+  "baseline_no_ai_2055_p50": 0.4532867286115958
 }

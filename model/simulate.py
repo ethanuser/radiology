@@ -93,6 +93,20 @@ COHORT_2023 = initial_cohorts()
 
 # ----------------------------------------------------------------------------------------------- main simulation
 def simulate(s: dict) -> dict:
+    """Two-pass solve. Pass 1 runs with AI adoption on calendar time and yields the shortage path ln(D/S).
+    Pass 2 re-runs with adoption clocks that run faster while demand exceeds supply (practices adopt
+    labour-saving AI faster when radiologists are scarce): one fixed-point iteration of the coupled system."""
+    n = len(s["dem_rate"])
+    first = _simulate_once(s, np.zeros((n, T)))
+    pressure = np.maximum(0.0, np.log(first["D_abs"] / first["S_fte"]))
+    press_cum = np.zeros_like(pressure)
+    press_cum[:, 1:] = np.cumsum(pressure[:, :-1], axis=1)  # lagged one year
+    out = _simulate_once(s, press_cum)
+    out["pressure_pass1"] = pressure
+    return out
+
+
+def _simulate_once(s: dict, press_cum: np.ndarray) -> dict:
     n = len(s["dem_rate"])
     t = YEARS[None, :].astype(float)
     dt = t - 2026.0
@@ -138,7 +152,9 @@ def simulate(s: dict) -> dict:
         # robotics lags software: procedural capability never compresses faster than M = 0.6
         "proc": logistic(t, 2026.0 + (col("cap_proc_T0") - 2026.0) * np.maximum(M, 0.6), cw),
     }
-    adopt = col("adopt_max") * logistic(t, col("adopt_mid"), col("adopt_width"))
+    kappa_a = col("adopt_pressure")
+    t_adopt = t + kappa_a * press_cum  # adoption clock: calendar time plus shortage-driven acceleration
+    adopt = col("adopt_max") * logistic(t_adopt, col("adopt_mid"), col("adopt_width"))
     sig = {k: lift(col(f"m_{k}"), TAI_TASK_CEILINGS[k]) * cap[k] * adopt for k in cap}
 
     # ===================================================================== 3-4. autonomy through the regulatory pipeline
@@ -157,7 +173,11 @@ def simulate(s: dict) -> dict:
         ready.append(rj)
         stage.append(np.hstack([tcap[j], tcap[j] + lv, tcap[j] + lv + lf, rj, rj + ahalf]))
         amax = lift(col(f"amax{j + 1}"), TAI_AMAX)
-        auto = auto + w[j] * amax * logistic(t, rj + ahalf, col("awidth"))
+        # adoption progress since readiness, on the shortage-accelerated clock
+        idx = np.clip(np.floor(rj[:, 0] - 2026).astype(int), 0, T - 1)
+        pc_ready = np.where(rj[:, 0] < 2026, 0.0, press_cum[np.arange(n), idx])[:, None]
+        tau_j = (t - rj) + kappa_a * np.maximum(0.0, press_cum - pc_ready) * (t >= rj)
+        auto = auto + w[j] * amax * logistic(tau_j, ahalf, col("awidth"))
     out["auto"] = auto
     out["stages"] = np.stack(stage, axis=1)  # (n, tier, [capability, validated, FDA, paid/liability, 50% adoption])
 

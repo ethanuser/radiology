@@ -20,7 +20,8 @@ import pandas as pd
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from model.params import PARAMS, REGIME_NAMES  # noqa: E402
-from model.references import REFERENCES  # noqa: E402
+from model.references import REFERENCES, format_ama  # noqa: E402
+from model.stages import STAGES  # noqa: E402
 
 OUT = ROOT / "outputs"
 
@@ -206,7 +207,42 @@ def params_md():
 
 
 n_sims = json.loads((ROOT / "docs" / "data" / "forecast.json").read_text())["n_sims"]
-CTX = dict(n_params=len(PARAMS), n_sims=n_sims, sm=sm, pr=pr, jv=jv, rg=rg, tor=tor, val=val, x=x, pct=pct, num=num, chg=chg, yr=yr, ev_shrink=ev_shrink,
+SECTIONS = {
+    "question": ("sec-question", "§1"), "approach": ("sec-approach", "§2"), "evidence": ("sec-evidence", "§3"),
+    "model": ("sec-model", "§4"), "baseline": ("sec-baseline", "§4.1"), "ai": ("sec-ai", "§4.2"),
+    "pipeline": ("sec-pipeline", "§4.3"), "jevons": ("sec-jevons", "§4.4"), "supply": ("sec-supply", "§4.5"),
+    "uncertainty": ("sec-uncertainty", "§4.6"), "params": ("sec-params", "§5"), "validation": ("sec-validation", "§6"),
+    "results": ("sec-results", "§7"), "ds": ("sec-ds", "§7.1"), "balance": ("sec-balance", "§7.2"),
+    "aiprod": ("sec-aiprod", "§7.3"), "jevres": ("sec-jevres", "§7.4"), "regimes": ("sec-regimes", "§7.5"),
+    "tasks": ("sec-tasks", "§7.6"), "baseres": ("sec-baseres", "§7.7"), "sensitivity": ("sec-sensitivity", "§8"),
+    "tornado": ("sec-tornado", "§8.1"), "eta": ("sec-eta", "§8.2"), "evshare": ("sec-evshare", "§8.3"),
+    "careers": ("sec-careers", "§9"), "margins": ("sec-margins", "§9.2"), "signposts": ("sec-signposts", "§9.3"),
+    "limits": ("sec-limits", "§10"), "repro": ("sec-repro", "§11"),
+}
+
+
+def m(key):
+    """Inline link from a claim to the section that supports it."""
+    anchor, label = SECTIONS[key]
+    return f'<sup>[{label}](#{anchor} "Method / evidence for this claim")</sup>'
+
+
+def anchor(key):
+    return f'<a name="{SECTIONS[key][0]}"></a>'
+
+
+def stage_table():
+    rows = ["| Where you are in autumn 2026 | Typical first attending year* | P(oversupply) when you start | 10 years in | 20 years in | "
+            "30 years in (or 2066) | P(demand below 2026) 10 years in | P(≥1 oversupplied year before 2067) |",
+            "|---|---|---|---|---|---|---|---|"]
+    for r in x["stages"]:
+        rows.append(f"| {r['label']} | {r['start']} | {pct(r['entry_p_over'])} | {pct(r['y10_p_over'])} | "
+                    f"{pct(r['y20_p_over'])} | {pct(r['y30_p_over'])} ({r['y30_year']}) | {pct(r['y10_p_below'])} | "
+                    f"{pct(r['p_any_over_career'])} |")
+    return "\n".join(rows)
+
+
+CTX = dict(m=m, anchor=anchor, stage_table=stage_table, n_params=len(PARAMS), n_sims=n_sims, sm=sm, pr=pr, jv=jv, rg=rg, tor=tor, val=val, x=x, pct=pct, num=num, chg=chg, yr=yr, ev_shrink=ev_shrink,
            ev_n=ev_n, headline_table=headline_table, jevons_md=jevons_md, regimes_md=regimes_md, tornado_md=tornado_md,
            signposts_md=signposts_md, eta_md=eta_md, eta_nt=eta_nt, composition_md=composition_md, pipeline_md=pipeline_md,
            params_md=params_md, float=float, round=round, abs=abs)
@@ -234,10 +270,15 @@ def _ranges(nums):
 
 
 def cite(text: str):
+    """Replace [@a; @b] with linked AMA superscripts; record each occurrence for back-links."""
     order: list[str] = []
+    occ: dict[int, int] = {}
 
-    def rep(m):
-        keys = [k.strip().lstrip("@") for k in m.group(1).split(";")]
+    def link(n):
+        return f"[{n}](#ref-{n})"
+
+    def rep(mobj):
+        keys = [k.strip().lstrip("@") for k in mobj.group(1).split(";")]
         nums = []
         for k in keys:
             if k not in REFERENCES:
@@ -245,10 +286,26 @@ def cite(text: str):
             if k not in order:
                 order.append(k)
             nums.append(order.index(k) + 1)
-        return f"<sup>{_ranges(nums)}</sup>"
+        nums = sorted(set(nums))
+        anchors = ""
+        for n in nums:
+            occ[n] = occ.get(n, 0) + 1
+            anchors += f'<a name="c{n}-{occ[n]}"></a>'
+        # ranges of 3+ consecutive numbers are shown as first-last (AMA)
+        parts, i = [], 0
+        while i < len(nums):
+            j = i
+            while j + 1 < len(nums) and nums[j + 1] == nums[j] + 1:
+                j += 1
+            if j - i >= 2:
+                parts.append(f"{link(nums[i])}-{link(nums[j])}")
+            else:
+                parts.extend(link(n) for n in nums[i:j + 1])
+            i = j + 1
+        return f"{anchors}<sup>{','.join(parts)}</sup>"
 
     body = re.sub(r"\[(@[^\]]+)\]", rep, text)
-    return body, order
+    return body, order, occ
 
 
 def ama_md(s: str) -> str:
@@ -258,12 +315,13 @@ def ama_md(s: str) -> str:
 def build():
     src = (ROOT / "report" / "REPORT.src.md").read_text()
     body = fill(src)
-    body, order = cite(body)
-    refs = ["", "## References", ""]
+    body, order, occ = cite(body)
+    refs = ["", '<a name="references"></a>', "", "## References", "",
+            "*AMA Manual of Style, 11th edition. ↩ links return to each place a source is cited.*", ""]
+    letters = "abcdefghijklmnopqrstuvwxyz"
     for n, k in enumerate(order, 1):
-        r = REFERENCES[k]
-        link = f" [Link]({r['url']})" if r.get("url") and "doi.org" not in r["ama"] and r["url"] not in r["ama"] else ""
-        refs.append(f"{n}. {ama_md(r['ama'])}{link}")
+        back = " ".join(f"[↩{letters[i] if occ[n] > 1 else ''}](#c{n}-{i + 1})" for i in range(occ.get(n, 0)))
+        refs.append(f'{n}. <a name="ref-{n}"></a>{format_ama(k, "md")} {back}')
     marker = "<!-- REFERENCES -->"
     body = body.replace(marker, "\n".join(refs)) if marker in body else body + "\n".join(refs)
     (ROOT / "REPORT.md").write_text(body)
