@@ -60,7 +60,7 @@
 | `scope_max`: Reads shifting to non-radiologists with AI support by 2066 | Triangular(0, mode 0.03, 0.1) | 0.0173 / 0.0408 / 0.0735 | share | S |  |
 | `nt_max`: New radiologist tasks created alongside AI (reinstatement), share of 2026 FTE | Triangular(0, mode 0.04, 0.12) | 0.0219 / 0.0507 / 0.089 | share | S | acemoglu_restrepo_2019, autor_2024, kwee_2025 |
 | `attr_mult`: Attrition hazard multiplier (post-COVID ≈ high end) | Uniform(0.95, 1.25) | 0.98 / 1.1 / 1.22 | multiplier | A | christensen_supply, rula_2026, parikh_2026 |
-| `slot_g`: Trend growth in DR residency positions (before market response) | Normal(μ=1, σ=0.8), truncated [-1.0, 3.0] | -0.00299 / 1 / 2 | %/yr | A | christensen_supply, nrmp_2026 |
+| `slot_g`: Trend growth in DR residency positions (before market response) | Normal(μ=1.5, σ=0.8), truncated [-1.0, 3.5] | 0.476 / 1.49 / 2.5 | %/yr | A | malhotra_2026, nrmp_2026, christensen_supply |
 | `resid_gamma`: Residency-position response to market signal (elasticity to ln D/S) | Uniform(0.3, 1.5) | 0.42 / 0.9 / 1.38 | elasticity | A | sharafinski_2016, rosenkrantz_2016, nicholson_2002 |
 | `fill_kappa`: Fill-rate response to oversupply (applicant flight) | Uniform(0.3, 1.5) | 0.42 / 0.9 / 1.38 | elasticity | A | sharafinski_2016, shi_2015 |
 | `resid_lag`: Information/perception lag before the pipeline reacts | Uniform(1, 3) | 1.2 / 2 / 2.8 | years | A | sharafinski_2016 |

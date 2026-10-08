@@ -24,6 +24,9 @@
   F.fte2026 = F.extra.supply.head_2026_p50 / F.series.R.p50[0];
   F.ratio0 = F.params.find((p) => p.name === "ratio0");
   F.util = F.params.find((p) => p.name === "util_g0");
+  F.slot = F.params.find((p) => p.name === "slot_g");
+  F.bt_lo = d3.min(Object.values(F.backtest.radiology.sensitivity).concat([F.backtest.radiology.p_shortage]));
+  F.bt_hi = d3.max(Object.values(F.backtest.radiology.sensitivity).concat([F.backtest.radiology.p_shortage]));
   // how much narrower the 2045 demand range gets if the judgment-call inputs were known exactly
   F.subj_shrink = (F.evidence_attribution.find((r) => r.metric === "D" && r.year === 2045 && r.grade === "Subjective") || {}).shrink;
   const BT = F.backtest;
@@ -243,7 +246,7 @@
         const A = stage.start;
         const p = (y) => fmt.pct(F.probs.p_oversupply[yi(y)]);
         out.innerHTML = `Typical start of independent practice: <b>${A}</b>. Chance of meaningful oversupply then: <b>${p(A)}</b>; ` +
-          `10 years in: <b>${p(A + 10)}</b>; 20 years in: <b>${p(A + 20)}</b>. Chance the market is still short when you start: <b>${fmt.pct(1 - F.probs.p_supply_exceeds_demand[yi(A)])}</b>.`;
+          `10 years in: <b>${p(A + 10)}</b>; 20 years in: <b>${p(A + 20)}</b>. Chance of a meaningful shortage then: <b>${fmt.pct(F.probs.p_shortage_10[yi(A)])}</b>.`;
       }
     }
     document.querySelectorAll(".stage-note").forEach((el) => {
@@ -504,9 +507,11 @@
     const chColors = { "Cheaper interpretation (price)": c.d, "Faster turnaround & availability": c.a, "Scanner throughput / latent demand": c.y,
       "New applications & screening": c.m, "Incidental findings & follow-up": c.g, "New radiologist tasks": c.r, "Utilization management (AI)": c.s,
       "Scope shift to non-radiologists": c.red };
+    const JEV_LABEL = { "Cheaper interpretation (price)": "Cheaper reads", "Scanner throughput / latent demand": "Faster scanners (more exams fit in a day)",
+      "Utilization management (AI)": "Payers' AI blocking unneeded scans", "Scope shift to non-radiologists": "Reads shifting to other doctors" };
     if (has("#jevonsChart")) Charts.stacked("#jevonsChart", { years, height: 380, valueFmt: (v) => d3.format("+.1%")(v).replace("-", "−"), yFmt: d3.format(".0%"),
       yLabel: "Share of 2026 radiologist FTEs (mean)",
-      layers: Object.entries(F.jevons.channels).map(([k, v]) => ({ label: k, values: v, color: chColors[k] })),
+      layers: Object.entries(F.jevons.channels).map(([k, v]) => ({ label: JEV_LABEL[k] || k, values: v, color: chColors[k] })),
       overlays: [{ label: "Radiologist time saved by AI", values: F.jevons.labor_saved_mean, color: css("--ink"), width: 2.4 },
         { label: "Net new work created by AI", values: F.jevons.induced_mean, color: css("--ink-2"), width: 2, dash: "6 4" }] });
     if (has("#offsetChart")) {
@@ -570,17 +575,17 @@
     const cf = Object.entries(R.structures).filter(([, v]) => v.counterfactual).map(([k, v]) => row(v, v.detail, k)).join("");
     const band = `<tr><td><b>Range across all rows</b></td>${ys.map((y) => `<td class="num"><b>${fmt.pct(R.band[y].lo)}–${fmt.pct(R.band[y].hi)}</b></td>`).join("")}` +
       `<td class="num"><b>${fmt.pct(R.band["2045"].jev_lo)}–${fmt.pct(R.band["2045"].jev_hi)}</b></td></tr>`;
-    t.innerHTML = `<thead><tr><th>Assumption set or model structure</th>${ys.map((y) => `<th class="num">P(oversupply) ${y}</th>`).join("")}<th class="num">P(Jevons) 2045</th></tr></thead>
-      <tbody><tr><td colspan="5" class="muted small"><b>Different priors</b> (same model, reweighted futures)</td></tr>${pri}
-      <tr><td colspan="5" class="muted small"><b>Different model structures</b> (main priors, re-simulated)</td></tr>${st}${band}
-      <tr><td colspan="5" class="muted small"><b>How much of the risk comes from AI?</b> Counterfactuals, not alternatives; excluded from the range</td></tr>${cf}</tbody>`;
+    t.innerHTML = `<thead><tr><th>Assumptions or model design</th>${ys.map((y) => `<th class="num">P(oversupply) ${y}</th>`).join("")}<th class="num">P(Jevons) 2045</th></tr></thead>
+      <tbody><tr><td colspan="5" class="muted small"><b>Different assumptions</b> (same futures, re-weighted)</td></tr>${pri}
+      <tr><td colspan="5" class="muted small"><b>Different model designs</b> (re-simulated)</td></tr>${st}${band}
+      <tr><td colspan="5" class="muted small"><b>How much of the risk comes from AI?</b> What-if runs, not alternatives; excluded from the range</td></tr>${cf}</tbody>`;
   }
 
   function predictionTable() {
     const t = $("#predictionTable");
     if (!t || !X.predictions) return;
     t.innerHTML = `<thead><tr><th>Check</th><th>Event</th><th class="num">Model's forecast</th></tr></thead><tbody>` +
-      X.predictions.map((p) => `<tr><td>${p.check}</td><td>${p.event}</td><td class="num">${p.p !== undefined ? fmt.pct(p.p) + " chance"
+      X.predictions.map((p) => `<tr><td>${p.check}</td><td>${p.event}<div class="muted small">Checked against: ${p.resolution}</div></td><td class="num">${p.p !== undefined ? fmt.pct(p.p) + " chance"
         : `${d3.format(",.0f")(p.p50)} (80%: ${d3.format(",.0f")(p.p10)}–${d3.format(",.0f")(p.p90)})`}</td></tr>`).join("") + "</tbody>";
   }
 
@@ -588,11 +593,11 @@
   function careerTable() {
     const t = $("#stageTable");
     if (!t) return;
-    t.innerHTML = `<thead><tr><th>Where you are in fall 2026</th><th class="num">Typical start of practice*</th><th class="num">P(oversupply) at start</th>
-      <th class="num">10 years in</th><th class="num">20 years in</th><th class="num">30 years in (or 2066)</th><th class="num">P(still a shortage) at start</th></tr></thead><tbody>` +
+    t.innerHTML = `<thead><tr><th>Where you are in fall 2026</th><th class="num">Typical start of practice*</th><th class="num">P(meaningful oversupply) at start</th>
+      <th class="num">… 10 years in</th><th class="num">… 20 years in</th><th class="num">P(meaningful shortage) at start</th></tr></thead><tbody>` +
       X.stages.map((r) => `<tr class="${stage && stage.key === r.key ? "hl" : ""}"><td>${r.label}</td><td class="num">${r.start}</td><td class="num">${fmt.pct(r.entry_p_over)}</td>
-      <td class="num">${fmt.pct(r.y10_p_over)}</td><td class="num">${fmt.pct(r.y20_p_over)}</td><td class="num">${fmt.pct(r.y30_p_over)} (${r.y30_year})</td>
-      <td class="num">${fmt.pct(r.entry_p_short)}</td></tr>`).join("") + "</tbody>";
+      <td class="num">${fmt.pct(r.y10_p_over)}</td><td class="num">${fmt.pct(r.y20_p_over)}</td>
+      <td class="num">${fmt.pct(r.entry_p_short10)}</td></tr>`).join("") + "</tbody>";
   }
   function horizon() {
     const el = $("#horizon");

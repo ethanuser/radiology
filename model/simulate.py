@@ -99,6 +99,7 @@ STRUCTURES = {
     "open_demand": "Much larger unforeseen new demand (3× new applications, 2× new radiologist tasks)",
     "payer_pushback": "Stronger payer pushback (2× AI utilization management and scope shift)",
     "uncapped_new_uses": "New AI-enabled uses not limited by scanner capacity (e.g. opportunistic screening of existing scans)",
+    "tai_gated": "Transformative-AI time savings above normal limits wait for the complex-exam (tier 3) regulatory pipeline",
     # counterfactuals (not alternatives): how much of the risk comes from AI at all
     "assistive_only": "Counterfactual: assistive AI only, no AI-first reading",
     "no_ai": "Counterfactual: radiology AI frozen at its 2026 level (alternative diagnostics such as AI-ECG still displace some imaging)",
@@ -138,7 +139,9 @@ def _simulate_once(s: dict, press_cum: np.ndarray, structure: str = "base") -> d
         return x + tai * np.maximum(0.0, ceiling - x)
 
     def scaled(T0):
-        return 2026.0 + (col(T0) - 2026.0) * M
+        # only future capability dates are compressed or stretched by the AI-speed multiplier
+        d = col(T0) - 2026.0
+        return 2026.0 + np.maximum(d, 0.0) * M + np.minimum(d, 0.0)
 
     out: dict[str, np.ndarray] = {}
 
@@ -212,7 +215,13 @@ def _simulate_once(s: dict, press_cum: np.ndarray, structure: str = "base") -> d
         auto_parts.append(part)
         auto = auto + part
     out["auto"] = auto
-    out["stages"] = np.stack(stage, axis=1)  # (n, tier, [capability, validated, FDA, paid/liability, 50% adoption])
+    out["stages"] = np.stack(stage, axis=1)
+    if structure == "tai_gated":
+        # extra assistive savings in the transformative branch count as de facto autonomy: they phase in only as the
+        # tier-3 (complex exams) validation, FDA and payment pipeline clears, not on capability alone
+        gate = logistic(t, ready[2], 2.0)
+        sig = {k: (col(f"m_{k}") + tai * gate * np.maximum(0.0, TAI_TASK_CEILINGS[k] - col(f"m_{k}"))) * cap[k] * adopt
+               for k in cap}  # (n, tier, [capability, validated, FDA, paid/liability, 50% adoption])
 
     fsub = lift(col("f_sub"), TAI_FSUB)
     # radiologist time left on AI-first studies (share of interpretive work); zero in every tier under "no_signoff"

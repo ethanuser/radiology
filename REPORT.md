@@ -34,21 +34,21 @@ for imaging), and propagated through 20,000 simulated futures.<sup>[§4.6](#sec-
 |---|---|---|---|---|---|
 | **FTE demand** (2026 demand = 1): median (P10–P90) | 1.02 (0.94–1.08) | 1.01 (0.77–1.13) | 1.05 (0.62–1.30) | 1.08 (0.59–1.43) | 1.11 (0.62–1.59) |
 |   FTE demand: P25–P75 | 0.99–1.05 | 0.93–1.07 | 0.92–1.18 | 0.90–1.26 | 0.88–1.35 |
-| **FTE supply** (2026 demand = 1): median (P10–P90) | 0.95 (0.91–0.99) | 1.00 (0.95–1.04) | 1.09 (1.02–1.16) | 1.15 (0.95–1.29) | 1.19 (0.82–1.46) |
-|   FTE supply: P25–P75 | 0.93–0.97 | 0.97–1.02 | 1.06–1.13 | 1.07–1.22 | 1.04–1.33 |
-| **Supply ÷ demand** (2026 ≈ 0.93): median (P10–P90) | 0.93 (0.87–1.02) | 0.99 (0.87–1.29) | 1.05 (0.85–1.66) | 1.09 (0.84–1.58) | 1.09 (0.81–1.41) |
-|   Supply ÷ demand: P25–P75 | 0.90–0.97 | 0.92–1.07 | 0.94–1.19 | 0.95–1.25 | 0.95–1.24 |
-| **AI productivity** (work per radiologist-hour, 2026 = 1) | 1.06 (1.02–1.23) | 1.22 (1.09–1.87) | 1.38 (1.22–2.90) | 1.47 (1.28–3.66) | 1.55 (1.33–3.79) |
+| **FTE supply** (2026 demand = 1): median (P10–P90) | 0.95 (0.91–0.99) | 1.00 (0.95–1.04) | 1.10 (1.03–1.17) | 1.19 (0.97–1.34) | 1.26 (0.86–1.54) |
+|   FTE supply: P25–P75 | 0.93–0.97 | 0.97–1.02 | 1.07–1.14 | 1.10–1.27 | 1.10–1.41 |
+| **Supply ÷ demand** (2026 ≈ 0.93): median (P10–P90) | 0.93 (0.87–1.02) | 0.99 (0.87–1.29) | 1.06 (0.86–1.67) | 1.12 (0.87–1.62) | 1.15 (0.87–1.47) |
+|   Supply ÷ demand: P25–P75 | 0.90–0.97 | 0.92–1.07 | 0.95–1.20 | 0.98–1.29 | 1.01–1.30 |
+| **AI productivity** (work per radiologist-hour, 2026 = 1) | 1.06 (1.02–1.23) | 1.22 (1.09–1.87) | 1.38 (1.22–2.89) | 1.47 (1.28–3.66) | 1.55 (1.33–3.79) |
 |   AI productivity: P25–P75 | 1.04–1.11 | 1.15–1.32 | 1.29–1.50 | 1.36–1.63 | 1.42–1.73 |
 | **AI-first / autonomous share** of interpretive work | <1% (<1%–3%) | 2% (<1%–12%) | 13% (4%–53%) | 26% (9%–88%) | 45% (16%–95%) |
 |   AI-first share: P25–P75 | <1%–1% | 1%–5% | 7%–22% | 16%–47% | 27%–58% |
-| P(demand < 2026 level) | 33% | 46% | 39% | 38% | 37% |
+| P(demand < 2026 level) | 34% | 46% | 39% | 38% | 37% |
 | P(demand < 80% of 2026) | 1% | 11% | 14% | 17% | 18% |
 | P(demand < 50% of 2026) | 0% | <1% | 6% | 7% | 6% |
-| P(supply > demand) | 14% | 45% | 60% | 67% | 68% |
-| **P(meaningful oversupply: S/D > 1.10)** | 3% | 20% | 39% | 48% | 49% |
-| P(severe oversupply: S/D > 1.25) | <1% | 11% | 19% | 25% | 24% |
-| P(shortage worse than 10%: S/D < 0.90) | 27% | 17% | 18% | 18% | 19% |
+| P(supply > demand) | 14% | 46% | 63% | 72% | 77% |
+| **P(meaningful oversupply: S/D > 1.10)** | 3% | 20% | 41% | 55% | 60% |
+| P(severe oversupply: S/D > 1.25) | <1% | 11% | 20% | 29% | 33% |
+| P(shortage worse than 10%: S/D < 0.90) | 27% | 17% | 16% | 14% | 13% |
 
 **Key findings**
 
@@ -60,15 +60,15 @@ for imaging), and propagated through 20,000 simulated futures.<sup>[§4.6](#sec-
    9%.<sup>[§7.2](#sec-balance "Method / evidence for this claim")</sup><sup>[§7.5](#sec-regimes "Method / evidence for this claim")</sup>
 2. **Risk grows with time in practice.** Median FTE demand rises only modestly (+5% by 2045,
    +8% by 2055) because AI productivity absorbs most of the growth in imaging. The probability of
-   meaningful oversupply rises to 39% in 2045 and 48% in 2055
-   (any surplus, $R>1$: 60% in 2045),
+   meaningful oversupply rises to 41% in 2045 and 55% in 2055
+   (any surplus, $R>1$: 63% in 2045),
    and from 2035 on, 37%–46%
    of futures have demand below today's level. With no further AI, oversupply would be
-   6% likely in 2045 and 18% in 2055
+   8% likely in 2045 and 24% in 2055
    (supply slowly overtaking slow-growing demand); with assistive AI but no AI-first reading,
-   31% and 32%. This
+   34% and 39%. This
    later risk is not only a transformative-AI story: excluding that branch, oversupply is still
-   31% likely in 2045 and 41% in 2055.<sup>[§7.1](#sec-ds "Method / evidence for this claim")</sup>
+   34% likely in 2045 and 49% in 2055.<sup>[§7.1](#sec-ds "Method / evidence for this claim")</sup>
 3. **A collapse is a tail, not a base case.** Demand falls below half of today's level with probability
    6% in 2045 and 6% in 2066, almost entirely in
    transformative-AI worlds.<sup>[§7.5](#sec-regimes "Method / evidence for this claim")</sup>
@@ -76,7 +76,8 @@ for imaging), and propagated through 20,000 simulated futures.<sup>[§4.6](#sec-
    18% in 2035 and 32% in 2055. AI-first or autonomous
    reading reaches a median 13% of interpretive work by 2045. For each tier of exam
    difficulty, the chain from technical capability to clinical validation, FDA authorization, liability and payment
-   acceptance, and hospital adoption takes one to two decades.<sup>[§7.3](#sec-aiprod "Method / evidence for this claim")</sup><sup>[§4.3](#sec-pipeline "Method / evidence for this claim")</sup>
+   acceptance, and hospital adoption takes one to two decades by assumption (the lag priors in §4.3, anchored on past
+   diffusion); it is an input, not a finding.<sup>[§7.3](#sec-aiprod "Method / evidence for this claim")</sup><sup>[§4.3](#sec-pipeline "Method / evidence for this claim")</sup>
 5. **A true Jevons paradox is unlikely under the main assumptions, but this depends on the demand channels assumed.**
    AI-induced demand (cheaper and faster reads, new applications, follow-up of AI-detected findings, scanner throughput, new
    radiologist tasks) offsets a median 50% of the labor AI saves by 2045 and exceeds it in only
@@ -85,17 +86,17 @@ for imaging), and propagated through 20,000 simulated futures.<sup>[§4.6](#sec-
    27%.<sup>[§7.4](#sec-jevres "Method / evidence for this claim")</sup><sup>[§8.4](#sec-robust "Method / evidence for this claim")</sup>
 6. **What drives the forecast:** the AI-progress regime and future per-capita imaging use, then the size of assistive-AI
    time savings. Regulatory delay, new applications and scanner throughput are second-order. Growth in residency positions
-   becomes a top driver by 2055. About half the
-   spread comes from parameters graded subjective.<sup>[§8](#sec-sensitivity "Method / evidence for this claim")</sup>
+   becomes a top driver by 2055. Most of the spread (roughly two-thirds to three-quarters) comes from inputs graded
+   subjective.<sup>[§8](#sec-sensitivity "Method / evidence for this claim")</sup>
 7. **For practicing radiologists, AI risk would most likely show up as slower hiring of new graduates, flatter pay and a
    changed job, not unemployment.** The model forecasts only the supply/demand balance; the split between hiring, pay and hours
-   is an interpretation from past gluts, not a model output. Attrition of about 2.7% of the workforce a year absorbs gradual declines,
+   is an interpretation from past gluts, not a model output. Attrition of about 3% of the workforce a year (sampled range ≈2.6–3.4%) absorbs gradual declines,
    but new graduates keep entering: a severe surplus ($R>1.25$) lasts five or more years in
-   30% of futures (21% outside the
+   36% of futures (28% outside the
    transformative branch).
    Demand falls faster than attrition over some five-year window after 2035 in
-   9% of futures, and in
-   0.2% outside the transformative branch.<sup>[§9.2](#sec-margins "Method / evidence for this claim")</sup>
+   8% of futures, and in
+   0.0% outside the transformative branch.<sup>[§9.2](#sec-margins "Method / evidence for this claim")</sup>
 8. **The backtest is a weak sanity check.** Run from 2016 with only the information then available, a simplified version of
    the approach gave a 67% chance of the radiologist shortage seen in 2025, but that result
    comes from the supply-versus-demand fundamentals rather than the AI layer, and ranges from
@@ -106,27 +107,27 @@ for imaging), and propagated through 20,000 simulated futures.<sup>[§4.6](#sec-
 9. **The direction is robust; the exact numbers are not.** Under four alternative prior sets and six alternative model
    structures (including reads with no radiologist, automation that does not follow a difficulty ladder, and no shortage
    today), the 2045
-   oversupply probability ranges from 23% to 53% (main
-   model 39%); changing the AI and imaging priors together widens this to
-   15%–61%. Every variant agrees that risk is lower in 2035 than later and rises over a
+   oversupply probability ranges from 24% to 55% (main
+   model 41%); changing the AI and imaging priors together widens this to
+   16%–64%. Every variant agrees that risk is lower in 2035 than later and rises over a
    career.<sup>[§8.4](#sec-robust "Method / evidence for this claim")</sup>
 
 **By career stage** (details in §9<sup>[§9](#sec-careers "Method / evidence for this claim")</sup>):
 
 | Where you are in fall 2026 | Typical first attending year* | P(oversupply) when you start | 10 years in | 20 years in | 30 years in (or 2066) | P(demand below 2026) 10 years in | P(still a shortage) when you start |
 |---|---|---|---|---|---|---|---|
-| Pre-med (college junior) | 2038 | 28% | 42% | 49% | 49% (2066) | 38% | 47% |
-| Medical student, year 1 | 2036 | 23% | 40% | 48% | 49% (2066) | 39% | 51% |
-| Medical student, year 2 | 2035 | 20% | 39% | 48% | 49% (2065) | 39% | 55% |
-| Medical student, year 3 | 2034 | 17% | 38% | 47% | 49% (2064) | 39% | 59% |
-| Medical student, year 4 | 2033 | 14% | 36% | 46% | 50% (2063) | 40% | 64% |
-| Intern (PGY-1) | 2032 | 11% | 35% | 46% | 50% (2062) | 40% | 71% |
-| Radiology resident, R1 | 2031 | 7% | 33% | 45% | 50% (2061) | 41% | 79% |
-| Radiology resident, R2 | 2030 | 3% | 31% | 44% | 50% (2060) | 42% | 86% |
-| Radiology resident, R3 | 2029 | 1% | 30% | 43% | 49% (2059) | 43% | 93% |
-| Radiology resident, R4 | 2028 | <1% | 28% | 42% | 49% (2058) | 44% | 98% |
-| Fellow | 2027 | 0% | 25% | 41% | 49% (2057) | 45% | 100% |
-| Practicing radiologist | 2026 | 0% | 23% | 40% | 48% (2056) | 46% | 100% |
+| Pre-med (college junior) | 2038 | 28% | 46% | 57% | 60% (2066) | 38% | 46% |
+| Medical student, year 1 | 2036 | 23% | 43% | 55% | 60% (2066) | 39% | 51% |
+| Medical student, year 2 | 2035 | 20% | 41% | 55% | 60% (2065) | 39% | 54% |
+| Medical student, year 3 | 2034 | 17% | 40% | 54% | 60% (2064) | 39% | 59% |
+| Medical student, year 4 | 2033 | 14% | 38% | 52% | 60% (2063) | 40% | 64% |
+| Intern (PGY-1) | 2032 | 11% | 36% | 51% | 60% (2062) | 40% | 71% |
+| Radiology resident, R1 | 2031 | 7% | 34% | 50% | 60% (2061) | 41% | 79% |
+| Radiology resident, R2 | 2030 | 3% | 32% | 49% | 59% (2060) | 42% | 86% |
+| Radiology resident, R3 | 2029 | 1% | 30% | 47% | 58% (2059) | 43% | 93% |
+| Radiology resident, R4 | 2028 | <1% | 28% | 46% | 57% (2058) | 44% | 98% |
+| Fellow | 2027 | 0% | 25% | 44% | 57% (2057) | 45% | 100% |
+| Practicing radiologist | 2026 | 0% | 23% | 43% | 55% (2056) | 46% | 100% |
 
 \*Assumes a 1-year fellowship; subtract one year without it.
 
@@ -423,9 +424,14 @@ entrants-per-position factor $\kappa$ absorbs definitional differences.
 Practice turnover has also roughly doubled <a name="c68-3"></a><sup>[68](#ref-68)</sup>. Entrants in year $t$ equal $\kappa$ × filled DR positions from
 the year $t-6$ Match, where $\kappa=$1.20 is calibrated so that flat residency
 positions reproduce Christensen et al's +25.7% (2023–2055) <a name="c1-3"></a><sup>[1](#ref-1)</sup>. Positions start at 1,241 <a name="c10-2"></a><sup>[10](#ref-10)</sup>,
-follow a trend (1%/yr, σ 0.8, capped at 1.8× by GME funding), and respond to the lagged signal $x=\ln(D/S)$:
+follow a trend (1.5%/yr, σ 0.8, capped at 1.8× by GME funding; positions grew about 1.9%/yr in 2010–2025 <a name="c96-1"></a><sup>[96](#ref-96)</sup>), and
+respond to a market signal $x=\ln(D/S)$ averaged over three years and observed with a 1–3-year lag, clipped to [−0.7, 0.4]:
 
-$$\text{positions}^{*}=\text{trend}\cdot e^{\gamma x},\qquad \text{fill}=0.976\,e^{\kappa_f\min(x,0)}-\text{fear}\cdot\text{visibility}_{AI}$$
+$$\text{positions}^{*}=\text{trend}\cdot e^{\gamma' x},\quad \gamma'=\gamma \text{ if } x<0 \text{ (surplus) else } 0.3\gamma,\qquad \text{positions}_{t+1}=\text{positions}_t+0.35(\text{positions}^{*}-\text{positions}_t)$$
+
+$$\text{fill}=0.976\,e^{\kappa_f\min(x,0)}-\text{fear}\cdot\text{visibility}_{AI}$$
+
+Programs cut positions faster in a surplus than they add them in a shortage (GME caps), and close 35% of the gap to the target each year.
 
 <a name="sec-uncertainty"></a>
 ### 4.6 Uncertainty, correlation, regimes and the shortage feedback
@@ -471,13 +477,24 @@ flags.<sup>[§8](#sec-sensitivity "Method / evidence for this claim")</sup>
 |---|---|---|
 | Supply growth 2023→2055, flat residency (calibration target, matched by construction) | +25.7% | +25.7% <a name="c1-4"></a><sup>[1](#ref-1)</sup> |
 | Supply growth 2023→2055, flat residency, attrition multiplier 1.2 (calibration end-point, not independent) | +21.5% | +20.9% with post-COVID attrition <a name="c79-4"></a><sup>[79](#ref-79)</sup> |
-| No further AI, flat residency positions, no market response: supply ÷ demand (independent check) | median 0.89 (2035), 0.88 (2045), 0.86 (2055) | shortage "fairly static" if no action is taken <a name="c79-5"></a><sup>[79](#ref-79)</sup> |
+| No further AI, flat residency positions, no market response: supply ÷ demand (consistency check) | median 0.89 (2035), 0.88 (2045), 0.86 (2055) | shortage "fairly static" if no action is taken <a name="c79-5"></a><sup>[79](#ref-79)</sup> |
 | Mean career length | 34.6 years | 34.2–35.7 years |
 | Aggregate attrition, 2023 | 2.7%/yr | 1.1% (2014) rising to 2.5% (2022) <a name="c79-6"></a><sup>[79](#ref-79)</sup> |
 | Demographic growth of imaging work, 2026→2055 | 15.7% | +16.9% to +26.9% for 2023→2055 with higher Census population <a name="c75-3"></a><sup>[75](#ref-75)</sup> |
 | Realized AI time savings by 2031 | median 8.6% (P90 25%) | Langlotz: 33% (14%–49%), an "upper end" potential if all applications are adopted <a name="c81-3"></a><sup>[81](#ref-81)</sup> |
 | Demographics × per-person imaging use, 2026→2055 | median 29% (80%: 6% to 58%) | 2023→2055 across modalities: +16.9% to +26.9% (demographics only), −5.6% to +45.2% (recent trends to 2030) <a name="c75-4"></a><sup>[75](#ref-75)</sup>; +17% to +25% <a name="c79-7"></a><sup>[79](#ref-79)</sup> |
 | Baseline radiologist work 2026→2055, no further AI | +32% median | Exam projections above plus work per exam (complexity); no direct benchmark |
+
+The no-AI consistency check worsens slowly (0.93 to about 0.86 by 2055) where the Neiman update calls the shortage "fairly
+static"; their projection assumes post-COVID attrition and constant per-person imaging, so the two are close but not
+identical.
+
+**A rough back-cast of the starting point.** Practicing radiologists grew about 12% from 2010 to 2022 (about 1%/yr) while
+residency positions grew about 1.9%/yr <a name="c96-2"></a><sup>[96](#ref-96)</sup>. If radiologist work grew 1.5–2.5%/yr over 2016–2026 (demographics,
+per-person use and complexity), a market near balance in 2016 (0.98–1.05) would sit at roughly 0.85–0.99 today, consistent
+with the prior but unable to tell 0.85 from 1.0. Practice-level data showing exams up about 31% in 2018–2024 with flat exams
+per radiologist-day <a name="c67-3"></a><sup>[67](#ref-67)</sup> come from a sample of growing practices and may reflect consolidation rather than national
+growth. A proper reconstruction remains the top priority (§10).
 
 The near-term AI effect is below Langlotz's potential because the model adds documented diffusion, validation and payment
 lags. It sits within the range of measured real-world effects in §3.1. Unit tests check the calibrations, the exact Jevons
@@ -491,7 +508,9 @@ Calibration checks show that the model reproduces published projections; they do
 To test that, we set the clock back to 2016 and forecast employment in 2025 using only information available then. 2016 is a
 natural start: it is the year of Hinton's "stop training radiologists" remark and of large-scale neural machine translation.
 
-**Protocol** (fixed before computing outcomes and applied the same way to every case; code in `model/backtest.py`). The
+**Protocol** (fixed before computing outcomes; code in `model/backtest.py`). The three occupations share one protocol;
+radiology differs (hand-set AI exposure, its own supply side and an 8-year regulatory lag), and the per-occupation capability
+dates were judged in 2026, so hindsight may enter. The
 backtest replays a simplified version of the method, with the same structure and AI-regime mixture but a generic
 task-exposure model, rather than the full radiology model:
 
@@ -504,7 +523,7 @@ task-exposure model, rather than the full radiology model:
 * *Radiology* also gets a supply side (the 2016–25 training pipeline was largely fixed) and a 2016 starting balance near
   or slightly above 1 after the mid-2010s glut <a name="c3-3"></a><a name="c4-3"></a><sup>[3](#ref-3),[4](#ref-4)</sup>. The question scored is whether 2025 shows a
   shortage.
-* Employment data come from the BLS *Occupational Outlook Handbook* (2008, 2018 and 2026 editions) <a name="c38-2"></a><a name="c39-2"></a><a name="c96-1"></a><a name="c97-1"></a><a name="c98-1"></a><a name="c99-1"></a><a name="c100-1"></a><a name="c101-1"></a><a name="c102-1"></a><sup>[38](#ref-38),[39](#ref-39),[96](#ref-96)-[102](#ref-102)</sup>.
+* Employment data come from the BLS *Occupational Outlook Handbook* (2008, 2018 and 2026 editions) <a name="c38-2"></a><a name="c39-2"></a><a name="c97-1"></a><a name="c98-1"></a><a name="c99-1"></a><a name="c100-1"></a><a name="c101-1"></a><a name="c102-1"></a><a name="c103-1"></a><sup>[38](#ref-38),[39](#ref-39),[97](#ref-97)-[103](#ref-103)</sup>.
 
 ![Figure 13. Backtest: forecasts made with 2016 information vs outcomes in 2025 (left), and the radiology hindcast under alternative protocol choices (right).](figures/fig13_backtest.png)
 
@@ -561,7 +580,7 @@ before outcomes are known would make a stronger test; §10.1 begins the last of 
 Median FTE demand rises +1% by 2035, +5% by 2045 and
 +11% by 2066. Baseline workload rises +23% by 2045 without further
 AI.<sup>[§7.7](#sec-baseres "Method / evidence for this claim")</sup> Supply is predictable for a decade: relative to 2026 supply, the median index is 1.08 in 2035
-(≈41,433 radiologists) and 1.18 in 2045.<sup>[§4.5](#sec-supply "Method / evidence for this claim")</sup>
+(≈41,455 radiologists) and 1.20 in 2045.<sup>[§4.5](#sec-supply "Method / evidence for this claim")</sup>
 
 <a name="sec-balance"></a>
 ### 7.2 The supply/demand balance
@@ -571,10 +590,10 @@ AI.<sup>[§7.7](#sec-baseres "Method / evidence for this claim")</sup> Supply is
 ![Figure 4. Probability of adverse outcomes over time.](figures/fig04_probabilities.png)
 
 In the median world the shortage narrows through the 2030s and the market is roughly balanced in the 2040s (median ratio
-1.05 in 2045). The probability of meaningful oversupply rises from
-3% (2030) to 20% (2035), 39% (2045)
-and 48% (2055). A shortage worse than 10% remains possible but less likely in 2045
-(18%).
+1.06 in 2045). The probability of meaningful oversupply rises from
+3% (2030) to 20% (2035), 41% (2045)
+and 55% (2055). A shortage worse than 10% remains possible but less likely in 2045
+(16%).
 
 <a name="sec-aiprod"></a>
 ### 7.3 AI productivity and autonomy
@@ -591,7 +610,7 @@ and 48% (2055). A shortage worse than 10% remains possible but less likely in 20
 | Tier 4 — hardest residual work | 2048 (2035–2079) | 2053 (2038–2085) | 2058 (2041–2091) | 2066 (2045–2103) | 2072 (2049–2110) |
 
 Tier 1 is typically payable in the early 2030s, but tier 3 (complex cross-sectional work, where most radiologist time goes)
-only in the 2050s. The upper tail of productivity (P90 2.90× in 2045) comes from the
+only in the 2050s. The upper tail of productivity (P90 2.89× in 2045) comes from the
 transformative branch.<sup>[§7.5](#sec-regimes "Method / evidence for this claim")</sup>
 
 <a name="sec-jevres"></a>
@@ -601,19 +620,19 @@ transformative branch.<sup>[§7.5](#sec-regimes "Method / evidence for this clai
 
 | | 2030 | 2035 | 2045 | 2055 | 2066 |
 |---|---|---|---|---|---|
-| Labor saved by AI productivity (mean, share of 2026 FTE) | 0.087 | 0.239 | 0.391 | 0.485 | 0.573 |
+| Labor saved by AI productivity (mean, share of 2026 FTE) | 0.087 | 0.239 | 0.391 | 0.485 | 0.572 |
 | ↳ induced: Cheaper interpretation (price) | +0.004 | +0.008 | +0.011 | +0.012 | +0.013 |
 | ↳ induced: Faster turnaround & availability | +0.009 | +0.019 | +0.026 | +0.031 | +0.036 |
 | ↳ induced: Scanner throughput / latent demand | +0.014 | +0.027 | +0.037 | +0.041 | +0.043 |
 | ↳ induced: New applications & screening | +0.021 | +0.043 | +0.072 | +0.087 | +0.099 |
-| ↳ induced: Incidental findings & follow-up | +0.005 | +0.014 | +0.021 | +0.023 | +0.025 |
+| ↳ induced: Incidental findings & follow-up | +0.005 | +0.014 | +0.021 | +0.024 | +0.025 |
 | ↳ induced: New radiologist tasks | +0.004 | +0.017 | +0.053 | +0.067 | +0.074 |
 | ↳ induced: Utilization management (AI) | −0.012 | −0.021 | −0.022 | −0.022 | −0.023 |
 | ↳ induced: Scope shift to non-radiologists | −0.003 | −0.009 | −0.023 | −0.032 | −0.036 |
 | **Net AI-induced demand (mean)** | 0.042 | 0.099 | 0.176 | 0.207 | 0.231 |
 | Offset ratio, induced ÷ saved: median (P10–P90) | 0.46 (0.08–0.98) | 0.43 (0.17–0.74) | 0.50 (0.20–0.82) | 0.47 (0.19–0.78) | 0.43 (0.19–0.71) |
 | Ratio of means | 0.49 | 0.41 | 0.45 | 0.43 | 0.40 |
-| **P(true Jevons paradox: induced > saved)** | 9.2% | 2.1% | 3.5% | 2.5% | 1.5% |
+| **P(true Jevons paradox: induced > saved)** | 9.3% | 2.1% | 3.5% | 2.5% | 1.5% |
 
 * Induced demand offsets a median 43% (2035), 50% (2045) and 43% (2066) of the
   labor AI saves. A true Jevons paradox occurs in 2.1% of worlds in 2035 and
@@ -635,12 +654,12 @@ transformative branch.<sup>[§7.5](#sec-regimes "Method / evidence for this clai
 
 | AI regime | Weight | Timeline multiplier M | Median demand 2035 / 2045 / 2055 | AI productivity 2045 | AI-first share 2045 | P(oversupply) 2035 / 2045 / 2055 |
 |---|---|---|---|---|---|---|
-| Stall | 15% | 1.6–3.0 | 1.05 / 1.12 / 1.18 | 1.21× | 6% | 3% / 23% / 33% |
-| Trend | 55% | ≈0.65–1.6 (median 1) | 1.02 / 1.08 / 1.12 | 1.36× | 11% | 9% / 31% / 39% |
-| Fast | 18% | 0.40–0.65 | 1.00 / 1.04 / 1.05 | 1.48× | 20% | 16% / 39% / 52% |
+| Stall | 15% | 1.6–3.0 | 1.06 / 1.12 / 1.18 | 1.21× | 6% | 3% / 25% / 41% |
+| Trend | 55% | ≈0.65–1.6 (median 1) | 1.02 / 1.08 / 1.12 | 1.36× | 11% | 9% / 33% / 47% |
+| Fast | 18% | 0.40–0.65 | 1.00 / 1.04 / 1.05 | 1.48× | 20% | 16% / 42% / 60% |
 | Transformative | 12% | 0.25–0.45 + ceilings lifted | 0.67 / 0.50 / 0.47 | 3.47× | 71% | 98% / 100% / 100% |
 
-Excluding the transformative branch, the 2045 oversupply probability is 31%, and the
+Excluding the transformative branch, the 2045 oversupply probability is 34%, and the
 probability that 2045 demand is below 80% of today's is 3%.
 
 <a name="sec-tasks"></a>
@@ -689,24 +708,24 @@ assumptions.
 
 | Assumption group (10th → 90th percentile) | Median demand 2035 | Median demand 2045 | Median demand 2055 | P(oversupply) 2035 | P(oversupply) 2045 | P(oversupply) 2055 |
 |---|---|---|---|---|---|---|
-| AI capability speed | 1.04 → 0.67 | 1.10 → 0.50 | 1.16 → 0.44 | 4% → 98% | 27% → 100% | 36% → 100% |
-| **Future imaging utilization** | 0.92 → 1.12 | 0.88 → 1.30 | 0.83 → 1.46 | 40% → 11% | 92% → 12% | 97% → 12% |
-| Assistive-AI time savings | 1.06 → 0.95 | 1.14 → 0.96 | 1.17 → 0.97 | 12% → 34% | 26% → 58% | 39% → 61% |
-| **New imaging applications** | 0.99 → 1.06 | 1.01 → 1.12 | 1.03 → 1.15 | 23% → 15% | 47% → 29% | 54% → 39% |
-| **Scanner throughput & capacity** | 0.98 → 1.04 | 1.01 → 1.08 | 1.03 → 1.11 | 26% → 16% | 48% → 35% | 54% → 45% |
-| **Regulatory delay** | 1.00 → 1.02 | 1.03 → 1.09 | 1.05 → 1.13 | 22% → 17% | 44% → 32% | 51% → 41% |
-| **AI-first / autonomous adoption** | 1.02 → 1.00 | 1.08 → 1.03 | 1.13 → 1.02 | 18% → 20% | 33% → 45% | 39% → 59% |
-| Demographics | 1.00 → 1.02 | 1.03 → 1.08 | 1.04 → 1.13 | 21% → 18% | 43% → 33% | 54% → 41% |
-| Price elasticity & pass-through | 1.00 → 1.03 | 1.04 → 1.08 | 1.06 → 1.11 | 22% → 16% | 42% → 34% | 50% → 44% |
-| Today's shortage (2026 S/D) | 1.01 → 1.02 | 1.06 → 1.06 | 1.08 → 1.08 | 14% → 25% | 31% → 46% | 42% → 52% |
-| Shortage-driven AI adoption | 1.02 → 1.00 | 1.06 → 1.06 | 1.08 → 1.08 | 18% → 20% | 39% → 38% | 48% → 47% |
-| Attrition | 1.01 → 1.01 | 1.06 → 1.06 | 1.08 → 1.08 | 20% → 18% | 40% → 37% | 49% → 46% |
-| Residency slot growth | 1.01 → 1.01 | 1.06 → 1.06 | 1.08 → 1.08 | 19% → 19% | 34% → 43% | 34% → 62% |
-| **Residency adjustment** | 1.01 → 1.01 | 1.06 → 1.06 | 1.08 → 1.08 | 19% → 19% | 38% → 38% | 49% → 43% |
-| *All assumptions at their sampled distributions (reference)* | 1.01 | 1.06 | 1.08 | 19% | 38% | 47% |
+| AI capability speed | 1.04 → 0.67 | 1.10 → 0.50 | 1.16 → 0.44 | 4% → 99% | 30% → 100% | 44% → 100% |
+| **Future imaging utilization** | 0.92 → 1.12 | 0.88 → 1.30 | 0.83 → 1.46 | 40% → 11% | 93% → 12% | 99% → 13% |
+| Assistive-AI time savings | 1.06 → 0.95 | 1.14 → 0.96 | 1.17 → 0.97 | 12% → 34% | 28% → 61% | 45% → 68% |
+| **New imaging applications** | 0.99 → 1.06 | 1.01 → 1.12 | 1.03 → 1.15 | 24% → 15% | 50% → 31% | 62% → 46% |
+| **Scanner throughput & capacity** | 0.98 → 1.04 | 1.01 → 1.08 | 1.03 → 1.11 | 26% → 16% | 50% → 37% | 61% → 52% |
+| **Regulatory delay** | 1.00 → 1.02 | 1.03 → 1.09 | 1.05 → 1.13 | 22% → 17% | 47% → 34% | 58% → 48% |
+| **AI-first / autonomous adoption** | 1.02 → 1.00 | 1.08 → 1.03 | 1.13 → 1.02 | 18% → 20% | 36% → 48% | 46% → 65% |
+| Demographics | 1.00 → 1.02 | 1.03 → 1.08 | 1.04 → 1.13 | 21% → 18% | 46% → 36% | 61% → 48% |
+| Price elasticity & pass-through | 1.00 → 1.03 | 1.04 → 1.08 | 1.06 → 1.11 | 22% → 16% | 45% → 36% | 57% → 51% |
+| Today's shortage (2026 S/D) | 1.01 → 1.02 | 1.06 → 1.06 | 1.08 → 1.08 | 15% → 25% | 33% → 48% | 49% → 59% |
+| Shortage-driven AI adoption | 1.02 → 1.01 | 1.06 → 1.06 | 1.08 → 1.08 | 18% → 20% | 41% → 41% | 55% → 54% |
+| Residency slot growth | 1.01 → 1.01 | 1.06 → 1.06 | 1.08 → 1.08 | 19% → 19% | 36% → 46% | 40% → 69% |
+| Attrition | 1.01 → 1.01 | 1.06 → 1.06 | 1.08 → 1.08 | 20% → 18% | 43% → 39% | 56% → 53% |
+| **Residency adjustment** | 1.01 → 1.01 | 1.06 → 1.06 | 1.08 → 1.08 | 19% → 19% | 41% → 40% | 56% → 51% |
+| *All assumptions at their sampled distributions (reference)* | 1.01 | 1.06 | 1.08 | 19% | 41% | 55% |
 
 * **Future imaging utilization** is the most important named assumption. It moves the 2045 oversupply probability from
-  92% to 12%.
+  93% to 12%.
 * **AI capability speed** is the largest single driver, mostly through whether a world falls in the transformative branch.
 * **AI-first adoption** and **regulatory delay** matter mainly after 2040.
 * **New applications** and **scanner throughput** shift median demand by roughly ±5%–8%.
@@ -726,13 +745,13 @@ With correlated inputs it includes effects carried by correlated parameters.
 | 1 | AI progress speed (timeline multiplier M, incl. regime) (`ai_u`) | S | 0.58 | 0.59 | 0.55 | 0.56 | +0.42 |
 | 2 | Per-capita (age/sex-adjusted) utilization growth, 2026 (`util_g0`) | S | 0.13 | 0.15 | 0.19 | 0.15 | +0.57 |
 | 3 | Max time saved on interpretation by assistive AI (radiologist still reads) (`m_interp`) | A | 0.11 | 0.10 | 0.09 | 0.10 | -0.31 |
-| 4 | Long-run per-capita utilization growth (asymptote) (`util_ginf`) | S | 0.07 | 0.10 | 0.16 | 0.10 | +0.47 |
+| 4 | Long-run per-capita utilization growth (asymptote) (`util_ginf`) | S | 0.07 | 0.10 | 0.16 | 0.11 | +0.47 |
 | 5 | Max time saved on administrative work (protocoling, QA, scheduling) (`m_admin`) | A | 0.08 | 0.08 | 0.08 | 0.08 | -0.24 |
 | 6 | Max time saved on clinical synthesis/consultation/communication (`m_consult`) | A | 0.08 | 0.08 | 0.07 | 0.07 | -0.23 |
 | 7 | Max time saved on measurement & report drafting (`m_draft`) | A | 0.07 | 0.07 | 0.06 | 0.06 | -0.23 |
 | 8 | Max time saved on physical/procedural work (`m_proc`) | S | 0.06 | 0.06 | 0.06 | 0.06 | -0.19 |
 | 9 | Liability + reimbursement + scope-of-practice acceptance lag; tier-2 median (`lpay`) | A | 0.06 | 0.06 | 0.06 | 0.06 | +0.22 |
-| 10 | AI-driven acquisition throughput gain at maturity (faster scans, auto-positioning) (`thru_H`) | A | 0.05 | 0.06 | 0.06 | 0.06 | -0.15 |
+| 10 | AI-driven acquisition throughput gain at maturity (faster scans, auto-positioning) (`thru_H`) | A | 0.06 | 0.06 | 0.06 | 0.06 | -0.15 |
 
 Excluding the transformative branch, per-capita utilization dominates:
 
@@ -755,8 +774,8 @@ Excluding the transformative branch, per-capita utilization dominates:
 Pinning all 34 subjective parameters at their medians narrows the 80% interval for 2045 demand by
 69% and for the 2045 supply/demand ratio by 77%.
 Pinning the anchored parameters narrows it by 1%. No sampled input is graded purely empirical
-(the empirical anchors enter as fixed calibration targets without propagated uncertainty), so about half the spread comes from
-purely subjective inputs and nearly all of it involves judgment.
+(the empirical anchors enter as fixed calibration targets without propagated uncertainty), so most of the spread (about two-thirds to three-quarters) comes from purely subjective inputs and nearly all of it
+involves judgment. The attribution is not additive.
 Better measurement of the inputs graded empirical barely sharpens the demand range, although two measurable quantities,
 today's per-person imaging growth and today's shortage, are large drivers of the oversupply probability and worth measuring
 better. Note that this attribution measures the width of the demand interval, not the oversupply probability. What would
@@ -780,7 +799,8 @@ inputs follow different, separately motivated priors (effective sample sizes sta
 weights 30/55/12/3, in the spirit of forecasting panels that put far lower odds on rapid transformative AI than AI-lab
 leaders <a name="c32-2"></a><a name="c33-2"></a><sup>[32](#ref-32),[33](#ref-33)</sup>. *AI-bullish:* 5/35/30/30, closer to AI-lab leaders and the AI 2027 scenario <a name="c29-2"></a><a name="c30-3"></a><sup>[29](#ref-29),[30](#ref-30)</sup>. *Imaging restraint:* per-capita imaging growth centered on 0.3%/yr (Medicare cost pressure, appropriateness
 rules) <a name="c95-2"></a><sup>[95](#ref-95)</sup>. *Imaging growth:* centered on 1.3%/yr, nearer recent CT growth <a name="c69-3"></a><a name="c78-2"></a><sup>[69](#ref-69),[78](#ref-78)</sup>.
-Two *corner* sets change both at once (AI-skeptical with imaging growth; AI-bullish with imaging restraint), because
+*Residency growth continues:* positions grow 1.9%/yr, the 2010–2025 pace <a name="c96-3"></a><sup>[96](#ref-96)</sup> (an exact reweight, since that
+input has no factor loadings). Two *corner* sets change both AI and imaging priors at once (AI-skeptical with imaging growth; AI-bullish with imaging restraint), because
 single changes understate how far the answer can move when assumptions err in the same direction.
 
 **Alternative model structures.** The main model fixes several things by construction, so six alternatives are
@@ -797,43 +817,51 @@ re-simulated from the same draws:
   technologist capacity cap.
 * *No shortage today:* supply ÷ demand in 2026 drawn from 0.95–1.03 instead of 0.85–0.99, since the main prior rules out a
   balanced market today.
+* *Transformative boost waits for regulation:* in the main model, the transformative regime raises assistive time-saving
+  ceilings (interpretation up to 70%, drafting up to 90%) without passing the validation, FDA and payment pipeline that gates
+  AI-first reading. That boost drives much of the transformative branch's near-certain oversupply in 2035. In this variant the
+  extra savings count as de facto autonomy and phase in only as the tier-3 pipeline clears; the 2035 headline falls from
+  20% to 16%.
 
 **Counterfactuals: how much of the risk comes from AI?** Two further runs are not alternatives but decompositions: *no further
 AI in radiology* (radiology AI frozen at its 2026 level; alternative diagnostics such as AI-ECG still displace some imaging, so
 this is not a world without AI anywhere) and *assistive AI only* (no AI-first reading). Without further AI, meaningful oversupply has
-probability 0.1% in 2035, 6% in
-2045 and 18% in 2055, because supply grows faster than demand once the 2026
-shortage is worked off. With assistive AI only it is 18%,
-31% and 32%.
+probability 0.1% in 2035, 8% in
+2045 and 24% in 2055. In this world today's shortage mostly deepens (a meaningful
+shortage in 44% of futures in 2045); oversupply arises only where per-person imaging
+grows slowly. With assistive AI only it is 18%,
+34% and 39%.
 So near-term risk comes almost entirely from AI time savings; by 2055 about
-37% of the risk would exist without further AI, and
+43% of the risk would exist without further AI, and
 AI-first reading adds most of the rest after 2045.
 
 ![Figure 14. P(meaningful oversupply) in 2035, 2045 and 2055 under alternative prior sets and model structures.](figures/fig14_robustness.png)
 
 | Prior set or structure | P(oversupply) 2035 | P(oversupply) 2045 | P(oversupply) 2055 | P(Jevons) 2045 | Median demand 2045 |
 |---|---|---|---|---|---|
-| Prior: This site's assumptions | 20% | 39% | 48% | 4% | 1.05 |
-| Prior: AI-skeptical | 11% | 31% | 41% | 4% | 1.08 |
-| Prior: AI-bullish | 37% | 53% | 61% | 3% | 0.98 |
-| Prior: Imaging restraint | 24% | 49% | 58% | 3% | 1.01 |
-| Prior: Imaging growth | 14% | 23% | 29% | 4% | 1.17 |
-| Prior: Both favorable: AI-skeptical + imaging growth | 5% | 15% | 21% | 5% | 1.21 |
-| Prior: Both unfavorable: AI-bullish + imaging restraint | 41% | 61% | 69% | 2% | 0.93 |
-| Structure: No radiologist on AI-first reads | 20% | 43% | 56% | 3% | 1.03 |
-| Structure: Tiers automated in any order | 19% | 39% | 49% | 4% | 1.05 |
-| Structure: 3× unforeseen new demand | 15% | 25% | 34% | 27% | 1.15 |
-| Structure: Stronger payer pushback | 26% | 48% | 55% | 2% | 1.01 |
-| Structure: New uses not capped by scanners | 18% | 36% | 45% | 8% | 1.07 |
-| Structure: No shortage today | 33% | 51% | 54% | 4% | 1.05 |
-| **Range across rows** | **5%–41%** | **15%–61%** | **21%–69%** | **2%–27%** | |
-| Counterfactual: Assistive AI only (no AI-first reads) | 18% | 31% | 32% | 8% | 1.09 |
-| Counterfactual: No further AI in radiology | <1% | 6% | 18% | 0% | 1.23 |
+| Prior: This site's assumptions | 20% | 42% | 55% | 4% | 1.05 |
+| Prior: AI-skeptical | 11% | 34% | 48% | 4% | 1.08 |
+| Prior: AI-bullish | 37% | 55% | 66% | 3% | 0.98 |
+| Prior: Imaging restraint | 24% | 52% | 65% | 3% | 1.01 |
+| Prior: Imaging growth | 14% | 24% | 34% | 4% | 1.17 |
+| Prior: Residency growth continues | 20% | 44% | 60% | 4% | 1.05 |
+| Prior: Both favorable: AI-skeptical + imaging growth | 5% | 16% | 26% | 5% | 1.21 |
+| Prior: Both unfavorable: AI-bullish + imaging restraint | 41% | 64% | 75% | 2% | 0.93 |
+| Structure: No radiologist on AI-first reads | 21% | 46% | 62% | 3% | 1.03 |
+| Structure: Tiers automated in any order | 19% | 41% | 56% | 4% | 1.05 |
+| Structure: 3× unforeseen new demand | 15% | 27% | 39% | 27% | 1.15 |
+| Structure: Stronger payer pushback | 26% | 51% | 61% | 2% | 1.01 |
+| Structure: New uses not capped by scanners | 18% | 38% | 52% | 8% | 1.07 |
+| Structure: Transformative boost waits for regulation | 16% | 41% | 55% | 4% | 1.05 |
+| Structure: No shortage today | 33% | 53% | 61% | 4% | 1.05 |
+| **Range across rows** | **5%–41%** | **16%–64%** | **26%–75%** | **2%–27%** | |
+| Counterfactual: Assistive AI only (no AI-first reads) | 18% | 34% | 39% | 8% | 1.09 |
+| Counterfactual: No further AI in radiology | <1% | 8% | 24% | 0% | 1.23 |
 
 The qualitative conclusions survive every variant: oversupply risk is lower in 2035 than later and rises over a career,
 and regulation and adoption lags matter. The quantitative ones do not: the 2045 oversupply probability spans
-23%–53% across single changes and
-15%–61% including the corners, driven mostly by the AI and imaging-growth
+24%–55% across single changes and
+16%–64% including the corners, driven mostly by the AI and imaging-growth
 priors. The structural variants
 move it less, except that the Jevons result is fragile: with three times the new demand, a true Jevons paradox occurs in
 27% of futures in 2045. These bands are sensitivity ranges, not
@@ -843,9 +871,9 @@ to data, and others (a wage-and-hours labor market, regional markets) remain unt
 
 **Method check on the reweighting.** Importance reweighting changes one input's marginal, but because inputs share latent
 factors it also shifts the correlated inputs. As a cross-check, the two imaging-growth sets were re-simulated with only that
-input's marginal changed and the copula unchanged: 2045 oversupply is 45%
-(restraint) and 27% (growth), against
-49% and 23% reweighted. The
+input's marginal changed and the copula unchanged: 2045 oversupply is 48%
+(restraint) and 29% (growth), against
+52% and 24% reweighted. The
 reweighted values are somewhat more extreme, as expected, but tell the same story. One structural feature deserves note: in the transformative branch, extra exams are capped by scanner and
 technologist capacity while radiologist time per study falls by about 70% by 2045, so oversupply there is near-certain
 and a Jevons outcome impossible by construction. The 2035 headline is therefore close to the transformative weight plus the
@@ -854,7 +882,7 @@ today's) comes almost entirely from that 12% prior weight: outside the transform
 above 80% of today's in nearly every future. Finally, the capacity cap also limits new uses that need no extra scanner time
 (such as opportunistic screening of existing CTs); exempting that channel raises P(Jevons, 2045) to
 8% and lowers P(oversupply, 2045) to
-36%.
+38%.
 
 ---
 
@@ -865,18 +893,18 @@ above 80% of today's in nearly every future. Finally, the capacity cap also limi
 
 | Where you are in fall 2026 | Typical first attending year* | P(oversupply) when you start | 10 years in | 20 years in | 30 years in (or 2066) | P(demand below 2026) 10 years in | P(still a shortage) when you start |
 |---|---|---|---|---|---|---|---|
-| Pre-med (college junior) | 2038 | 28% | 42% | 49% | 49% (2066) | 38% | 47% |
-| Medical student, year 1 | 2036 | 23% | 40% | 48% | 49% (2066) | 39% | 51% |
-| Medical student, year 2 | 2035 | 20% | 39% | 48% | 49% (2065) | 39% | 55% |
-| Medical student, year 3 | 2034 | 17% | 38% | 47% | 49% (2064) | 39% | 59% |
-| Medical student, year 4 | 2033 | 14% | 36% | 46% | 50% (2063) | 40% | 64% |
-| Intern (PGY-1) | 2032 | 11% | 35% | 46% | 50% (2062) | 40% | 71% |
-| Radiology resident, R1 | 2031 | 7% | 33% | 45% | 50% (2061) | 41% | 79% |
-| Radiology resident, R2 | 2030 | 3% | 31% | 44% | 50% (2060) | 42% | 86% |
-| Radiology resident, R3 | 2029 | 1% | 30% | 43% | 49% (2059) | 43% | 93% |
-| Radiology resident, R4 | 2028 | <1% | 28% | 42% | 49% (2058) | 44% | 98% |
-| Fellow | 2027 | 0% | 25% | 41% | 49% (2057) | 45% | 100% |
-| Practicing radiologist | 2026 | 0% | 23% | 40% | 48% (2056) | 46% | 100% |
+| Pre-med (college junior) | 2038 | 28% | 46% | 57% | 60% (2066) | 38% | 46% |
+| Medical student, year 1 | 2036 | 23% | 43% | 55% | 60% (2066) | 39% | 51% |
+| Medical student, year 2 | 2035 | 20% | 41% | 55% | 60% (2065) | 39% | 54% |
+| Medical student, year 3 | 2034 | 17% | 40% | 54% | 60% (2064) | 39% | 59% |
+| Medical student, year 4 | 2033 | 14% | 38% | 52% | 60% (2063) | 40% | 64% |
+| Intern (PGY-1) | 2032 | 11% | 36% | 51% | 60% (2062) | 40% | 71% |
+| Radiology resident, R1 | 2031 | 7% | 34% | 50% | 60% (2061) | 41% | 79% |
+| Radiology resident, R2 | 2030 | 3% | 32% | 49% | 59% (2060) | 42% | 86% |
+| Radiology resident, R3 | 2029 | 1% | 30% | 47% | 58% (2059) | 43% | 93% |
+| Radiology resident, R4 | 2028 | <1% | 28% | 46% | 57% (2058) | 44% | 98% |
+| Fellow | 2027 | 0% | 25% | 44% | 57% (2057) | 45% | 100% |
+| Practicing radiologist | 2026 | 0% | 23% | 43% | 55% (2056) | 46% | 100% |
 
 \*Assumes a 1-year fellowship. "Oversupply" means more than 10% excess radiologist capacity nationally (a convention; §1).
 
@@ -895,7 +923,7 @@ In order of likelihood:
 
 1. **Task composition** (near-certain). See §7.6.
 2. **Workload intensity.** In shortage worlds, productivity gains become more studies per hour rather than shorter days,
-   consistent with rising volumes for the busiest radiologists <a name="c67-3"></a><sup>[67](#ref-67)</sup>.
+   consistent with rising volumes for the busiest radiologists <a name="c67-4"></a><sup>[67](#ref-67)</sup>.
 3. **Hiring of new graduates.** In surplus worlds, the first adjustment is fewer openings and residency cuts, as in the
    mid-1990s and mid-2010s <a name="c4-4"></a><a name="c16-2"></a><sup>[4](#ref-4),[16](#ref-16)</sup>. In other AI-exposed occupations, early-career employment fell first
    while experienced workers were unaffected <a name="c71-2"></a><sup>[71](#ref-71)</sup>.
@@ -904,12 +932,12 @@ In order of likelihood:
    routine parts of the job, the remaining work becomes more expert, which tends to support pay but reduce headcount
    <a name="c26-2"></a><sup>[26](#ref-26)</sup>. Pay is not modeled explicitly.
 5. **Pressure on practicing radiologists.** Demand falls faster than attrition in some five-year window after 2035 in
-   9% of worlds, nearly all of them transformative. But
+   8% of worlds, nearly all of them transformative. But
    because new graduates keep entering, a severe surplus ($R>1.25$) lasts five or more years in
-   30% of worlds (21%
+   36% of worlds (28%
    outside the transformative branch). Who bears it, through pay, hours or jobs, is not modeled. As illustrative arithmetic,
    a 15% surplus could be absorbed entirely by about 13% fewer hours each, or by halving
-   new-graduate entry for about 8 years (entrants are about
+   new-graduate entry for about 7 years (entrants are about
    3.6% of the workforce a year), or by lower pay, most likely in some uneven mix.
 
 <a name="sec-signposts"></a>
@@ -917,18 +945,18 @@ In order of likelihood:
 
 | If we observe… | Share of simulated worlds | P(oversupply) 2035 | P(oversupply) 2045 | P(oversupply) 2055 | Median demand 2045 |
 |---|---|---|---|---|---|
-| All simulated futures | 100% | 20% | 39% | 48% | 1.05 |
-| AI saves >15% of radiologist time by 2031 | 20% | 69% | 77% | 81% | 0.62 |
-| AI saves <5% of radiologist time by 2031 | 22% | 2% | 24% | 35% | 1.12 |
-| >5% of interpretive work is AI-first/autonomous by 2033 | 16% | 66% | 76% | 79% | 0.60 |
-| Autonomous reads paid for through tier 2 (all radiographs & screening) before 2035 | 21% | 58% | 72% | 75% | 0.75 |
-| Autonomous reads not paid for through tier 2 until after 2045 | 25% | 4% | 22% | 31% | 1.13 |
-| Per-capita imaging growth in the top third (≥0.9%/yr in 2026) | 33% | 12% | 16% | 22% | 1.19 |
-| Per-capita imaging growth in the bottom third (≤0.3%/yr in 2026) | 33% | 32% | 68% | 76% | 0.94 |
-| Many new AI-enabled imaging uses (top third)† | 33% | 28% | 39% | 47% | 1.07 |
-| Few new AI-enabled imaging uses (bottom third)† | 33% | 15% | 42% | 52% | 1.03 |
+| All simulated futures | 100% | 20% | 41% | 55% | 1.05 |
+| AI saves >15% of radiologist time by 2031 | 20% | 69% | 79% | 84% | 0.62 |
+| AI saves <5% of radiologist time by 2031 | 22% | 2% | 27% | 43% | 1.12 |
+| >5% of interpretive work is AI-first/autonomous by 2033 | 16% | 67% | 78% | 82% | 0.60 |
+| Autonomous reads paid for through tier 2 (all radiographs & screening) before 2035 | 21% | 58% | 73% | 79% | 0.74 |
+| Autonomous reads not paid for through tier 2 until after 2045 | 25% | 4% | 24% | 39% | 1.13 |
+| Per-capita imaging growth in the top third (≥0.9%/yr in 2026) | 33% | 12% | 17% | 27% | 1.20 |
+| Per-capita imaging growth in the bottom third (≤0.3%/yr in 2026) | 33% | 32% | 71% | 83% | 0.94 |
+| Many new AI-enabled imaging uses (top third)† | 33% | 28% | 41% | 52% | 1.07 |
+| Few new AI-enabled imaging uses (bottom third)† | 33% | 15% | 45% | 60% | 1.03 |
 | Transformative-AI regime | 12% | 98% | 100% | 100% | 0.50 |
-| Any regime except transformative AI | 88% | 9% | 31% | 41% | 1.08 |
+| Any regime except transformative AI | 88% | 9% | 34% | 49% | 1.08 |
 
 †Futures with many new AI uses are mostly fast-AI futures, where AI also saves more time, so they show *more* oversupply despite the extra imaging; these are signals, not levers.
 
@@ -947,14 +975,18 @@ In order of likelihood:
 ## 10. Limitations
 
 * **National aggregate.** The model has no geography, subspecialty mix, practice type or teleradiology. The shortage is local
-  and uneven <a name="c67-4"></a><a name="c79-8"></a><sup>[67](#ref-67),[79](#ref-79)</sup>.
+  and uneven <a name="c67-5"></a><a name="c79-8"></a><sup>[67](#ref-67),[79](#ref-79)</sup>.
 * **No wage, hours or reimbursement equilibrium.** $R$ is a pressure indicator, not an unemployment rate. A 30% productivity
   gain could show up as fewer hires, shorter hours, lower pay, shorter backlogs or lower prices; the model does not choose
   among these, and statements about pay and hiring are interpretations.
 * **The starting point is a judgment.** The 2026 ratio (median 0.93) is inferred from pay, vacancies, workload and workforce
   projections, not measured. The model has not been shown to reproduce 2015–2026 exam volumes, work RVUs and workforce counts;
   doing so would strengthen the baseline. A milder starting shortage (0.96) raises the 2045 oversupply probability from about
-  39% to 46%.
+  41% to 48%.
+* **Tier-1 timing.** Tier-1 capability is centered on 2025, later than the European evidence (CE marking 2022) implies; with
+  capability in 2022 the model's own lags would make FDA authorization before late 2026 about as likely as not, which has not
+  happened, suggesting the validation and FDA lags may be short. The archived predictions (§10.1) are conditioned on that
+  non-event.
 * **Structure is only partly tested.** §8.4 tests six alternative structures; others are untested.
 * **The shortage feedback is a one-step approximation** of a coupled system, with a subjective strength.
 * **The regimes are coarse.** The transformative branch is a stylization of a world far stranger than any parameter change
@@ -975,15 +1007,15 @@ outside forecasters with a prespecified procedure; (4) score the archived predic
 <a name="sec-tracking"></a>
 ### 10.1 Prospective tracking
 
-Each release archives near-term, checkable predictions in `outputs/predictions/` so the forecast can be scored later. This
-release's are:
+Each release archives near-term, checkable predictions in `outputs/predictions/` so the forecast can be scored later.
+They are conditioned on what is already known (no FDA-authorized autonomous radiology read before October 2026; 91%
+of draws), state how they will be resolved, and will be scored by Brier score for yes/no events; for positions, whether the outcome falls in the 80% interval and its percentile rank. This release's are:
 
-| Check | Event | Model's forecast |
-|---|---|---|
-| By end of 2029 | FDA authorizes autonomous (no-radiologist) reading of normal chest radiographs or negative screens | 68% chance |
-| By end of 2032 | Medicare or major payers pay for such autonomous reads | 60% chance |
-| 2030 Match | Diagnostic-radiology PGY-1/PGY-2 positions offered | 1,295 (80%: 1,260–1,333) |
-| Studies published by 2031 | Real-world AI time savings across radiologist work exceed 15% | 20% chance |
+| Check | Event | Resolution | Model's forecast |
+|---|---|---|---|
+| By 31 Dec 2029 | FDA authorizes a device that finalizes some normal chest radiographs or negative screening exams without radiologist review | FDA device database (510(k)/De Novo/PMA) decision summary states autonomous reporting without radiologist review | 65% chance |
+| By 31 Dec 2032 | Medicare pays separately for such autonomous reads | CMS physician fee schedule or OPPS assigns a payable code (Category I or national coverage) to autonomous AI interpretation | 55% chance |
+| 2030 Match | Diagnostic-radiology first-year residency positions offered (2026: 1,241) | NRMP Main Residency Match results, diagnostic radiology positions offered (same definition as the 1,241 in 2026) | 1,311 (80%: 1,275–1,349) |
 
 <a name="sec-repro"></a>
 ## 11. Reproducibility
@@ -1008,7 +1040,9 @@ backtest compared with forecast combination alone (§6.2); sustained-surplus met
 oversupply threshold described as a convention. v1.4 (October 2026): counterfactuals without further radiology AI and with assistive AI only; no-shortage-today and
 uncapped-new-uses structures; re-simulation check of the reweighting; attrition range centered nearer post-COVID levels;
 imaging-growth center 0.6%/yr; tiers described as this report's construct; illustrative surplus arithmetic; archived
-checkable predictions (§10.1).
+checkable predictions (§10.1). Also in v1.4: residency growth recentered to 1.5%/yr (2010–2025 pace ≈1.9%/yr); a variant that gates the
+transformative assistive boost through the regulatory pipeline; predictions conditioned on known events with resolution
+criteria; like-for-like shortage and oversupply comparisons; rough back-cast of the starting point.
 
 
 <a name="references"></a>
@@ -1083,7 +1117,7 @@ checkable predictions (§10.1).
 64. <a name="ref-64"></a>Allen B, Agarwal S, Coombs L, Wald C, Dreyer K. 2020 ACR Data Science Institute artificial intelligence survey. *J Am Coll Radiol*. 2021;18(8):1153-1159. doi:[10.1016/j.jacr.2021.04.002](https://doi.org/10.1016/j.jacr.2021.04.002) [↩a](#c64-1) [↩b](#c64-2)
 65. <a name="ref-65"></a>Royal College of Radiologists. *Clinical Radiology Workforce Census 2025*. Royal College of Radiologists; 2026. Accessed October 7, 2026. [https://www.rcr.ac.uk/media/n1fjvrv4/rcr-2025-clinical-radiology-workforce-census-report.pdf](https://www.rcr.ac.uk/media/n1fjvrv4/rcr-2025-clinical-radiology-workforce-census-report.pdf) [↩a](#c65-1) [↩b](#c65-2) [↩c](#c65-3)
 66. <a name="ref-66"></a>Liu H, Ding N, Li X, et al. Artificial intelligence and radiologist burnout. *JAMA Netw Open*. 2024;7(11):e2448714. doi:[10.1001/jamanetworkopen.2024.48714](https://doi.org/10.1001/jamanetworkopen.2024.48714) [↩](#c66-1)
-67. <a name="ref-67"></a>Zamani H, Fruscello T, Burleson J, Bhargavan-Chatfield M, Davenport MS. US radiology imaging and workforce volumes 2017-2024: an analysis of 46.4 million imaging examinations from 167 radiology facilities. *J Am Coll Radiol*. 2026;23(6):1041-1048. doi:[10.1016/j.jacr.2025.12.026](https://doi.org/10.1016/j.jacr.2025.12.026) [↩a](#c67-1) [↩b](#c67-2) [↩c](#c67-3) [↩d](#c67-4) [↩e](#c67-5)
+67. <a name="ref-67"></a>Zamani H, Fruscello T, Burleson J, Bhargavan-Chatfield M, Davenport MS. US radiology imaging and workforce volumes 2017-2024: an analysis of 46.4 million imaging examinations from 167 radiology facilities. *J Am Coll Radiol*. 2026;23(6):1041-1048. doi:[10.1016/j.jacr.2025.12.026](https://doi.org/10.1016/j.jacr.2025.12.026) [↩a](#c67-1) [↩b](#c67-2) [↩c](#c67-3) [↩d](#c67-4) [↩e](#c67-5) [↩f](#c67-6)
 68. <a name="ref-68"></a>Parikh JR, Drake AR, Rula EY, Golding E, Christensen EW. Radiologist turnover in the United States. *J Am Coll Radiol*. 2026;23(6):1058-1066. doi:[10.1016/j.jacr.2026.01.009](https://doi.org/10.1016/j.jacr.2026.01.009) [↩a](#c68-1) [↩b](#c68-2) [↩c](#c68-3) [↩d](#c68-4) [↩e](#c68-5)
 69. <a name="ref-69"></a>Rosenkrantz AB, Cummings RW. Utilization of emergency department imaging from 2013 to 2023: a national Medicare analysis. *Radiology*. 2025;316(3):e251395. doi:[10.1148/radiol.251395](https://doi.org/10.1148/radiol.251395) [↩a](#c69-1) [↩b](#c69-2) [↩c](#c69-3) [↩d](#c69-4) [↩e](#c69-5)
 70. <a name="ref-70"></a>Kwee TC, Kwee RM. Workload of diagnostic radiologists in the foreseeable future based on recent (2024) scientific advances: updated growth expectations. *Eur J Radiol*. 2025;187:112103. doi:[10.1016/j.ejrad.2025.112103](https://doi.org/10.1016/j.ejrad.2025.112103) [↩a](#c70-1) [↩b](#c70-2) [↩c](#c70-3) [↩d](#c70-4) [↩e](#c70-5)
@@ -1112,15 +1146,16 @@ checkable predictions (§10.1).
 93. <a name="ref-93"></a>Lee MH, Garrett JW, Warner JD, Pickhardt PJ. Opportunistic screening with imaging: actionable insights from unused data. *Radiol Clin North Am*. 2026;64(3):605-621. doi:[10.1016/j.rcl.2026.01.013](https://doi.org/10.1016/j.rcl.2026.01.013) [↩a](#c93-1) [↩b](#c93-2) [↩c](#c93-3)
 94. <a name="ref-94"></a>Eisemann N, Bunk S, Mukama T, et al. Nationwide real-world implementation of AI for cancer detection in population-based mammography screening. *Nat Med*. 2025;31(3):917-924. doi:[10.1038/s41591-024-03408-6](https://doi.org/10.1038/s41591-024-03408-6) [↩a](#c94-1) [↩b](#c94-2)
 95. <a name="ref-95"></a>Boards of Trustees of the Federal Hospital Insurance and Federal Supplementary Medical Insurance Trust Funds. *2026 Annual Report of the Boards of Trustees of the Federal Hospital Insurance and Federal Supplementary Medical Insurance Trust Funds*. Centers for Medicare & Medicaid Services; June 9, 2026. Accessed October 7, 2026. [https://www.cms.gov/oact/tr](https://www.cms.gov/oact/tr) [↩a](#c95-1) [↩b](#c95-2) [↩c](#c95-3) [↩d](#c95-4)
-96. <a name="ref-96"></a>US Bureau of Labor Statistics. Computer software engineers and computer programmers. *Occupational Outlook Handbook, 2010-11 Edition (archived)*. Accessed October 7, 2026. [http://web.archive.org/web/2008/http://www.bls.gov/oco/ocos303.htm](http://web.archive.org/web/2008/http://www.bls.gov/oco/ocos303.htm) [↩](#c96-1)
-97. <a name="ref-97"></a>US Bureau of Labor Statistics. Software developers (2016-26 projections). *Occupational Outlook Handbook, 2018-19 Edition (archived June 2018)*. Accessed October 7, 2026. [http://web.archive.org/web/20180615000000/https://www.bls.gov/ooh/computer-and-information-technology/software-developers.htm](http://web.archive.org/web/20180615000000/https://www.bls.gov/ooh/computer-and-information-technology/software-developers.htm) [↩](#c97-1)
-98. <a name="ref-98"></a>US Bureau of Labor Statistics. Software developers, quality assurance analysts, and testers. *Occupational Outlook Handbook*. Accessed October 7, 2026. [https://www.bls.gov/ooh/computer-and-information-technology/software-developers.htm](https://www.bls.gov/ooh/computer-and-information-technology/software-developers.htm) [↩](#c98-1)
-99. <a name="ref-99"></a>US Bureau of Labor Statistics. Interpreters and translators. *Occupational Outlook Handbook, 2008-09 Edition (archived May 13, 2008)*. Accessed October 7, 2026. [http://web.archive.org/web/20080513155327/http://www.bls.gov/oco/ocos175.htm](http://web.archive.org/web/20080513155327/http://www.bls.gov/oco/ocos175.htm) [↩](#c99-1)
-100. <a name="ref-100"></a>US Bureau of Labor Statistics. Interpreters and translators (2016-26 projections). *Occupational Outlook Handbook, 2018-19 Edition (archived June 2018)*. Accessed October 7, 2026. [http://web.archive.org/web/20180615000000/https://www.bls.gov/ooh/media-and-communication/interpreters-and-translators.htm](http://web.archive.org/web/20180615000000/https://www.bls.gov/ooh/media-and-communication/interpreters-and-translators.htm) [↩](#c100-1)
-101. <a name="ref-101"></a>US Bureau of Labor Statistics. Interpreters and translators. *Occupational Outlook Handbook*. Accessed October 7, 2026. [https://www.bls.gov/ooh/media-and-communication/interpreters-and-translators.htm](https://www.bls.gov/ooh/media-and-communication/interpreters-and-translators.htm) [↩](#c101-1)
-102. <a name="ref-102"></a>US Bureau of Labor Statistics. Medical transcriptionists. *Occupational Outlook Handbook*. Accessed October 7, 2026. [https://www.bls.gov/ooh/healthcare/medical-transcriptionists.htm](https://www.bls.gov/ooh/healthcare/medical-transcriptionists.htm) [↩](#c102-1)
-103. <a name="ref-103"></a>Agarwal N, Moehring A, Rajpurkar P, Salz T. Combining human expertise with artificial intelligence: experimental evidence from radiology. NBER Working Paper 31422. National Bureau of Economic Research; 2023. doi:[10.3386/w31422](https://doi.org/10.3386/w31422) [↩a](#c103-1) [↩b](#c103-2)
-104. <a name="ref-104"></a>Baker LC. Acquisition of MRI equipment by doctors drives up imaging use and spending. *Health Aff (Millwood)*. 2010;29(12):2252-2259. doi:[10.1377/hlthaff.2009.1099](https://doi.org/10.1377/hlthaff.2009.1099) [↩](#c104-1)
+96. <a name="ref-96"></a>Malhotra A, Kandala K, Futela D, et al. The evolving US radiologist pipeline: trends in residency positions, resident workforce, and practicing radiologists per unit population. *J Am Coll Radiol*. 2026;23(8):1587-1592. doi:[10.1016/j.jacr.2026.04.005](https://doi.org/10.1016/j.jacr.2026.04.005) [↩a](#c96-1) [↩b](#c96-2) [↩c](#c96-3) [↩d](#c96-4)
+97. <a name="ref-97"></a>US Bureau of Labor Statistics. Computer software engineers and computer programmers. *Occupational Outlook Handbook, 2010-11 Edition (archived)*. Accessed October 7, 2026. [http://web.archive.org/web/2008/http://www.bls.gov/oco/ocos303.htm](http://web.archive.org/web/2008/http://www.bls.gov/oco/ocos303.htm) [↩](#c97-1)
+98. <a name="ref-98"></a>US Bureau of Labor Statistics. Software developers (2016-26 projections). *Occupational Outlook Handbook, 2018-19 Edition (archived June 2018)*. Accessed October 7, 2026. [http://web.archive.org/web/20180615000000/https://www.bls.gov/ooh/computer-and-information-technology/software-developers.htm](http://web.archive.org/web/20180615000000/https://www.bls.gov/ooh/computer-and-information-technology/software-developers.htm) [↩](#c98-1)
+99. <a name="ref-99"></a>US Bureau of Labor Statistics. Software developers, quality assurance analysts, and testers. *Occupational Outlook Handbook*. Accessed October 7, 2026. [https://www.bls.gov/ooh/computer-and-information-technology/software-developers.htm](https://www.bls.gov/ooh/computer-and-information-technology/software-developers.htm) [↩](#c99-1)
+100. <a name="ref-100"></a>US Bureau of Labor Statistics. Interpreters and translators. *Occupational Outlook Handbook, 2008-09 Edition (archived May 13, 2008)*. Accessed October 7, 2026. [http://web.archive.org/web/20080513155327/http://www.bls.gov/oco/ocos175.htm](http://web.archive.org/web/20080513155327/http://www.bls.gov/oco/ocos175.htm) [↩](#c100-1)
+101. <a name="ref-101"></a>US Bureau of Labor Statistics. Interpreters and translators (2016-26 projections). *Occupational Outlook Handbook, 2018-19 Edition (archived June 2018)*. Accessed October 7, 2026. [http://web.archive.org/web/20180615000000/https://www.bls.gov/ooh/media-and-communication/interpreters-and-translators.htm](http://web.archive.org/web/20180615000000/https://www.bls.gov/ooh/media-and-communication/interpreters-and-translators.htm) [↩](#c101-1)
+102. <a name="ref-102"></a>US Bureau of Labor Statistics. Interpreters and translators. *Occupational Outlook Handbook*. Accessed October 7, 2026. [https://www.bls.gov/ooh/media-and-communication/interpreters-and-translators.htm](https://www.bls.gov/ooh/media-and-communication/interpreters-and-translators.htm) [↩](#c102-1)
+103. <a name="ref-103"></a>US Bureau of Labor Statistics. Medical transcriptionists. *Occupational Outlook Handbook*. Accessed October 7, 2026. [https://www.bls.gov/ooh/healthcare/medical-transcriptionists.htm](https://www.bls.gov/ooh/healthcare/medical-transcriptionists.htm) [↩](#c103-1)
+104. <a name="ref-104"></a>Agarwal N, Moehring A, Rajpurkar P, Salz T. Combining human expertise with artificial intelligence: experimental evidence from radiology. NBER Working Paper 31422. National Bureau of Economic Research; 2023. doi:[10.3386/w31422](https://doi.org/10.3386/w31422) [↩a](#c104-1) [↩b](#c104-2)
+105. <a name="ref-105"></a>Baker LC. Acquisition of MRI equipment by doctors drives up imaging use and spending. *Health Aff (Millwood)*. 2010;29(12):2252-2259. doi:[10.1377/hlthaff.2009.1099](https://doi.org/10.1377/hlthaff.2009.1099) [↩](#c105-1)
 
 ---
 
@@ -1140,11 +1175,11 @@ $z_{dem}$ (appetite for imaging).
 | demand | Growth in radiologist work per exam (complexity, images/study), 2026 (`cmplx_g0`) | Normal(μ=0.4, σ=0.3), truncated [-0.2, 1.2] | 0.0476 / 0.407 / 0.782 | %/yr | **A** | <a name="c80-2"></a><sup>[80](#ref-80)</sup> Images per cross-sectional study rose ~10x at Mayo 1999-2010 while exams doubled. Work per exam (RVU-weighted) grows far more slowly than image counts; we decay this term with a 20-year half-life. *Factor loadings: z_dem: +0.3.* |
 | demand | Imaging displaced by alternative diagnostics by 2066 (blood tests, AI-ECG, genomics) (`alt_max`) | Triangular(0, mode 0.04, 0.15) | 0.0245 / 0.0592 / 0.109 | share | **S** |   |
 | demand | Midpoint year of alternative-diagnostic substitution (`alt_mid`) | Uniform(2035, 2055) | 2037 / 2045 / 2053 | year | **S** |   |
-| demand | Supply ÷ demand for radiologist FTEs in 2026 (current shortage) (`ratio0`) | Triangular(0.85, mode 0.93, 0.99) | 0.883 / 0.925 / 0.961 | ratio | **S** | <a name="c79-10"></a><sup>[79](#ref-79)</sup>, <a name="c67-5"></a><sup>[67](#ref-67)</sup>, <a name="c68-4"></a><sup>[68](#ref-68)</sup>, <a name="c11-2"></a><sup>[11](#ref-11)</sup>, <a name="c10-3"></a><sup>[10](#ref-10)</sup> No measured national figure exists; this is a judgment from indirect signals. HRSA projects radiology at ≈90% adequacy in 2038 (a projection, not today's gap), and the Neiman Institute calls the shortage 'fairly static'. Compensation rose 6.6% in a year and DR positions keep expanding. Average exams read per radiologist-day were flat 2018-2024 (+0.6%) but the busiest quartile read 31% more, and practice turnover rose from 5.3% to 8.5% (2013-2022): a real but uneven, moderate shortage. |
+| demand | Supply ÷ demand for radiologist FTEs in 2026 (current shortage) (`ratio0`) | Triangular(0.85, mode 0.93, 0.99) | 0.883 / 0.925 / 0.961 | ratio | **S** | <a name="c79-10"></a><sup>[79](#ref-79)</sup>, <a name="c67-6"></a><sup>[67](#ref-67)</sup>, <a name="c68-4"></a><sup>[68](#ref-68)</sup>, <a name="c11-2"></a><sup>[11](#ref-11)</sup>, <a name="c10-3"></a><sup>[10](#ref-10)</sup> No measured national figure exists; this is a judgment from indirect signals. HRSA projects radiology at ≈90% adequacy in 2038 (a projection, not today's gap), and the Neiman Institute calls the shortage 'fairly static'. Compensation rose 6.6% in a year and DR positions keep expanding. Average exams read per radiologist-day were flat 2018-2024 (+0.6%) but the busiest quartile read 31% more, and practice turnover rose from 5.3% to 8.5% (2013-2022): a real but uneven, moderate shortage. |
 | ai_capability | AI progress speed (quantile → timeline multiplier M) (`ai_u`) | Regime mixture: 15% stall (M 1.6-3.0), 55% trend (lognormal, median 1, σ_log 0.25), 18% fast (M 0.40-0.65), 12% transformative (M 0.25-0.45, task ceilings lifted) | 0.417 / 0.917 / 2.07 | multiplier | **S** | <a name="c28-2"></a><sup>[28](#ref-28)</sup>, <a name="c29-4"></a><sup>[29](#ref-29)</sup>, <a name="c30-4"></a><sup>[30](#ref-30)</sup>, <a name="c31-2"></a><sup>[31](#ref-31)</sup>, <a name="c32-3"></a><sup>[32](#ref-32)</sup>, <a name="c33-3"></a><sup>[33](#ref-33)</sup> Loose guidance only; M multiplies the years from 2026 until each capability arrives. AI researchers put 50% odds on machines outperforming humans at every task by 2047 but on full automation of occupations only by 2116; expert panels put far lower odds on near-term transformative AI than lab leaders. Fast + transformative = 30% of worlds. *Factor loadings: z_ai: +1.0.* |
 | ai_capability | Midpoint year: reliable draft reports & automated measurements (M=1) (`cap_draft_T0`) | Normal(μ=2028, σ=1.5) | 2026 / 2028 / 2030 | year | **A** | <a name="c44-2"></a><sup>[44](#ref-44)</sup>, <a name="c45-2"></a><sup>[45](#ref-45)</sup>, <a name="c48-2"></a><sup>[48](#ref-48)</sup>, <a name="c58-2"></a><sup>[58](#ref-58)</sup>, <a name="c81-4"></a><sup>[81](#ref-81)</sup> Generative draft reporting gave +15.5% documentation efficiency on 24k radiographs in live use; AI-drafted chest radiograph reports cut reading time 42% in a reader study; generative chest-radiograph drafting tools received FDA Breakthrough designations in 2026. |
 | ai_capability | Midpoint year: protocoling, scheduling, QA and admin automation (M=1) (`cap_admin_T0`) | Normal(μ=2030.5, σ=2) | 2028 / 2030 / 2033 | year | **A** | <a name="c81-5"></a><sup>[81](#ref-81)</sup>  |
-| ai_capability | Midpoint year: AI assistance that materially speeds interpretation (M=1) (`cap_interp_T0`) | Normal(μ=2033, σ=3) | 2029 / 2033 / 2037 | year | **A** | <a name="c49-3"></a><sup>[49](#ref-49)</sup>, <a name="c50-2"></a><sup>[50](#ref-50)</sup>, <a name="c103-1"></a><sup>[103](#ref-103)</sup>, <a name="c43-2"></a><sup>[43](#ref-43)</sup> Real-world meta-analysis finds no significant time savings yet; effects of AI assistance vary widely across radiologists and erroneous AI output hurts performance; radiologists under-weight AI predictions. |
+| ai_capability | Midpoint year: AI assistance that materially speeds interpretation (M=1) (`cap_interp_T0`) | Normal(μ=2033, σ=3) | 2029 / 2033 / 2037 | year | **A** | <a name="c49-3"></a><sup>[49](#ref-49)</sup>, <a name="c50-2"></a><sup>[50](#ref-50)</sup>, <a name="c104-1"></a><sup>[104](#ref-104)</sup>, <a name="c43-2"></a><sup>[43](#ref-43)</sup> Real-world meta-analysis finds no significant time savings yet; effects of AI assistance vary widely across radiologists and erroneous AI output hurts performance; radiologists under-weight AI predictions. |
 | ai_capability | Midpoint year: AI support for clinical synthesis/communication (M=1) (`cap_consult_T0`) | Normal(μ=2034, σ=3) | 2030 / 2034 / 2038 | year | **S** | <a name="c81-6"></a><sup>[81](#ref-81)</sup>  |
 | ai_capability | Midpoint year: meaningful automation of procedural/physical work (M=1) (`cap_proc_T0`) | Normal(μ=2050, σ=8) | 2040 / 2050 / 2060 | year | **S** |   |
 | ai_capability | Capability S-curve width (logistic scale; 10→90% ≈ 4.4×) (`cap_width`) | Uniform(2, 4) | 2.2 / 3 / 3.8 | years | **S** |   |
@@ -1174,7 +1209,7 @@ $z_{dem}$ (appetite for imaging).
 | regulation | Eventual uptake of tier-2 autonomy (`amax2`) | Beta(14, 6) [mean 0.70] | 0.566 / 0.707 / 0.825 | share | **S** |   *Factor loadings: z_reg: -0.4, z_ai: +0.3.* |
 | regulation | Eventual uptake of tier-3 autonomy (`amax3`) | Beta(11, 9) [mean 0.55] | 0.408 / 0.552 / 0.69 | share | **S** |   *Factor loadings: z_reg: -0.4, z_ai: +0.3.* |
 | regulation | Eventual uptake of tier-4 autonomy (`amax4`) | Beta(8, 12) [mean 0.40] | 0.263 / 0.397 / 0.541 | share | **S** |   *Factor loadings: z_reg: -0.4, z_ai: +0.3.* |
-| regulation | Share of interpretation+drafting time actually removed per AI-first/autonomous study (`f_sub`) | Uniform(0.6, 0.95) | 0.635 / 0.775 / 0.915 | share | **S** | <a name="c103-2"></a><sup>[103](#ref-103)</sup>, <a name="c48-3"></a><sup>[48](#ref-48)</sup> Residual human time: sampling QA, sign-off, escalations, liability review. Clinically significant errors still appeared in 22.8% of AI-only versus 14.0% of human-only chest-radiograph reports in a 2025 evaluation. *Factor loadings: z_ai: +0.3.* |
+| regulation | Share of interpretation+drafting time actually removed per AI-first/autonomous study (`f_sub`) | Uniform(0.6, 0.95) | 0.635 / 0.775 / 0.915 | share | **S** | <a name="c104-2"></a><sup>[104](#ref-104)</sup>, <a name="c48-3"></a><sup>[48](#ref-48)</sup> Residual human time: sampling QA, sign-off, escalations, liability review. Clinically significant errors still appeared in 22.8% of AI-only versus 14.0% of human-only chest-radiograph reports in a 2025 evaluation. *Factor loadings: z_ai: +0.3.* |
 | jevons | Professional (interpretation) share of the all-in price of an imaging exam (`pc_share`) | Triangular(0.1, mode 0.2, 0.3) | 0.145 / 0.2 / 0.255 | share | **A** | <a name="c85-3"></a><sup>[85](#ref-85)</sup> ≈20% for MRI, ≈25% for radiography of Medicare global fees; lower where hospital facility fees apply. |
 | jevons | Share of cost savings passed through to prices paid (`pass_through`) | Beta(4, 6) [mean 0.40] | 0.21 / 0.393 / 0.599 | share | **S** |  Fee schedules are administered and revalued slowly; commercial prices are sticky. |
 | jevons | Price elasticity of imaging demand (`elasticity`) | Triangular(-0.6, mode -0.2, -0.05) | -0.452 / -0.268 / -0.141 | elasticity | **A** | <a name="c86-3"></a><sup>[86](#ref-86)</sup>, <a name="c87-3"></a><sup>[87](#ref-87)</sup>, <a name="c88-2"></a><sup>[88](#ref-88)</sup> RAND HIE ≈ −0.2 for medical care, with respect to the patient's out-of-pocket price; professional-fee cuts mostly fall on payers, so this channel is if anything overstated. Deductible shocks cut imaging alongside other services. |
@@ -1187,12 +1222,12 @@ $z_{dem}$ (appetite for imaging).
 | jevons | Latent demand currently rationed by scanner/technologist capacity (`latent`) | Triangular(0.02, mode 0.06, 0.12) | 0.04 / 0.0652 / 0.0955 | share | **A** | <a name="c91-2"></a><sup>[91](#ref-91)</sup> CT technologist vacancy 19.4% and MRI 17.4% in 2025. |
 | jevons | AI-driven acquisition throughput gain at maturity (faster scans, auto-positioning) (`thru_H`) | Lognormal(median=0.3, σ_log=0.45) | 0.169 / 0.3 / 0.534 | share | **A** | <a name="c90-2"></a><sup>[90](#ref-90)</sup> Deep-learning reconstruction cut knee MRI time ≈44% prospectively; CT is already fast and table time dominates. *Factor loadings: z_ai: +0.5.* |
 | jevons | Midpoint year of throughput gains (M=1) (`thru_T0`) | Normal(μ=2032, σ=3) | 2028 / 2032 / 2036 | year | **A** | <a name="c90-3"></a><sup>[90](#ref-90)</sup>  |
-| jevons | Long-run extra scanner/technologist capacity built in response to demand (by 2066) (`cap_invest`) | Uniform(0, 0.25) | 0.025 / 0.125 / 0.225 | share | **S** | <a name="c104-1"></a><sup>[104](#ref-104)</sup>  |
+| jevons | Long-run extra scanner/technologist capacity built in response to demand (by 2066) (`cap_invest`) | Uniform(0, 0.25) | 0.025 / 0.125 / 0.225 | share | **S** | <a name="c105-1"></a><sup>[105](#ref-105)</sup>  |
 | jevons | AI-enabled utilization management (order decision support, payer AI prior auth) (`um_max`) | Triangular(0, mode 0.03, 0.08) | 0.0155 / 0.0353 / 0.06 | share | **A** | <a name="c81-13"></a><sup>[81](#ref-81)</sup>, <a name="c95-4"></a><sup>[95](#ref-95)</sup> Langlotz: order-entry decision support −3% (0-6%) of advanced imaging; Medicare HI trust fund depletion projected 2033. *Factor loadings: z_dem: -0.4.* |
 | jevons | Reads shifting to non-radiologists with AI support by 2066 (`scope_max`) | Triangular(0, mode 0.03, 0.1) | 0.0173 / 0.0408 / 0.0735 | share | **S** |   |
 | jevons | New radiologist tasks created alongside AI (reinstatement), share of 2026 FTE (`nt_max`) | Triangular(0, mode 0.04, 0.12) | 0.0219 / 0.0507 / 0.089 | share | **S** | <a name="c23-5"></a><sup>[23](#ref-23)</sup>, <a name="c25-4"></a><sup>[25](#ref-25)</sup>, <a name="c70-5"></a><sup>[70](#ref-70)</sup> e.g. AI governance roles, theranostics, quantitative-imaging consults, multidisciplinary precision-medicine work. *Factor loadings: z_ai: +0.3.* |
 | supply | Attrition hazard multiplier (post-COVID ≈ high end) (`attr_mult`) | Uniform(0.95, 1.25) | 0.98 / 1.1 / 1.22 | multiplier | **A** | <a name="c1-5"></a><sup>[1](#ref-1)</sup>, <a name="c79-12"></a><sup>[79](#ref-79)</sup>, <a name="c68-5"></a><sup>[68](#ref-68)</sup> Measured attrition rose from 1.1%/yr (2014) to 2.0% (2019) and 2.5% (2022). With flat residency positions, multipliers of 1.0 and 1.2 reproduce the published supply projections under blended 2014-23 attrition (+25.7% by 2055) and post-COVID attrition (+20.9%); the range is centred between them, nearer the post-COVID case the Neiman 2026 update emphasises. Turnover between practices also roughly doubled (adjusted odds 1.96, 2022 vs 2013). |
-| supply | Trend growth in DR residency positions (before market response) (`slot_g`) | Normal(μ=1, σ=0.8), truncated [-1.0, 3.0] | -0.00299 / 1 / 2 | %/yr | **A** | <a name="c1-6"></a><sup>[1](#ref-1)</sup>, <a name="c10-4"></a><sup>[10](#ref-10)</sup> DR positions rose from 1,132 (2022) to 1,241 (2026), ≈2.3%/yr; GME caps limit sustained growth. |
+| supply | Trend growth in DR residency positions (before market response) (`slot_g`) | Normal(μ=1.5, σ=0.8), truncated [-1.0, 3.5] | 0.476 / 1.49 / 2.5 | %/yr | **A** | <a name="c96-4"></a><sup>[96](#ref-96)</sup>, <a name="c10-4"></a><sup>[10](#ref-10)</sup>, <a name="c1-6"></a><sup>[1](#ref-1)</sup> DR positions rose 33% from 2010 to 2025 (about 1.9%/yr) and from 1,132 (2022) to 1,241 (2026), about 2.3%/yr. We centre slightly lower (1.5%/yr) because Medicare GME caps bind and PGY-1 applicants fell 14% over 2023-2026; the 'residency growth continues' prior set uses 1.9%/yr. |
 | supply | Residency-position response to market signal (elasticity to ln D/S) (`resid_gamma`) | Uniform(0.3, 1.5) | 0.42 / 0.9 / 1.38 | elasticity | **A** | <a name="c3-4"></a><sup>[3](#ref-3)</sup>, <a name="c16-3"></a><sup>[16](#ref-16)</sup>, <a name="c17-2"></a><sup>[17](#ref-17)</sup> After the mid-1990s downturn, radiology trainee numbers fell to a 1997 nadir (3,080) and then rose 84% by 2011; medical-student interest tracks the job market. |
 | supply | Fill-rate response to oversupply (applicant flight) (`fill_kappa`) | Uniform(0.3, 1.5) | 0.42 / 0.9 / 1.38 | elasticity | **A** | <a name="c3-5"></a><sup>[3](#ref-3)</sup>, <a name="c4-5"></a><sup>[4](#ref-4)</sup> 2015 Match, during the last oversupply: 86% of advanced DR positions filled, 55 of 166 programs went unfilled, and U.S. graduates took 67% of matched positions. |
 | supply | Information/perception lag before the pipeline reacts (`resid_lag`) | Uniform(1, 3) | 1.2 / 2 / 2.8 | years | **A** | <a name="c3-6"></a><sup>[3](#ref-3)</sup>  |

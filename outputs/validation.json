@@ -21,9 +21,9 @@
     0.11624628156231243,
     0.19902176768711932
   ],
-  "realized_time_saved_2031_p50": 0.08615286508609626,
-  "realized_time_saved_2031_p90": 0.25088823256061,
-  "assistive_potential_interp_draft_2031_p50": 0.13058422941335857,
+  "realized_time_saved_2031_p50": 0.08611599487937027,
+  "realized_time_saved_2031_p90": 0.2510387352330619,
+  "assistive_potential_interp_draft_2031_p50": 0.1305661655183752,
   "langlotz_5yr_hours_reduction": "33% (range 14%-49%)",
   "baseline_no_ai_2055_p50": 0.3193119066215231
 }

@@ -224,10 +224,10 @@ def robust_md():
 
 
 def predictions_md():
-    rows = ["| Check | Event | Model's forecast |", "|---|---|---|"]
+    rows = ["| Check | Event | Resolution | Model's forecast |", "|---|---|---|---|"]
     for p in x["predictions"]:
         f = f"{pct(p['p'])} chance" if "p" in p else f"{p['p50']:,.0f} (80%: {p['p10']:,.0f}–{p['p90']:,.0f})"
-        rows.append(f"| {p['check']} | {p['event']} | {f} |")
+        rows.append(f"| {p['check']} | {p['event']} | {p['resolution']} | {f} |")
     return "\n".join(rows)
 
 

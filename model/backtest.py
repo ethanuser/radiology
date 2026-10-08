@@ -1,6 +1,7 @@
 """Hindcast: run the method from 2016 and score it against what happened by 2025.
 
-Protocol (fixed before looking at outcomes, applied mechanically to every occupation):
+Protocol (fixed before looking at outcomes; one protocol for the three occupations, while radiology has a hand-set
+exposure, its own supply side and an 8-year regulatory lag; capability dates were judged in 2026):
   * Baseline (non-AI) growth = an equal-weight combination of two forecasts available in 2016:
       - the BLS 2016-26 Employment Projection (interpolated geometrically to 2025), and
       - the prior trend (2006/2008 -> 2016 compound growth) extended 9 years.

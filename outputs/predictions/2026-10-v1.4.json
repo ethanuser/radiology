@@ -3,29 +3,33 @@
   "predictions": [
     {
       "id": "fda_tier1_2029",
-      "check": "By end of 2029",
-      "event": "FDA authorizes autonomous (no-radiologist) reading of normal chest radiographs or negative screens",
-      "p": 0.67945
+      "check": "By 31 Dec 2029",
+      "event": "FDA authorizes a device that finalizes some normal chest radiographs or negative screening exams without radiologist review",
+      "resolution": "FDA device database (510(k)/De Novo/PMA) decision summary states autonomous reporting without radiologist review",
+      "p": 0.6458989229494615
     },
     {
       "id": "paid_tier1_2032",
-      "check": "By end of 2032",
-      "event": "Medicare or major payers pay for such autonomous reads",
-      "p": 0.59535
+      "check": "By 31 Dec 2032",
+      "event": "Medicare pays separately for such autonomous reads",
+      "resolution": "CMS physician fee schedule or OPPS assigns a payable code (Category I or national coverage) to autonomous AI interpretation",
+      "p": 0.5537696768848385
     },
     {
       "id": "positions_2030",
       "check": "2030 Match",
-      "event": "Diagnostic-radiology PGY-1/PGY-2 positions offered",
-      "p50": 1295.0276910695559,
-      "p10": 1259.9467454155954,
-      "p90": 1332.552498415015
-    },
-    {
-      "id": "time_saved_2031",
-      "check": "Studies published by 2031",
-      "event": "Real-world AI time savings across radiologist work exceed 15%",
-      "p": 0.19615
+      "event": "Diagnostic-radiology first-year residency positions offered (2026: 1,241)",
+      "resolution": "NRMP Main Residency Match results, diagnostic radiology positions offered (same definition as the 1,241 in 2026)",
+      "p50": 1311.1399598032276,
+      "p10": 1275.1435785700955,
+      "p90": 1349.4750880449883,
+      "q": {
+        "5": 1265.0388341445469,
+        "25": 1292.2061531063084,
+        "50": 1311.1399598032276,
+        "75": 1330.9721437325982,
+        "95": 1360.294385458847
+      }
     }
   ]
 }

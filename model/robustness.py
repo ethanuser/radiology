@@ -39,6 +39,8 @@ PRIOR_SETS = {
     "imaging_growth": dict(label="Imaging growth", weights=BASE_W, util=(1.3, 0.8),
                            note="Imaging per person grows ~1.3%/yr, nearer recent CT growth.",
                            sources=["smith_bindman_2025", "rosenkrantz_2025"]),
+    "residency_growth": dict(label="Residency growth continues", weights=BASE_W, util=None, slot=(1.9, 0.8),
+                             note="Residency positions keep growing ~1.9%/yr, the 2010-2025 pace.", sources=["malhotra_2026"]),
     # the two corners: change both of the most consequential priors at once
     "favorable": dict(label="Both favorable: AI-skeptical + imaging growth", weights=np.array([0.30, 0.55, 0.12, 0.03]),
                       util=(1.3, 0.8), note="Combines the two single changes that lower oversupply risk most.", sources=[]),
@@ -89,6 +91,10 @@ def prior_sets(s, o):
         if ps["util"]:
             mu, sd = ps["util"]
             w = w * _util_density(s["util_g0"], mu, sd) / _util_density(s["util_g0"], base_u["mu"], base_u["sd"])
+        if ps.get("slot"):  # slot_g has no factor loadings, so reweighting its marginal is exact
+            mu, sd = ps["slot"]
+            bs = PARAM_INDEX["slot_g"].args
+            w = w * _util_density(s["slot_g"], mu, sd) / _util_density(s["slot_g"], bs["mu"], bs["sd"])
         res[key] = {"label": ps["label"], "note": ps["note"], "sources": ps["sources"], **_metrics(o, w)}
     return res
 
@@ -96,6 +102,7 @@ def prior_sets(s, o):
 STRUCT_SHORT = {"base": "Main model", "no_signoff": "No radiologist on AI-first reads", "unordered": "Tiers automated in any order",
                 "open_demand": "3× unforeseen new demand", "payer_pushback": "Stronger payer pushback",
                 "uncapped_new_uses": "New uses not capped by scanners", "no_shortage_today": "No shortage today",
+                "tai_gated": "Transformative boost waits for regulation",
                 "assistive_only": "Assistive AI only (no AI-first reads)", "no_ai": "No further AI in radiology"}
 
 

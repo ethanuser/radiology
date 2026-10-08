@@ -359,8 +359,10 @@ PARAMS: list[Param] = [
       "attrition (+20.9%); the range is centred between them, nearer the post-COVID case the Neiman 2026 update emphasises. "
       "Turnover between practices also roughly doubled (adjusted odds 1.96, 2022 vs 2013)."),
     P("slot_g", "supply", "Trend growth in DR residency positions (before market response)",
-      "normal", dict(mu=1.0, sd=0.8, lo=-1.0, hi=3.0), "%/yr", "A", ["christensen_supply", "nrmp_2026"],
-      "DR positions rose from 1,132 (2022) to 1,241 (2026), ≈2.3%/yr; GME caps limit sustained growth."),
+      "normal", dict(mu=1.5, sd=0.8, lo=-1.0, hi=3.5), "%/yr", "A", ["malhotra_2026", "nrmp_2026", "christensen_supply"],
+      "DR positions rose 33% from 2010 to 2025 (about 1.9%/yr) and from 1,132 (2022) to 1,241 (2026), about 2.3%/yr. We centre "
+      "slightly lower (1.5%/yr) because Medicare GME caps bind and PGY-1 applicants fell 14% over 2023-2026; the "
+      "'residency growth continues' prior set uses 1.9%/yr."),
     P("resid_gamma", "supply", "Residency-position response to market signal (elasticity to ln D/S)",
       "uniform", dict(lo=0.3, hi=1.5), "elasticity", "A", ["sharafinski_2016", "rosenkrantz_2016", "nicholson_2002"],
       "After the mid-1990s downturn, radiology trainee numbers fell to a 1997 nadir (3,080) and then rose 84% by 2011; "
