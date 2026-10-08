@@ -17,6 +17,7 @@ from model import analysis, backtest, export_web, plots, robustness
 from model.params import PARAMS, evidence_counts
 
 ROOT = Path(__file__).parent
+RELEASE = "2026-10-v1.4"  # bump when publishing a new forecast; archived predictions are kept for later scoring
 
 
 def _fmt_num(v: float) -> str:
@@ -69,6 +70,11 @@ def main():
     (out / "extra_metrics.json").write_text(json.dumps(extra, indent=2, default=float))
     (out / "backtest.json").write_text(json.dumps(bt, indent=2, default=float))
     (out / "robustness.json").write_text(json.dumps(rb, indent=2, default=float))
+    # prospective tracking: archive this release's checkable predictions once; never overwrite an archived file
+    arch = out / "predictions" / f"{RELEASE}.json"
+    arch.parent.mkdir(exist_ok=True)
+    if not arch.exists():
+        arch.write_text(json.dumps({"release": RELEASE, "predictions": extra["predictions"]}, indent=2, default=float))
     (out / "parameters.md").write_text(params_markdown())
     for k in ("D", "S", "R", "P", "auto"):
         q = np.percentile(o[k], [5, 10, 25, 50, 75, 90, 95], axis=0)

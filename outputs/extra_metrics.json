@@ -509,6 +509,40 @@
     "positions_2045_p10": 1032.4055160554212,
     "positions_2055_p10": 1021.5165909863226
   },
+  "surplus_arith": {
+    "surplus": 0.15,
+    "hours_cut": 0.13043478260869557,
+    "entry_rate_2035": 0.03616719231758152,
+    "years_half_entry": 8.294810317752109
+  },
+  "predictions": [
+    {
+      "id": "fda_tier1_2029",
+      "check": "By end of 2029",
+      "event": "FDA authorizes autonomous (no-radiologist) reading of normal chest radiographs or negative screens",
+      "p": 0.67945
+    },
+    {
+      "id": "paid_tier1_2032",
+      "check": "By end of 2032",
+      "event": "Medicare or major payers pay for such autonomous reads",
+      "p": 0.59535
+    },
+    {
+      "id": "positions_2030",
+      "check": "2030 Match",
+      "event": "Diagnostic-radiology PGY-1/PGY-2 positions offered",
+      "p50": 1295.0276910695559,
+      "p10": 1259.9467454155954,
+      "p90": 1332.552498415015
+    },
+    {
+      "id": "time_saved_2031",
+      "check": "Studies published by 2031",
+      "event": "Real-world AI time savings across radiologist work exceed 15%",
+      "p": 0.19615
+    }
+  ],
   "baseline": {
     "2030": {
       "p10": 1.0171546068119361,

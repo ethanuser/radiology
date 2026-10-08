@@ -29,7 +29,7 @@
   const BT = F.backtest;
   const ROOT = { F, SUM, JEV, REG, X, VAL: F.validation, BT };
   const FMT = { pct: fmt.pct, pct1: fmt.pct1, x2: fmt.x2, chg: fmt.chg, mult: fmt.mult, int: (v) => d3.format(",.0f")(v),
-    x1: (v) => v.toFixed(1), r100: (v) => d3.format(",.0f")(Math.round(v / 100) * 100), gr: (v) => fmt.pct(v - 1), pp: (v) => (v * 100).toFixed(1) + " percentage points", pts: (v) => Math.round(v * 100) + " percentage points",
+    x1: (v) => v.toFixed(1), x0: (v) => v.toFixed(0), r100: (v) => d3.format(",.0f")(Math.round(v / 100) * 100), gr: (v) => fmt.pct(v - 1), pp: (v) => (v * 100).toFixed(1) + " percentage points", pts: (v) => Math.round(v * 100) + " percentage points",
     k: (v) => d3.format(",")(Math.round(v / 1000) * 1000),
     yr: (v) => String(Math.round(v)) };
   const $ = (s) => document.querySelector(s);
@@ -563,17 +563,25 @@
     const t = $("#robustTable");
     if (!t || !F.robust) return;
     const R = F.robust, ys = ["2035", "2045", "2055"];
-    const row = (v, kind) => `<tr><td>${v.label}${kind ? `<div class="muted small">${kind}</div>` : ""}</td>` +
+    const row = (v, kind, key) => `<tr id="robust-${key}"><td>${v.label}${kind ? `<div class="muted small">${kind}</div>` : ""}</td>` +
       ys.map((y) => `<td class="num">${fmt.pct(v[y].p_over)}</td>`).join("") + `<td class="num">${fmt.pct(v["2045"].p_jevons)}</td></tr>`;
-    const pri = Object.entries(R.priors).map(([k, v]) => row(v, k === "main" ? "main model" : v.note)).join("");
-    const st = Object.entries(R.structures).filter(([k, v]) => k !== "base" && !v.counterfactual).map(([, v]) => row(v, v.detail)).join("");
-    const cf = Object.entries(R.structures).filter(([, v]) => v.counterfactual).map(([, v]) => row(v, v.detail)).join("");
+    const pri = Object.entries(R.priors).map(([k, v]) => row(v, k === "main" ? "main model" : v.note, k)).join("");
+    const st = Object.entries(R.structures).filter(([k, v]) => k !== "base" && !v.counterfactual).map(([k, v]) => row(v, v.detail, k)).join("");
+    const cf = Object.entries(R.structures).filter(([, v]) => v.counterfactual).map(([k, v]) => row(v, v.detail, k)).join("");
     const band = `<tr><td><b>Range across all rows</b></td>${ys.map((y) => `<td class="num"><b>${fmt.pct(R.band[y].lo)}–${fmt.pct(R.band[y].hi)}</b></td>`).join("")}` +
       `<td class="num"><b>${fmt.pct(R.band["2045"].jev_lo)}–${fmt.pct(R.band["2045"].jev_hi)}</b></td></tr>`;
     t.innerHTML = `<thead><tr><th>Assumption set or model structure</th>${ys.map((y) => `<th class="num">P(oversupply) ${y}</th>`).join("")}<th class="num">P(Jevons) 2045</th></tr></thead>
       <tbody><tr><td colspan="5" class="muted small"><b>Different priors</b> (same model, reweighted futures)</td></tr>${pri}
       <tr><td colspan="5" class="muted small"><b>Different model structures</b> (main priors, re-simulated)</td></tr>${st}${band}
       <tr><td colspan="5" class="muted small"><b>How much of the risk comes from AI?</b> Counterfactuals, not alternatives; excluded from the range</td></tr>${cf}</tbody>`;
+  }
+
+  function predictionTable() {
+    const t = $("#predictionTable");
+    if (!t || !X.predictions) return;
+    t.innerHTML = `<thead><tr><th>Check</th><th>Event</th><th class="num">Model's forecast</th></tr></thead><tbody>` +
+      X.predictions.map((p) => `<tr><td>${p.check}</td><td>${p.event}</td><td class="num">${p.p !== undefined ? fmt.pct(p.p) + " chance"
+        : `${d3.format(",.0f")(p.p50)} (80%: ${d3.format(",.0f")(p.p10)}–${d3.format(",.0f")(p.p90)})`}</td></tr>`).join("") + "</tbody>";
   }
 
   // ------------------------------------------------------------------ careers
@@ -742,7 +750,7 @@
     stageUI();
     heroChart(); dashChart(); careerTrack(); setYear(curYear, curTag);
     diagram(); regimeChart(); backtestChart(); forecastCharts(); headlineTable(); aiCharts(); jevonsCharts();
-    tornadoChart(); etaChart(); evidenceChart(); compChart(); careerTable(); horizon(); explorerRender(); robustTable();
+    tornadoChart(); etaChart(); evidenceChart(); compChart(); careerTable(); horizon(); explorerRender(); robustTable(); predictionTable();
   }
   signposts(); paramTable();
   renderAll();

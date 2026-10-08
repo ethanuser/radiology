@@ -96,7 +96,7 @@ def prior_sets(s, o):
 STRUCT_SHORT = {"base": "Main model", "no_signoff": "No radiologist on AI-first reads", "unordered": "Tiers automated in any order",
                 "open_demand": "3× unforeseen new demand", "payer_pushback": "Stronger payer pushback",
                 "uncapped_new_uses": "New uses not capped by scanners", "no_shortage_today": "No shortage today",
-                "assistive_only": "Assistive AI only (no AI-first reads)", "no_ai": "No further AI"}
+                "assistive_only": "Assistive AI only (no AI-first reads)", "no_ai": "No further AI in radiology"}
 
 
 def structures(n: int = 20000, seed: int = 20261007):
@@ -116,6 +116,25 @@ def structures(n: int = 20000, seed: int = 20261007):
     return res
 
 
+def resim_check(n: int = 20000, seed: int = 20261007):
+    """Cross-check of importance reweighting: re-simulate the imaging-growth prior sets by changing only the
+    util_g0 marginal (the copula and every other input unchanged)."""
+    from .params import PARAM_INDEX as PI
+    out = {}
+    p = PI["util_g0"]
+    saved = dict(p.args)
+    try:
+        for key in ("imaging_restraint", "imaging_growth"):
+            mu, sd = PRIOR_SETS[key]["util"]
+            p.args.update(mu=mu, sd=sd)
+            o = simulate(sample(n, seed=seed))
+            out[key] = {str(y): float((o["R"][:, int(y - YEARS[0])] > OVERSUPPLY).mean()) for y in YRS}
+    finally:
+        p.args.clear()
+        p.args.update(saved)
+    return out
+
+
 def run(s, o, n: int = 20000, seed: int = 20261007) -> dict:
     pri = prior_sets(s, o)
     st = structures(n, seed)
@@ -128,4 +147,4 @@ def run(s, o, n: int = 20000, seed: int = 20261007) -> dict:
         band[str(y)] = {"lo": min(vals), "hi": max(vals), "single_lo": min(single), "single_hi": max(single),
                         "jev_lo": min(jev), "jev_hi": max(jev)}
     min_ess = min(v["ess"] for v in pri.values())
-    return {"priors": pri, "structures": st, "band": band, "n": n, "min_ess": min_ess}
+    return {"priors": pri, "structures": st, "band": band, "n": n, "min_ess": min_ess, "resim_check": resim_check(n, seed)}

@@ -223,6 +223,14 @@ def robust_md():
     return "\n".join(rows)
 
 
+def predictions_md():
+    rows = ["| Check | Event | Model's forecast |", "|---|---|---|"]
+    for p in x["predictions"]:
+        f = f"{pct(p['p'])} chance" if "p" in p else f"{p['p50']:,.0f} (80%: {p['p10']:,.0f}–{p['p90']:,.0f})"
+        rows.append(f"| {p['check']} | {p['event']} | {f} |")
+    return "\n".join(rows)
+
+
 def pipeline_md():
     tiers = ["Tier 1 — normal/negative radiographs & screening", "Tier 2 — all radiographs, screening mammography, standardized follow-up",
              "Tier 3 — complex diagnostic CT/MR/US/NM", "Tier 4 — hardest residual work"]
@@ -285,7 +293,7 @@ def stage_table():
 
 CTX = dict(m=m, anchor=anchor, stage_table=stage_table, n_params=len(PARAMS), n_sims=n_sims, sm=sm, pr=pr, jv=jv, rg=rg, tor=tor, val=val, x=x, pct=pct, num=num, chg=chg, yr=yr, ev_shrink=ev_shrink,
            ev_n=ev_n, headline_table=headline_table, jevons_md=jevons_md, regimes_md=regimes_md, tornado_md=tornado_md,
-           signposts_md=signposts_md, backtest_md=backtest_md, bt=bt, robust_md=robust_md, rb=rb, eta_md=eta_md, eta_nt=eta_nt, composition_md=composition_md, pipeline_md=pipeline_md,
+           signposts_md=signposts_md, backtest_md=backtest_md, bt=bt, robust_md=robust_md, rb=rb, predictions_md=predictions_md, eta_md=eta_md, eta_nt=eta_nt, composition_md=composition_md, pipeline_md=pipeline_md,
            params_md=params_md, float=float, round=round, abs=abs, min=min, max=max)
 
 

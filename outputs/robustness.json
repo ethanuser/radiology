@@ -729,8 +729,8 @@
       }
     },
     "no_ai": {
-      "label": "No further AI",
-      "detail": "Counterfactual: AI frozen at its 2026 level",
+      "label": "No further AI in radiology",
+      "detail": "Counterfactual: radiology AI frozen at its 2026 level (alternative diagnostics such as AI-ECG still displace some imaging)",
       "counterfactual": true,
       "ess": 20000.0,
       "2030": {
@@ -874,5 +874,21 @@
     }
   },
   "n": 20000,
-  "min_ess": 4429.658852132186
+  "min_ess": 4429.658852132186,
+  "resim_check": {
+    "imaging_restraint": {
+      "2030": 0.03825,
+      "2035": 0.22295,
+      "2045": 0.45375,
+      "2055": 0.5356,
+      "2066": 0.5342
+    },
+    "imaging_growth": {
+      "2030": 0.0251,
+      "2035": 0.1538,
+      "2045": 0.2744,
+      "2055": 0.35875,
+      "2066": 0.3915
+    }
+  }
 }

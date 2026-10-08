@@ -373,6 +373,24 @@ def extra_metrics(s: dict, o: dict) -> dict:
         "positions_2045_p10": np.percentile(o["positions"][:, yi(2045)], 10),
         "positions_2055_p10": np.percentile(o["positions"][:, yi(2055)], 10),
     }
+    # What a surplus would mean in practice (illustrative arithmetic, not a labor-market model): a 15% surplus could be
+    # absorbed entirely by shorter hours, or by cutting new-graduate entry, at the model's 2035 entry rate.
+    entry_rate = np.median(o["entrants"][:, yi(2035)] / o["head"][:, yi(2035)])
+    x["surplus_arith"] = {"surplus": 0.15, "hours_cut": 1 - 1 / 1.15, "entry_rate_2035": float(entry_rate),
+                          "years_half_entry": float(0.15 / (entry_rate / 2))}
+    # Prospective tracking: near-term, checkable predictions archived with each release
+    st = o["stages"]  # (n, tier, [capable, validated, FDA, paid, 50% adoption])
+    pos30 = o["positions"][:, yi(2030)]
+    x["predictions"] = [
+        {"id": "fda_tier1_2029", "check": "By end of 2029", "event": "FDA authorizes autonomous (no-radiologist) reading of normal chest radiographs or negative screens",
+         "p": float((st[:, 0, 2] < 2030).mean())},
+        {"id": "paid_tier1_2032", "check": "By end of 2032", "event": "Medicare or major payers pay for such autonomous reads",
+         "p": float((st[:, 0, 3] < 2033).mean())},
+        {"id": "positions_2030", "check": "2030 Match", "event": "Diagnostic-radiology PGY-1/PGY-2 positions offered",
+         "p50": float(np.median(pos30)), "p10": float(np.percentile(pos30, 10)), "p90": float(np.percentile(pos30, 90))},
+        {"id": "time_saved_2031", "check": "Studies published by 2031", "event": "Real-world AI time savings across radiologist work exceed 15%",
+         "p": float((1 - 1 / P[:, yi(2031)] > 0.15).mean())},
+    ]
     x["baseline"] = {str(y): {f"p{q}": np.percentile(o["B"][:, yi(y)], q) for q in (10, 50, 90)}
                      for y in (2030, 2035, 2045, 2055, 2066)}
     x["time_saved"] = {str(y): {f"p{q}": np.percentile(1 - 1 / P[:, yi(y)], q) for q in (10, 50, 90)}

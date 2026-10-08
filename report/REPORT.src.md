@@ -1,7 +1,7 @@
 # Will AI Shrink the Radiology Job Market?
 ## A probabilistic forecast of the U.S. diagnostic-radiology workforce, 2026–2066
 
-*For anyone considering, training in, or early in a career in diagnostic radiology · Version 1.3 · October 2026 ·
+*For anyone considering, training in, or early in a career in diagnostic radiology · Version 1.4 · October 2026 ·
 Interactive version: <https://ethanuser.github.io/radiology/> · Code and data: this repository*
 
 > **How to read this document.** Every number is produced by the Monte Carlo model in [`model/`](model/) and inserted by
@@ -340,8 +340,12 @@ and AI productivity is $P(t)=\tau(2026)/\tau(t)$.
 
 Interpretive work is split into four autonomy tiers. Tier 1 is normal or negative radiographs and screening exams, ≈7% of
 interpretive work after recalibration to the Danish evidence in §3.2. Tier 2 is all radiographs, screening mammography and
-standardized follow-ups (≈17%). Tier 3 is complex diagnostic CT/MR/US/NM (≈47%). Tier 4 is the hardest residual work. Each
-tier passes, in sequence:
+standardized follow-ups (≈17%). Tier 3 is complex diagnostic CT/MR/US/NM (≈47%). Tier 4 is the hardest residual work.
+These tiers are this report's own construct, not a standard classification. The closest published framework, "levels of
+autonomous radiology" [@ghuwalewala_2022], grades *how much* of a read AI performs (from assistance to fully autonomous
+reporting); our tiers instead group *which exams* could plausibly become autonomous first, ordered by current evidence (normal
+chest radiographs and screening exams first, §3.2). The ordering is an assumption, tested by the "tiers in any order" structure
+in §8.4. Each tier passes, in sequence:
 
 $$T^{\text{ready}}_j = T^{\text{cap}}_j + L^{\text{validation}}_j + L^{\text{FDA}}_j + L^{\text{liability/payment}}_j,\qquad
 \alpha(t)=\sum_j w_j\,a^{\max}_j\,\text{logistic}\!\left(\tfrac{\tilde t_j(t)-h}{\text{width}}\right)$$
@@ -505,9 +509,10 @@ a shortage, rests on the indirect market signals behind the subjective 2026 star
 **Limits.** Four cases cannot establish forecasting skill or calibration at a 40-year horizon. The 2016 inputs were selected in
 2026, and the capability timing for each occupation (for example, neural translation reaching production quality around 2022)
 and the radiology regulatory lag are judgments that may carry hindsight even though they were fixed before scoring. Wide
-intervals make coverage easy. What the backtest does support is narrower: combining forecasts helps, and in radiology the
-supply pipeline and demand growth, not AI, determined the 2016–2025 outcome. Several start dates, a larger reference class
-and forecasts recorded before outcomes are known would make a stronger test.
+intervals make coverage easy. This is therefore not out-of-sample evidence that the long-range method is accurate or well
+calibrated. What the backtest does support is narrower: combining forecasts helps, and in radiology the supply pipeline and
+demand growth, not AI, determined the 2016–2025 outcome. Several start dates, a larger reference class and forecasts recorded
+before outcomes are known would make a stronger test; §10.1 begins the last of these.
 
 ---
 
@@ -693,7 +698,8 @@ re-simulated from the same draws:
   balanced market today.
 
 **Counterfactuals: how much of the risk comes from AI?** Two further runs are not alternatives but decompositions: *no further
-AI* (AI frozen at its 2026 level) and *assistive AI only* (no AI-first reading). Without further AI, meaningful oversupply has
+AI in radiology* (radiology AI frozen at its 2026 level; alternative diagnostics such as AI-ECG still displace some imaging, so
+this is not a world without AI anywhere) and *assistive AI only* (no AI-first reading). Without further AI, meaningful oversupply has
 probability {{pct(rb['structures']['no_ai']['2035']['p_over'], 1)}} in 2035, {{pct(rb['structures']['no_ai']['2045']['p_over'])}} in
 2045 and {{pct(rb['structures']['no_ai']['2055']['p_over'])}} in 2055, because supply grows faster than demand once the 2026
 shortage is worked off. With assistive AI only it is {{pct(rb['structures']['assistive_only']['2035']['p_over'])}},
@@ -713,8 +719,16 @@ and regulation and adoption lags matter. The quantitative ones do not: the 2045 
 priors. The structural variants
 move it less, except that the Jevons result is fragile: with three times the new demand, a true Jevons paradox occurs in
 {{pct(rb['structures']['open_demand']['2045']['p_jevons'])}} of futures in 2045. These bands are sensitivity ranges, not
-confidence intervals; no variant was fitted to data, and others (a wage-and-hours labor market, regional markets) remain
-untested. One structural feature deserves note: in the transformative branch, extra exams are capped by scanner and
+confidence intervals. They cover a chosen set of alternatives, not the full space of plausible structures (for example, a
+transformative-AI future that also creates large imaging-derived services needing little scanner time); no variant was fitted
+to data, and others (a wage-and-hours labor market, regional markets) remain untested.
+
+**Method check on the reweighting.** Importance reweighting changes one input's marginal, but because inputs share latent
+factors it also shifts the correlated inputs. As a cross-check, the two imaging-growth sets were re-simulated with only that
+input's marginal changed and the copula unchanged: 2045 oversupply is {{pct(rb['resim_check']['imaging_restraint']['2045'])}}
+(restraint) and {{pct(rb['resim_check']['imaging_growth']['2045'])}} (growth), against
+{{pct(rb['priors']['imaging_restraint']['2045']['p_over'])}} and {{pct(rb['priors']['imaging_growth']['2045']['p_over'])}} reweighted. The
+reweighted values are somewhat more extreme, as expected, but tell the same story. One structural feature deserves note: in the transformative branch, extra exams are capped by scanner and
 technologist capacity while radiologist time per study falls by about 70% by 2045, so oversupply there is near-certain
 and a Jevons outcome impossible by construction. The 2035 headline is therefore close to the transformative weight plus the
 non-transformative risk ({{pct(x['non_tai']['2035']['p_over'])}}). Similarly, the collapse tail (demand below half of
@@ -762,7 +776,10 @@ In order of likelihood:
    {{pct(x['displacement']['p_any_decline_faster_than_attrition_2035_2066'])}} of worlds, nearly all of them transformative. But
    because new graduates keep entering, a severe surplus ($R>1.25$) lasts five or more years in
    {{pct(x['displacement']['p_sustained_severe_surplus'])}} of worlds ({{pct(x['displacement']['p_sustained_severe_surplus_non_tai'])}}
-   outside the transformative branch). Who bears it, through pay, hours or jobs, is not modeled.
+   outside the transformative branch). Who bears it, through pay, hours or jobs, is not modeled. As illustrative arithmetic,
+   a 15% surplus could be absorbed entirely by about {{pct(x['surplus_arith']['hours_cut'])}} fewer hours each, or by halving
+   new-graduate entry for about {{num(x['surplus_arith']['years_half_entry'], 0)}} years (entrants are about
+   {{pct(x['surplus_arith']['entry_rate_2035'], 1)}} of the workforce a year), or by lower pay, most likely in some uneven mix.
 
 {{anchor('signposts')}}
 ### 9.3 What would make the forecast more optimistic or pessimistic
@@ -806,6 +823,19 @@ In order of likelihood:
 * **Recent sources.** Several key sources are preprints, conference results or trade-press summaries. Some JACR figures come
   from abstracts.
 
+**Priorities for further work**, in order: (1) test whether the demand and supply model reproduces 2015–2026 data (imaging
+volumes, work RVUs, staffing, hours, vacancies and pay) independently of its calibration targets, which would test the
+subjective 2026 starting point; (2) add simple pay, hours and hiring scenarios; (3) elicit the AI and imaging-growth priors from
+outside forecasters with a prespecified procedure; (4) score the archived predictions below as they resolve.
+
+<a name="sec-tracking"></a>
+### 10.1 Prospective tracking
+
+Each release archives near-term, checkable predictions in `outputs/predictions/` so the forecast can be scored later. This
+release's are:
+
+{{predictions_md()}}
+
 {{anchor('repro')}}
 ## 11. Reproducibility
 
@@ -826,7 +856,10 @@ demand; axis titles on all figures; citation pop-overs with source passages on t
 imaging growth recentered from 1.2% to 0.6%/yr after benchmarking against national claims-based projections (§4.1, §6.1);
 alternative prior sets, corner combinations and alternative model structures (§8.4); three kinds of uncertainty separated;
 backtest compared with forecast combination alone (§6.2); sustained-surplus metric; today's shortage regraded subjective;
-oversupply threshold described as a convention.
+oversupply threshold described as a convention. v1.4 (October 2026): counterfactuals without further radiology AI and with assistive AI only; no-shortage-today and
+uncapped-new-uses structures; re-simulation check of the reweighting; attrition range centered nearer post-COVID levels;
+imaging-growth center 0.6%/yr; tiers described as this report's construct; illustrative surplus arithmetic; archived
+checkable predictions (§10.1).
 
 <!-- REFERENCES -->
 

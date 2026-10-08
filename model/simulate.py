@@ -101,7 +101,7 @@ STRUCTURES = {
     "uncapped_new_uses": "New AI-enabled uses not limited by scanner capacity (e.g. opportunistic screening of existing scans)",
     # counterfactuals (not alternatives): how much of the risk comes from AI at all
     "assistive_only": "Counterfactual: assistive AI only, no AI-first reading",
-    "no_ai": "Counterfactual: AI frozen at its 2026 level",
+    "no_ai": "Counterfactual: radiology AI frozen at its 2026 level (alternative diagnostics such as AI-ECG still displace some imaging)",
 }
 COUNTERFACTUALS = ("assistive_only", "no_ai")
 
