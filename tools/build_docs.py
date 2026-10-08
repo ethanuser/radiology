@@ -254,7 +254,8 @@ def params_md():
     return "\n".join(rows)
 
 
-n_sims = json.loads((ROOT / "docs" / "data" / "forecast.json").read_text())["n_sims"]
+_fj = json.loads((ROOT / "docs" / "data" / "forecast.json").read_text())
+n_sims, n_drawn = _fj["n_sims"], _fj["n_drawn"]
 SECTIONS = {
     "question": ("sec-question", "§1"), "approach": ("sec-approach", "§2"), "evidence": ("sec-evidence", "§3"),
     "model": ("sec-model", "§4"), "baseline": ("sec-baseline", "§4.1"), "ai": ("sec-ai", "§4.2"),
@@ -281,17 +282,17 @@ def anchor(key):
 
 
 def stage_table():
-    rows = ["| Where you are in fall 2026 | Typical first attending year* | P(oversupply) when you start | 10 years in | 20 years in | "
-            "30 years in (or 2066) | P(demand below 2026) 10 years in | P(still a shortage) when you start |",
+    rows = ["| Where you are in fall 2026 | Typical first attending year* | P(meaningful oversupply) when you start | 10 years in | 20 years in | "
+            "30 years in (or 2066) | P(demand below 2026) 10 years in | P(meaningful shortage) when you start |",
             "|---|---|---|---|---|---|---|---|"]
     for r in x["stages"]:
         rows.append(f"| {r['label']} | {r['start']} | {pct(r['entry_p_over'])} | {pct(r['y10_p_over'])} | "
                     f"{pct(r['y20_p_over'])} | {pct(r['y30_p_over'])} ({r['y30_year']}) | {pct(r['y10_p_below'])} | "
-                    f"{pct(r['entry_p_short'])} |")
+                    f"{pct(r['entry_p_short10'])} |")
     return "\n".join(rows)
 
 
-CTX = dict(m=m, anchor=anchor, stage_table=stage_table, n_params=len(PARAMS), n_sims=n_sims, sm=sm, pr=pr, jv=jv, rg=rg, tor=tor, val=val, x=x, pct=pct, num=num, chg=chg, yr=yr, ev_shrink=ev_shrink,
+CTX = dict(m=m, anchor=anchor, stage_table=stage_table, n_params=len(PARAMS), n_sims=n_sims, n_drawn=n_drawn, len=len, sm=sm, pr=pr, jv=jv, rg=rg, tor=tor, val=val, x=x, pct=pct, num=num, chg=chg, yr=yr, ev_shrink=ev_shrink,
            ev_n=ev_n, headline_table=headline_table, jevons_md=jevons_md, regimes_md=regimes_md, tornado_md=tornado_md,
            signposts_md=signposts_md, backtest_md=backtest_md, bt=bt, robust_md=robust_md, rb=rb, predictions_md=predictions_md, eta_md=eta_md, eta_nt=eta_nt, composition_md=composition_md, pipeline_md=pipeline_md,
            params_md=params_md, float=float, round=round, abs=abs, min=min, max=max)
@@ -425,9 +426,9 @@ def readme_block() -> str:
              row("**P(meaningful oversupply, S/D > 1.10)**", [f"**{pct(sm[y]['p_oversupply'])}**" for y in ys]),
              row("P(true Jevons paradox)", [pct(jv[y]["p_jevons"]) for y in ys])]
     m1 = x["m1"]
-    para = (f"**In one paragraph:** for someone entering practice in the mid-2030s, the market is more likely than not still short "
-            f"({pct(m1['p_shortage_2035'])} chance in 2035), with a {pct(sm[2035]['p_oversupply'])} chance of meaningful oversupply. "
-            f"Most of that risk sits in a 12%-weighted \"transformative AI\" branch; without it the risk is "
+    para = (f"**In one paragraph:** for someone entering practice in the mid-2030s, meaningful oversupply ({pct(sm[2035]['p_oversupply'])}) "
+            f"and meaningful shortage ({pct(sm[2035]['p_shortage_10'])}) are about equally likely in 2035. "
+            f"Most of the oversupply risk sits in the transformative-AI branch; without it the risk is "
             f"{pct(x['non_tai']['2035']['p_over'])}. Risk grows over a career ({pct(sm[2045]['p_oversupply'])} by 2045, "
             f"{pct(sm[2055]['p_oversupply'])} by 2055). Most of it comes from AI: with no further AI it would be "
             f"{pct(rb['structures']['no_ai']['2045']['p_over'])} and {pct(rb['structures']['no_ai']['2055']['p_over'])}; assistive AI drives "

@@ -31,7 +31,7 @@ def _quants(arr):
 
 
 def forecast_json(s, o, summary, probs, jev, regimes, tor, eta, ev, val) -> dict:
-    out = {"years": YEARS.tolist(), "report_years": list(REPORT_YEARS), "n_sims": int(len(o["D"])),
+    out = {"years": YEARS.tolist(), "report_years": list(REPORT_YEARS), "n_sims": int(len(o["D"])), "n_drawn": int(o.get("n_drawn", len(o["D"]))),
            "oversupply_threshold": OVERSUPPLY, "severe_threshold": SEVERE}
     out["series"] = {k: _quants(o[k]) for k in ("D", "S", "Sd", "R", "P", "auto", "B", "W")}
     out["series"]["time_saved"] = _quants(1 - 1 / o["P"])

@@ -6,29 +6,29 @@
       "check": "By 31 Dec 2029",
       "event": "FDA authorizes a device that finalizes some normal chest radiographs or negative screening exams without radiologist review",
       "resolution": "FDA device database (510(k)/De Novo/PMA) decision summary states autonomous reporting without radiologist review",
-      "p": 0.6458989229494615
+      "p": 0.6370540728459111
     },
     {
       "id": "paid_tier1_2032",
       "check": "By 31 Dec 2032",
       "event": "Medicare pays separately for such autonomous reads",
       "resolution": "CMS physician fee schedule or OPPS assigns a payable code (Category I or national coverage) to autonomous AI interpretation",
-      "p": 0.5537696768848385
+      "p": 0.5453816120233193
     },
     {
       "id": "positions_2030",
       "check": "2030 Match",
       "event": "Diagnostic-radiology first-year residency positions offered (2026: 1,241)",
       "resolution": "NRMP Main Residency Match results, diagnostic radiology positions offered (same definition as the 1,241 in 2026)",
-      "p50": 1311.1399598032276,
-      "p10": 1275.1435785700955,
-      "p90": 1349.4750880449883,
+      "p50": 1340.8913154289287,
+      "p10": 1285.5816899525537,
+      "p90": 1398.0832794079743,
       "q": {
-        "5": 1265.0388341445469,
-        "25": 1292.2061531063084,
-        "50": 1311.1399598032276,
-        "75": 1330.9721437325982,
-        "95": 1360.294385458847
+        "5": 1270.4186529703354,
+        "25": 1311.8186204492888,
+        "50": 1340.8913154289287,
+        "75": 1370.8113178854617,
+        "95": 1413.555767390458
       }
     }
   ]

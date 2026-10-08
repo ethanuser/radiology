@@ -308,7 +308,7 @@ const Charts = (() => {
   }
 
   // ---------------------------------------------------------------- regulatory pipeline dot-range
-  function pipeline(el, P, { xLabel = "Year (dot = median, line = 80% range)", yLabel = "Autonomy tier" } = {}) {
+  function pipeline(el, P, { xLabel = "Year (dot = median, line = 80% range)", yLabel = "Tier of exam difficulty" } = {}) {
     const narrow = (document.querySelector(el)?.clientWidth || 700) < 560;
     const tiers = P.tiers, stages = P.stages, rowH = 92;
     const F = frame(el, { height: tiers.length * rowH + 10 + 30 + (xLabel ? 18 : 0) + 4, margin: { t: 10, r: 18, b: 30, l: narrow ? 70 : 210 }, xLabel, yLabel: narrow ? null : yLabel });

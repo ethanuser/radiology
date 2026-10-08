@@ -10,7 +10,7 @@ from scipy import stats
 from .params import PARAM_INDEX, PARAMS, REGIME_NAMES, SHORT, TASKS
 from .stages import STAGES
 from .sampling import sample
-from .simulate import REPORT_YEARS, YEARS, simulate
+from .simulate import REPORT_YEARS, YEARS, consistent_with_today, simulate, subset
 
 warnings.filterwarnings("ignore", message="All-NaN slice")
 QS = (10, 25, 50, 75, 90)
@@ -22,9 +22,16 @@ def yi(year: int) -> int:
     return int(year - YEARS[0])
 
 
-def run(n: int = 20000, seed: int = 20261007, overrides: dict | None = None):
+def run(n: int = 20000, seed: int = 20261007, overrides: dict | None = None, condition: bool = True):
+    """Sample and simulate n futures, then drop those already contradicted by events (see consistent_with_today)."""
     s = sample(n, seed=seed, overrides=overrides)
-    return s, simulate(s)
+    o = simulate(s)
+    if not condition:
+        return s, o
+    keep = consistent_with_today(o)
+    o = subset(o, keep)
+    o["n_drawn"] = n
+    return subset(s, keep), o
 
 
 # ------------------------------------------------------------------------------------------------ headline table
@@ -250,6 +257,10 @@ def validation(s: dict, o: dict) -> dict:
     for year in range(2024, 2056):
         c_hi = np.r_[KAPPA * FILLED_HIST[2024], (c_hi - c_hi * hz_hi)[:-1]]
     flat_2055_high_attr = c_hi.sum() / STOCK_2023
+    c_hi2, sflat_hi = COHORT_2023.copy(), {}
+    for year in range(2024, 2056):
+        c_hi2 = np.r_[KAPPA * FILLED_HIST[2024], (c_hi2 - c_hi2 * hz_hi)[:-1]]
+        sflat_hi[year] = c_hi2.sum()
     mean_career = np.cumprod(np.r_[1.0, 1 - HAZARD[:-1]]).sum()
     attr_2023 = (COHORT_2023 * HAZARD).sum() / COHORT_2023.sum()
     # (2) demographics-only growth 2026-2055 vs Christensen 2023-2055 range (+16.9% to +26.9%)
@@ -262,6 +273,8 @@ def validation(s: dict, o: dict) -> dict:
         "christensen_flat_2055": 1.257,
         "supply_flat_2055_high_attrition": flat_2055_high_attr,
         # like-for-like with Neiman's "if no action is taken": no further AI, flat residency positions, no market response
+        "neiman_matched_ratio_p50": {str(y): float(np.median(np.asarray(s["ratio0"]) * sflat_hi[y] / sflat_hi[2026] / o["B_dem"][:, yi(y)]))
+                                     for y in (2035, 2045, 2055)},
         "noai_flat_ratio_p50": {str(y): float(np.median(np.asarray(s["ratio0"]) * sflat[y] / sflat[2026] / o["B"][:, yi(y)]))
                                 for y in (2035, 2045, 2055)},
         "mean_career_years": mean_career,
@@ -332,7 +345,7 @@ def extra_metrics(s: dict, o: dict) -> dict:
         })
     # Displacement pressure: demand falling faster than natural attrition (~2.7%/yr) over any 5-year window
     # means incumbents (not just new graduates) would face involuntary job loss or forced part-time work.
-    attr = 0.03  # sampled centre of the attrition range
+    attr = 0.025  # measured attrition in 2022 (Rula 2026); the model's own exit rate is a little higher
     win = 5
     dec = 1 - (D[:, win:] / D[:, :-win]) ** (1 / win)  # annualized 5-year decline rate starting each year
     start = YEARS[:-win]
@@ -394,7 +407,7 @@ def extra_metrics(s: dict, o: dict) -> dict:
          "p": float((stk[:, 0, 2] < 2030).mean())},
         {"id": "paid_tier1_2032", "check": "By 31 Dec 2032",
          "event": "Medicare pays separately for such autonomous reads",
-         "resolution": "CMS physician fee schedule or OPPS assigns a payable code (Category I or national coverage) to autonomous AI interpretation",
+         "resolution": "A national Medicare payment rate (physician fee schedule or OPPS) for autonomous AI interpretation, not contractor pricing",
          "p": float((stk[:, 0, 3] < 2033).mean())},
         {"id": "positions_2030", "check": "2030 Match",
          "event": "Diagnostic-radiology first-year residency positions offered (2026: 1,241)",

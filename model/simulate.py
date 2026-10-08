@@ -94,17 +94,36 @@ COHORT_2023 = initial_cohorts()
 # ----------------------------------------------------------------------------------------------- main simulation
 STRUCTURES = {
     "base": "Main model",
-    "no_signoff": "AI-first reads need no radiologist at all, in every tier (no audit or sign-off time)",
-    "unordered": "Tiers automated in any order, with equally hard regulation",
-    "open_demand": "Much larger unforeseen new demand (3× new applications, 2× new radiologist tasks)",
-    "payer_pushback": "Stronger payer pushback (2× AI utilization management and scope shift)",
-    "uncapped_new_uses": "New AI-enabled uses not limited by scanner capacity (e.g. opportunistic screening of existing scans)",
-    "tai_gated": "Transformative-AI time savings above normal limits wait for the complex-exam (tier 3) regulatory pipeline",
+    "no_signoff": "No audit or sign-off time at all on AI-first reads",
+    "unordered": "Complex exams may be automated before simple ones",
+    "open_demand": "3× as many new AI-enabled imaging uses and 2× the new radiologist tasks",
+    "payer_pushback": "Payers' AI blocks twice as many scans; twice as many reads shift to other doctors",
+    "uncapped_new_uses": "New uses such as screening existing scans are not limited by scanner capacity",
+    "tai_gated": "Transformative AI's extra time savings must also wait for regulation and adoption",
     # counterfactuals (not alternatives): how much of the risk comes from AI at all
-    "assistive_only": "Counterfactual: assistive AI only, no AI-first reading",
-    "no_ai": "Counterfactual: radiology AI frozen at its 2026 level (alternative diagnostics such as AI-ECG still displace some imaging)",
+    "assistive_only": "AI helps radiologists read but never reads first",
+    "no_ai": "Radiology AI frozen at its 2026 level (other diagnostics such as AI-ECG still displace some imaging)",
 }
 COUNTERFACTUALS = ("assistive_only", "no_ai")
+
+
+def consistent_with_today(o: dict) -> np.ndarray:
+    """Futures already contradicted by events: an autonomous radiology read FDA-authorized before October 2026."""
+    return o["stages"][:, :, 2].min(axis=1) >= 2026.8
+
+
+def subset(d: dict, mask: np.ndarray) -> dict:
+    """Keep the futures in `mask` in every per-future array of a sample or output dict."""
+    n = len(mask)
+    out = {}
+    for k, v in d.items():
+        if isinstance(v, dict):
+            out[k] = subset(v, mask)
+        elif isinstance(v, np.ndarray) and v.ndim >= 1 and v.shape[0] == n:
+            out[k] = v[mask]
+        else:
+            out[k] = v
+    return out
 
 
 def simulate(s: dict, structure: str = "base") -> dict:
@@ -198,9 +217,10 @@ def _simulate_once(s: dict, press_cum: np.ndarray, structure: str = "base") -> d
     lag_mult = 1 - (1 - TAI_LAG_MULT) * tai
     ahalf = col("ahalf") * (1 - (1 - TAI_ADOPT_MULT) * tai)
     for j in range(4):
-        lv = col("lval") * mult_val[j] * lag_mult
-        lf = col("lfda") * mult_fda[j] * lag_mult
-        lp = col("lpay") * mult_pay[j] * lag_mult
+        lm = lag_mult if j > 0 else 1.0  # tier 1 is already technically capable; its regulatory clock is not compressed
+        lv = col("lval") * mult_val[j] * lm
+        lf = col("lfda") * mult_fda[j] * lm
+        lp = col("lpay") * mult_pay[j] * lm
         rj = tcap[j] + lv + lf + lp
         ready.append(rj)
         stage.append(np.hstack([tcap[j], tcap[j] + lv, tcap[j] + lv + lf, rj, rj + ahalf]))
@@ -219,7 +239,7 @@ def _simulate_once(s: dict, press_cum: np.ndarray, structure: str = "base") -> d
     if structure == "tai_gated":
         # extra assistive savings in the transformative branch count as de facto autonomy: they phase in only as the
         # tier-3 (complex exams) validation, FDA and payment pipeline clears, not on capability alone
-        gate = logistic(t, ready[2], 2.0)
+        gate = logistic(t - ready[2], ahalf, col("awidth"))  # tier-3 regulatory clearance plus hospital adoption
         sig = {k: (col(f"m_{k}") + tai * gate * np.maximum(0.0, TAI_TASK_CEILINGS[k] - col(f"m_{k}"))) * cap[k] * adopt
                for k in cap}  # (n, tier, [capability, validated, FDA, paid/liability, 50% adoption])
 
@@ -359,7 +379,8 @@ def simulate_supply(s: dict, D: np.ndarray, P: np.ndarray) -> dict:
             trend = POSITIONS_2026 * np.minimum((1 + slot_g) ** (m - 2026), GME_CAP)
             g_eff = np.where(xbar < 0, gamma, 0.3 * gamma)
             target = np.minimum(trend * np.exp(g_eff * xbar), GME_CAP * POSITIONS_2026)
-            positions = positions + 0.35 * (target - positions)
+            grown = np.minimum(positions * (1 + slot_g), GME_CAP * POSITIONS_2026)
+            positions = grown + 0.35 * (target - grown)
             vis = np.clip((1 - 1 / P[:, i]) / 0.3, 0, 1)  # visible AI labour-saving deters applicants
             fill = np.clip(FILL_2026 * np.exp(kappa_f * np.minimum(xbar, 0)) - fear * vis, 0.4, 0.99)
             filled[m] = positions * fill

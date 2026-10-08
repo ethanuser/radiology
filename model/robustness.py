@@ -18,7 +18,7 @@ import numpy as np
 
 from .params import PARAM_INDEX
 from .sampling import sample
-from .simulate import COUNTERFACTUALS, STRUCTURES, YEARS, simulate
+from .simulate import COUNTERFACTUALS, STRUCTURES, YEARS, consistent_with_today, simulate, subset
 
 OVERSUPPLY = 1.10
 YRS = (2030, 2035, 2045, 2055, 2066)
@@ -50,6 +50,10 @@ PRIOR_SETS = {
 CORNERS = ("favorable", "unfavorable")
 
 
+def _cond(o):
+    return subset(o, consistent_with_today(o))
+
+
 def _wquantile(x, w, q):
     i = np.argsort(x)
     c = np.cumsum(w[i])
@@ -57,6 +61,7 @@ def _wquantile(x, w, q):
 
 
 def _metrics(o, w):
+    w = np.ones(len(o["R"])) if w is None else w
     w = w / w.sum()
     yi = {y: int(y - YEARS[0]) for y in YRS}
     ess = 1.0 / np.sum(w ** 2)
@@ -87,7 +92,7 @@ def prior_sets(s, o):
     base_u = PARAM_INDEX["util_g0"].args
     res = {}
     for key, ps in PRIOR_SETS.items():
-        w = ps["weights"][reg] / freq[reg]
+        w = np.ones(len(reg)) if key == "main" else ps["weights"][reg] / freq[reg]
         if ps["util"]:
             mu, sd = ps["util"]
             w = w * _util_density(s["util_g0"], mu, sd) / _util_density(s["util_g0"], base_u["mu"], base_u["sd"])
@@ -100,10 +105,10 @@ def prior_sets(s, o):
 
 
 STRUCT_SHORT = {"base": "Main model", "no_signoff": "No radiologist on AI-first reads", "unordered": "Tiers automated in any order",
-                "open_demand": "3× unforeseen new demand", "payer_pushback": "Stronger payer pushback",
+                "open_demand": "Much more new imaging", "payer_pushback": "Stronger payer pushback",
                 "uncapped_new_uses": "New uses not capped by scanners", "no_shortage_today": "No shortage today",
                 "tai_gated": "Transformative boost waits for regulation",
-                "assistive_only": "Assistive AI only (no AI-first reads)", "no_ai": "No further AI in radiology"}
+                "assistive_only": "Assistive AI only", "no_ai": "No further radiology AI"}
 
 
 def structures(n: int = 20000, seed: int = 20261007):
@@ -112,14 +117,15 @@ def structures(n: int = 20000, seed: int = 20261007):
     res = {}
     for key, label in STRUCTURES.items():
         o = simulate(s, structure=key)
+        o = subset(o, consistent_with_today(o))
         res[key] = {"label": STRUCT_SHORT[key], "detail": label, "counterfactual": key in COUNTERFACTUALS,
-                    **_metrics(o, np.ones(n))}
+                    **_metrics(o, np.ones(len(o["R"])))}
     # the main prior rules out a balanced market today (0.85-0.99); re-simulate with no shortage in 2026
     s2 = dict(s)
     s2["ratio0"] = np.random.default_rng(seed + 1).uniform(0.95, 1.03, n)
     res["no_shortage_today"] = {"label": STRUCT_SHORT["no_shortage_today"], "counterfactual": False,
-                                "detail": "Supply ÷ demand in 2026 drawn from 0.95-1.03 instead of 0.85-0.99",
-                                **_metrics(simulate(s2), np.ones(n))}
+                                "detail": "Today's supply ÷ demand anywhere from 0.95 to 1.03 (main model: full range 0.85-0.99)",
+                                **_metrics(_cond(simulate(s2)), None)}
     return res
 
 
@@ -134,7 +140,7 @@ def resim_check(n: int = 20000, seed: int = 20261007):
         for key in ("imaging_restraint", "imaging_growth"):
             mu, sd = PRIOR_SETS[key]["util"]
             p.args.update(mu=mu, sd=sd)
-            o = simulate(sample(n, seed=seed))
+            o = _cond(simulate(sample(n, seed=seed)))
             out[key] = {str(y): float((o["R"][:, int(y - YEARS[0])] > OVERSUPPLY).mean()) for y in YRS}
     finally:
         p.args.clear()

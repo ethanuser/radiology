@@ -487,7 +487,7 @@
       ["P(demand < 2026)", ys.map((y) => fmt.pct(SUM[y].p_demand_below_today))], ["P(demand < 80% of 2026)", ys.map((y) => fmt.pct(SUM[y].p_demand_below_80))],
       ["P(demand < 50% of 2026)", ys.map((y) => fmt.pct(SUM[y].p_demand_below_50))],
       ["<b>P(meaningful oversupply)</b>", ys.map((y) => `<b>${fmt.pct(SUM[y].p_oversupply)}</b>`)],
-      ["  range under alternative priors and structures", ys.map((y) => F.robust && F.robust.band[y] ? `${fmt.pct(F.robust.band[y].lo)}–${fmt.pct(F.robust.band[y].hi)}` : "–")],
+      ["  range under alternative assumptions and model designs", ys.map((y) => F.robust && F.robust.band[y] ? `${fmt.pct(F.robust.band[y].lo)}–${fmt.pct(F.robust.band[y].hi)}` : "–")],
       ["P(severe oversupply, supply ÷ demand > 1.25)", ys.map((y) => fmt.pct(SUM[y].p_severe_oversupply))],
       ["P(supply exceeds demand)", ys.map((y) => fmt.pct(SUM[y].p_supply_exceeds_demand))],
       ["P(meaningful shortage, supply ÷ demand < 0.90)", ys.map((y) => fmt.pct(SUM[y].p_shortage_10))]];
@@ -617,7 +617,7 @@
     const t = $("#signpostTable");
     if (!t) return;
     t.innerHTML = `<thead><tr><th>If we observe…</th><th class="num">2035</th><th class="num">2045</th><th class="num">2055</th></tr></thead><tbody>` +
-      X.signposts.map((r) => `<tr><td>${r.label}<div class="muted small">${fmt.pct(r.share)} of simulated futures</div></td><td class="num">${fmt.pct(r.p_over_2035)}</td><td class="num">${fmt.pct(r.p_over_2045)}</td><td class="num">${fmt.pct(r.p_over_2055)}</td></tr>`).join("") + "</tbody>";
+      X.signposts.filter((r) => !/†|regime|branch/i.test(r.label)).map((r) => `<tr><td>${r.label}<div class="muted small">${fmt.pct(r.share)} of simulated futures</div></td><td class="num">${fmt.pct(r.p_over_2035)}</td><td class="num">${fmt.pct(r.p_over_2045)}</td><td class="num">${fmt.pct(r.p_over_2055)}</td></tr>`).join("") + "</tbody>";
   }
 
   // ------------------------------------------------------------------ parameter table

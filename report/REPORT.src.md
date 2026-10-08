@@ -25,7 +25,8 @@ and over the following decades? How much does AI change it?
 AI productivity, the regulatory and adoption pipeline for autonomous AI, Jevons/rebound effects, and a cohort model of
 radiologist supply with an endogenous residency response.{{m('model')}} Its {{n_params}} uncertain inputs are drawn
 from explicit probability distributions, correlated through three latent factors (AI progress, regulatory friction, appetite
-for imaging), and propagated through {{f"{n_sims:,}"}} simulated futures.{{m('uncertainty')}} Each input is graded
+for imaging), and propagated through {{f"{n_drawn:,}"}} simulated futures, of which the {{f"{n_sims:,}"}} not already contradicted by
+events are kept (§10).{{m('uncertainty')}} Each input is graded
 **empirical** (E), **anchored** (A: an empirical anchor plus judgment) or **subjective** (S).{{m('params')}}
 
 **Headline results** (median with 10th–90th percentile range; indices relative to 2026):
@@ -72,7 +73,7 @@ for imaging), and propagated through {{f"{n_sims:,}"}} simulated futures.{{m('un
    subjective.{{m('sensitivity')}}
 7. **For practicing radiologists, AI risk would most likely show up as slower hiring of new graduates, flatter pay and a
    changed job, not unemployment.** The model forecasts only the supply/demand balance; the split between hiring, pay and hours
-   is an interpretation from past gluts, not a model output. Attrition of about 3% of the workforce a year (sampled range ≈2.6–3.4%) absorbs gradual declines,
+   is an interpretation from past gluts, not a model output. Attrition (measured 2.0–2.5% a year in 2019–2022; the model's exit rate is a little higher) absorbs gradual declines,
    but new graduates keep entering: a severe surplus ($R>1.25$) lasts five or more years in
    {{pct(x['displacement']['p_sustained_severe_surplus'])}} of futures ({{pct(x['displacement']['p_sustained_severe_surplus_non_tai'])}} outside the
    transformative branch).
@@ -86,7 +87,7 @@ for imaging), and propagated through {{f"{n_sims:,}"}} simulated futures.{{m('un
    reasonable protocol choices. For the three other occupations, the BLS-plus-trend combination alone was more accurate
    than the full method on average: the AI layer helped for translators, tied for software and hurt badly for
    transcription.{{m('backtest')}}
-9. **The direction is robust; the exact numbers are not.** Under four alternative prior sets and six alternative model
+9. **The direction is robust; the exact numbers are not.** Under {{len(rb['priors']) - 1}} alternative prior sets (two of them combinations) and {{len([k for k, v in rb['structures'].items() if k != 'base' and not v['counterfactual']])}} alternative model
    structures (including reads with no radiologist, automation that does not follow a difficulty ladder, and no shortage
    today), the 2045
    oversupply probability ranges from {{pct(rb['band']['2045']['single_lo'])}} to {{pct(rb['band']['2045']['single_hi'])}} (main
@@ -396,11 +397,11 @@ positions reproduce Christensen et al's +25.7% (2023–2055) [@christensen_suppl
 follow a trend (1.5%/yr, σ 0.8, capped at 1.8× by GME funding; positions grew about 1.9%/yr in 2010–2025 [@malhotra_2026]), and
 respond to a market signal $x=\ln(D/S)$ averaged over three years and observed with a 1–3-year lag, clipped to [−0.7, 0.4]:
 
-$$\text{positions}^{*}=\text{trend}\cdot e^{\gamma' x},\quad \gamma'=\gamma \text{ if } x<0 \text{ (surplus) else } 0.3\gamma,\qquad \text{positions}_{t+1}=\text{positions}_t+0.35(\text{positions}^{*}-\text{positions}_t)$$
+$$\text{positions}^{*}=\text{trend}\cdot e^{\gamma' x},\quad \gamma'=\gamma \text{ if } x<0 \text{ (surplus) else } 0.3\gamma,\qquad \tilde p=\text{positions}_t(1+g),\quad \text{positions}_{t+1}=\tilde p+0.35(\text{positions}^{*}-\tilde p)$$
 
 $$\text{fill}=0.976\,e^{\kappa_f\min(x,0)}-\text{fear}\cdot\text{visibility}_{AI}$$
 
-Programs cut positions faster in a surplus than they add them in a shortage (GME caps), and close 35% of the gap to the target each year.
+Programs cut positions faster in a surplus than they add them in a shortage (GME caps), and each year grow with trend and then close 35% of the remaining gap to the market-adjusted target.
 
 {{anchor('uncertainty')}}
 ### 4.6 Uncertainty, correlation, regimes and the shortage feedback
@@ -415,7 +416,7 @@ these subjective weights:
 | Stall | 15% | 1.6–3.0 | radiology AI arrives 1.6–3× later than trend |
 | Trend | 55% | lognormal, median 1 | current pace continues |
 | Fast | 18% | 0.40–0.65 | roughly 2× faster |
-| Transformative | 12% | 0.25–0.45 + lifted ceilings | AI eventually does nearly all radiologist cognitive work; institutional lags shrink 40%; robotics still lags |
+| Transformative | 12% | 0.25–0.45 + lifted ceilings | AI eventually does nearly all radiologist cognitive work; institutional lags for tiers 2–4 shrink 40%; robotics still lags |
 
 **Shortage feedback (new in v1.1).** Version 1.0 assumed adoption speed was independent of the shortage. Now the model solves
 in two passes. Pass 1 computes the shortage path $\ln(D/S)$. Pass 2 runs the assistive and autonomous adoption clocks faster
@@ -446,7 +447,8 @@ flags.{{m('sensitivity')}}
 |---|---|---|
 | Supply growth 2023→2055, flat residency (calibration target, matched by construction) | {{chg(val['supply_flat_2055_vs_2023'], 1)}} | +25.7% [@christensen_supply] |
 | Supply growth 2023→2055, flat residency, attrition multiplier 1.2 (calibration end-point, not independent) | {{chg(val['supply_flat_2055_high_attrition'], 1)}} | +20.9% with post-COVID attrition [@rula_2026] |
-| No further AI, flat residency positions, no market response: supply ÷ demand (consistency check) | median {{num(val['noai_flat_ratio_p50']['2035'])}} (2035), {{num(val['noai_flat_ratio_p50']['2045'])}} (2045), {{num(val['noai_flat_ratio_p50']['2055'])}} (2055) | shortage "fairly static" if no action is taken [@rula_2026] |
+| Matched to the Neiman update: demographics-only demand, post-COVID attrition, flat positions, no AI: supply ÷ demand (consistency check) | median {{num(val['neiman_matched_ratio_p50']['2035'])}} (2035), {{num(val['neiman_matched_ratio_p50']['2045'])}} (2045), {{num(val['neiman_matched_ratio_p50']['2055'])}} (2055) | shortage "fairly static" if no action is taken [@rula_2026] |
+| Same, but with this model's per-person and complexity growth and blended attrition | median {{num(val['noai_flat_ratio_p50']['2035'])}} (2035), {{num(val['noai_flat_ratio_p50']['2045'])}} (2045), {{num(val['noai_flat_ratio_p50']['2055'])}} (2055) | shortage "fairly static" if no action is taken [@rula_2026] |
 | Mean career length | {{num(val['mean_career_years'], 1)}} years | 34.2–35.7 years |
 | Aggregate attrition, 2023 | {{pct(val['attrition_2023'], 1)}}/yr | 1.1% (2014) rising to 2.5% (2022) [@rula_2026] |
 | Demographic growth of imaging work, 2026→2055 | {{pct(val['demographic_growth_2026_2055_p50'], 1)}} | +16.9% to +26.9% for 2023→2055 with higher Census population [@christensen_util] |
@@ -454,9 +456,8 @@ flags.{{m('sensitivity')}}
 | Demographics × per-person imaging use, 2026→2055 | median {{pct(val['dem_util_growth_2026_2055'][1])}} (80%: {{pct(val['dem_util_growth_2026_2055'][0])}} to {{pct(val['dem_util_growth_2026_2055'][2])}}) | 2023→2055 across modalities: +16.9% to +26.9% (demographics only), −5.6% to +45.2% (recent trends to 2030) [@christensen_util]; +17% to +25% [@rula_2026] |
 | Baseline radiologist work 2026→2055, no further AI | {{chg(1 + val['baseline_no_ai_2055_p50'])}} median | Exam projections above plus work per exam (complexity); no direct benchmark |
 
-The no-AI consistency check worsens slowly (0.93 to about 0.86 by 2055) where the Neiman update calls the shortage "fairly
-static"; their projection assumes post-COVID attrition and constant per-person imaging, so the two are close but not
-identical.
+Matched to the Neiman update's assumptions, the model gives a roughly static shortage, as they do. With this model's own
+per-person and complexity growth, the no-AI shortage instead deepens slowly; the gap is entirely those demand assumptions.
 
 **A rough back-cast of the starting point.** Practicing radiologists grew about 12% from 2010 to 2022 (about 1%/yr) while
 residency positions grew about 1.9%/yr [@malhotra_2026]. If radiologist work grew 1.5–2.5%/yr over 2016–2026 (demographics,
@@ -674,7 +675,8 @@ Pinning all {{ev_n('Subjective')}} subjective parameters at their medians narrow
 Pinning the anchored parameters narrows it by {{pct(ev_shrink('Anchored', 2045))}}. No sampled input is graded purely empirical
 (the empirical anchors enter as fixed calibration targets without propagated uncertainty), so most of the spread (about two-thirds to three-quarters) comes from purely subjective inputs and nearly all of it
 involves judgment. The attribution is not additive.
-Better measurement of the inputs graded empirical barely sharpens the demand range, although two measurable quantities,
+Pinning the anchored inputs barely sharpens the demand range (and widens the 2045 supply ÷ demand interval by
+{{pct(-ev_shrink('Anchored', 2045, 'R'))}}, a sign the attribution is not additive), although two measurable quantities,
 today's per-person imaging growth and today's shortage, are large drivers of the oversupply probability and worth measuring
 better. Note that this attribution measures the width of the demand interval, not the oversupply probability. What would
 also sharpen it is information about AI, regulation and
@@ -702,7 +704,7 @@ rules) [@trustees_2026]. *Imaging growth:* centered on 1.3%/yr, nearer recent CT
 input has no factor loadings). Two *corner* sets change both AI and imaging priors at once (AI-skeptical with imaging growth; AI-bullish with imaging restraint), because
 single changes understate how far the answer can move when assumptions err in the same direction.
 
-**Alternative model structures.** The main model fixes several things by construction, so six alternatives are
+**Alternative model structures.** The main model fixes several things by construction, so {{len([k for k, v in rb['structures'].items() if k != 'base' and not v['counterfactual']])}} alternatives are
 re-simulated from the same draws:
 
 * *No radiologist on AI-first reads:* in every tier, AI-first reads need no radiologist time at all (no audit or sign-off),
@@ -719,7 +721,8 @@ re-simulated from the same draws:
 * *Transformative boost waits for regulation:* in the main model, the transformative regime raises assistive time-saving
   ceilings (interpretation up to 70%, drafting up to 90%) without passing the validation, FDA and payment pipeline that gates
   AI-first reading. That boost drives much of the transformative branch's near-certain oversupply in 2035. In this variant the
-  extra savings count as de facto autonomy and phase in only as the tier-3 pipeline clears; the 2035 headline falls from
+  extra savings count as de facto autonomy and phase in only as the tier-3 pipeline clears and hospitals adopt; the 2035
+  headline falls from
   {{pct(sm[2035]['p_oversupply'])}} to {{pct(rb['structures']['tai_gated']['2035']['p_over'])}}.
 
 **Counterfactuals: how much of the risk comes from AI?** Two further runs are not alternatives but decompositions: *no further
@@ -837,11 +840,14 @@ In order of likelihood:
   projections, not measured. The model has not been shown to reproduce 2015–2026 exam volumes, work RVUs and workforce counts;
   doing so would strengthen the baseline. A milder starting shortage (0.96) raises the 2045 oversupply probability from about
   {{pct(sm[2045]['p_oversupply'])}} to {{pct(tor["Today's shortage (2026 S/D)"]['pOver2045_high'])}}.
-* **Tier-1 timing.** Tier-1 capability is centered on 2025, later than the European evidence (CE marking 2022) implies; with
-  capability in 2022 the model's own lags would make FDA authorization before late 2026 about as likely as not, which has not
-  happened, suggesting the validation and FDA lags may be short. The archived predictions (§10.1) are conditioned on that
-  non-event.
-* **Structure is only partly tested.** §8.4 tests six alternative structures; others are untested.
+* **Tier-1 timing and conditioning.** Tier-1 capability is centered on 2025, later than the European evidence (CE marking 2022)
+  implies; with capability in 2022 the model's own lags would make FDA authorization before late 2026 about as likely as not,
+  which has not happened, suggesting the validation and FDA lags may be short and thin-tailed: the model cannot represent an
+  authorization pathway that stays closed for many years, so the archived FDA and payment predictions (§10.1) partly test those
+  tails. All results drop the {{pct(1 - n_sims / n_drawn, 1)}} of futures already contradicted by events (an FDA-authorized
+  autonomous radiology read before October 2026), which lowers the effective transformative-AI weight to
+  {{pct(rg['Transformative']['weight'])}}.
+* **Structure is only partly tested.** §8.4 tests {{len([k for k, v in rb['structures'].items() if k != 'base' and not v['counterfactual']])}} alternative structures; others are untested.
 * **The shortage feedback is a one-step approximation** of a coupled system, with a subjective strength.
 * **The regimes are coarse.** The transformative branch is a stylization of a world far stranger than any parameter change
   can capture.
@@ -862,8 +868,8 @@ outside forecasters with a prespecified procedure; (4) score the archived predic
 ### 10.1 Prospective tracking
 
 Each release archives near-term, checkable predictions in `outputs/predictions/` so the forecast can be scored later.
-They are conditioned on what is already known ({{x['predictions_meta']['conditioned_on']}}; {{pct(x['predictions_meta']['share_of_draws_kept'])}}
-of draws), state how they will be resolved, and will be scored by {{x['predictions_meta']['scoring']}}. This release's are:
+Like every result in this report, they are conditioned on what is already known
+({{x['predictions_meta']['conditioned_on']}}), state how they will be resolved, and will be scored by {{x['predictions_meta']['scoring']}}. This release's are:
 
 {{predictions_md()}}
 
