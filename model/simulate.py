@@ -92,22 +92,33 @@ COHORT_2023 = initial_cohorts()
 
 
 # ----------------------------------------------------------------------------------------------- main simulation
-def simulate(s: dict) -> dict:
+STRUCTURES = {
+    "base": "Main model",
+    "no_signoff": "Some reads need no radiologist: AI-first tier 1–2 reads take zero radiologist time",
+    "unordered": "Tiers automated in any order, with equally hard regulation",
+    "open_demand": "Much larger unforeseen new demand (3× new applications, 2× new radiologist tasks)",
+    "payer_pushback": "Stronger payer pushback (2× AI utilization management and scope shift)",
+}
+
+
+def simulate(s: dict, structure: str = "base") -> dict:
     """Two-pass solve. Pass 1 runs with AI adoption on calendar time and yields the shortage path ln(D/S).
     Pass 2 re-runs with adoption clocks that run faster while demand exceeds supply (practices adopt
     labour-saving AI faster when radiologists are scarce): one fixed-point iteration of the coupled system."""
     n = len(s["dem_rate"])
-    first = _simulate_once(s, np.zeros((n, T)))
+    first = _simulate_once(s, np.zeros((n, T)), structure)
     pressure = np.maximum(0.0, np.log(first["D_abs"] / first["S_fte"]))
     press_cum = np.zeros_like(pressure)
     press_cum[:, 1:] = np.cumsum(pressure[:, :-1], axis=1)  # lagged one year
-    out = _simulate_once(s, press_cum)
+    out = _simulate_once(s, press_cum, structure)
     out["pressure_pass1"] = pressure
     out["Sd"] = out["R"] * out["D"]  # supply in units of 2026 demand: lines cross where supply = demand
     return out
 
 
-def _simulate_once(s: dict, press_cum: np.ndarray) -> dict:
+def _simulate_once(s: dict, press_cum: np.ndarray, structure: str = "base") -> dict:
+    """`structure` switches between the main model and the alternative structures in STRUCTURES."""
+    assert structure in STRUCTURES, structure
     n = len(s["dem_rate"])
     t = YEARS[None, :].astype(float)
     dt = t - 2026.0
@@ -162,14 +173,23 @@ def _simulate_once(s: dict, press_cum: np.ndarray) -> dict:
     w = [col("w1"), col("w2"), col("w3")]
     w.append(np.maximum(0.0, 1.0 - w[0] - w[1] - w[2]))
     tcap = [col("tcap1_T0"), scaled("tcap2_T0"), scaled("tcap3_T0"), scaled("tcap4_T0")]
+    mult_val, mult_fda, mult_pay = TIER_VAL_MULT, TIER_FDA_MULT, TIER_PAY_MULT
+    if structure == "unordered":
+        # no universal difficulty ladder: each future assigns the four capability dates to tiers in random order,
+        # and validation, FDA and payment are equally hard for every tier
+        perm = np.random.default_rng(11).permuted(np.tile(np.arange(4), (n, 1)), axis=1)
+        tcap4 = np.take_along_axis(np.hstack(tcap), perm, axis=1)
+        tcap = [tcap4[:, j:j + 1] for j in range(4)]
+        mult_val, mult_fda, mult_pay = (np.full(4, m.mean()) for m in (TIER_VAL_MULT, TIER_FDA_MULT, TIER_PAY_MULT))
     auto = np.zeros_like(t * M)
+    auto_parts = []
     ready, stage = [], []
     lag_mult = 1 - (1 - TAI_LAG_MULT) * tai
     ahalf = col("ahalf") * (1 - (1 - TAI_ADOPT_MULT) * tai)
     for j in range(4):
-        lv = col("lval") * TIER_VAL_MULT[j] * lag_mult
-        lf = col("lfda") * TIER_FDA_MULT[j] * lag_mult
-        lp = col("lpay") * TIER_PAY_MULT[j] * lag_mult
+        lv = col("lval") * mult_val[j] * lag_mult
+        lf = col("lfda") * mult_fda[j] * lag_mult
+        lp = col("lpay") * mult_pay[j] * lag_mult
         rj = tcap[j] + lv + lf + lp
         ready.append(rj)
         stage.append(np.hstack([tcap[j], tcap[j] + lv, tcap[j] + lv + lf, rj, rj + ahalf]))
@@ -178,13 +198,18 @@ def _simulate_once(s: dict, press_cum: np.ndarray) -> dict:
         idx = np.clip(np.floor(rj[:, 0] - 2026).astype(int), 0, T - 1)
         pc_ready = np.where(rj[:, 0] < 2026, 0.0, press_cum[np.arange(n), idx])[:, None]
         tau_j = (t - rj) + kappa_a * np.maximum(0.0, press_cum - pc_ready) * (t >= rj)
-        auto = auto + w[j] * amax * logistic(tau_j, ahalf, col("awidth"))
+        part = w[j] * amax * logistic(tau_j, ahalf, col("awidth"))
+        auto_parts.append(part)
+        auto = auto + part
     out["auto"] = auto
     out["stages"] = np.stack(stage, axis=1)  # (n, tier, [capability, validated, FDA, paid/liability, 50% adoption])
 
     fsub = lift(col("f_sub"), TAI_FSUB)
-    iI = col("s_interp") * ((1 - auto) * (1 - sig["interp"]) + auto * (1 - fsub))
-    iD = col("s_draft") * ((1 - auto) * (1 - sig["draft"]) + auto * (1 - fsub))
+    # radiologist time left on AI-first studies (share of interpretive work); zero for tiers 1-2 under "no_signoff"
+    fsub_t = [np.ones_like(fsub) if (structure == "no_signoff" and j < 2) else fsub for j in range(4)]
+    resid = sum(auto_parts[j] * (1 - fsub_t[j]) for j in range(4))
+    iI = col("s_interp") * ((1 - auto) * (1 - sig["interp"]) + resid)
+    iD = col("s_draft") * ((1 - auto) * (1 - sig["draft"]) + resid)
     iC = col("s_consult") * (1 - sig["consult"])
     iA = col("s_admin") * (1 - sig["admin"])
     iP = col("s_proc") * (1 - sig["proc"])
@@ -198,7 +223,8 @@ def _simulate_once(s: dict, press_cum: np.ndarray) -> dict:
     thru = col("thru_H") * logistic(t, scaled("thru_T0"), 3.0 * sqM)
     price_cut = col("pass_through") * (col("pc_share") * (1 - tau) + (1 - col("pc_share")) * 0.5 * thru / (1 + thru))
     J_price = (1 - price_cut) ** col("elasticity") - 1
-    new_max = col("new_max") * (1 + (TAI_NEW_MULT - 1) * tai)
+    k_new, k_nt, k_um = {"open_demand": (3.0, 2.0, 1.0), "payer_pushback": (1.0, 1.0, 2.0)}.get(structure, (1.0, 1.0, 1.0))
+    new_max = k_new * col("new_max") * (1 + (TAI_NEW_MULT - 1) * tai)
     J_new = col("lambda_new") * new_max * logistic(t, scaled("new_T0"), col("new_width") * sqM)
     J_inc = col("iota") * adopt * cap["interp"]
     J_lat = col("latent") * thru / col("thru_H")
@@ -207,10 +233,10 @@ def _simulate_once(s: dict, press_cum: np.ndarray) -> dict:
     capacity = thru + col("cap_invest") * dt / 40 + 0.02
     G = G_pot * (1 + (G_pot / capacity) ** 4) ** -0.25  # smooth min(G_pot, capacity)
     share = np.divide(G, G_pot, out=np.zeros_like(G), where=G_pot > 1e-12)
-    J_um = col("um_max") * adopt
-    J_scope = col("scope_max") * (1 + (TAI_SCOPE_MULT - 1) * tai) * logistic(t, ready[1], 4.0)
+    J_um = k_um * col("um_max") * adopt
+    J_scope = k_um * col("scope_max") * (1 + (TAI_SCOPE_MULT - 1) * tai) * logistic(t, ready[1], 4.0)
     J = G - J_um - J_scope
-    NT = col("nt_max") * logistic(t, col("adopt_mid") + 8.0, 4.0)
+    NT = k_nt * col("nt_max") * logistic(t, col("adopt_mid") + 8.0, 4.0)
     out["thru"] = thru
     out["capacity_bind"] = 1 - share  # fraction of potential induced exams blocked by capacity
 

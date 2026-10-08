@@ -1,0 +1,112 @@
+"""How much do the headline probabilities depend on our choices?
+
+Three kinds of uncertainty are kept apart:
+
+* Monte Carlo (numerical) error: sampling noise from using a finite number of simulated futures. Tiny.
+* Prior choice: the same model with different, separately motivated assumptions about the most subjective inputs.
+  Implemented by importance-reweighting the main run (no re-simulation), so the futures are identical and only
+  their weights change.
+* Model structure: alternative equations for things the main model fixes by construction (no-sign-off autonomy,
+  unordered automation, extra demand channels, payer pushback). Implemented by re-simulating.
+
+The resulting range is a sensitivity band, not a confidence interval: it shows how far defensible alternative
+choices move the answer.
+"""
+from __future__ import annotations
+
+import numpy as np
+
+from .params import PARAM_INDEX
+from .sampling import sample
+from .simulate import STRUCTURES, YEARS, simulate
+
+OVERSUPPLY = 1.10
+YRS = (2030, 2035, 2045, 2055, 2066)
+BASE_W = np.array([0.15, 0.55, 0.18, 0.12])
+
+PRIOR_SETS = {
+    "main": dict(label="This site's assumptions", weights=BASE_W, util=None,
+                 note="Regime weights 15/55/18/12; imaging growth per person starts near 1.2%/yr.", sources=[]),
+    "ai_skeptic": dict(label="AI-skeptical", weights=np.array([0.30, 0.55, 0.12, 0.03]), util=None,
+                       note="Forecasting panels put far lower odds on rapid, transformative AI than AI-lab leaders do.",
+                       sources=["leap_2025", "karger_2023"]),
+    "ai_bullish": dict(label="AI-bullish", weights=np.array([0.05, 0.35, 0.30, 0.30]), util=None,
+                       note="Closer to AI-lab leaders and the AI 2027 scenario: fast or transformative AI in 60% of futures.",
+                       sources=["ai2027", "metr_2026"]),
+    "imaging_restraint": dict(label="Imaging restraint", weights=BASE_W, util=(0.6, 0.6),
+                              note="Imaging per person grows ~0.6%/yr (payer and Medicare cost pressure, appropriateness rules).",
+                              sources=["trustees_2026"]),
+    "imaging_growth": dict(label="Imaging growth", weights=BASE_W, util=(1.8, 0.8),
+                           note="Imaging per person grows ~1.8%/yr, nearer recent CT growth.",
+                           sources=["smith_bindman_2025", "rosenkrantz_2025"]),
+}
+
+
+def _wquantile(x, w, q):
+    i = np.argsort(x)
+    c = np.cumsum(w[i])
+    return float(x[i][np.searchsorted(c, q * c[-1])])
+
+
+def _metrics(o, w):
+    w = w / w.sum()
+    yi = {y: int(y - YEARS[0]) for y in YRS}
+    ess = 1.0 / np.sum(w ** 2)
+    out = {"ess": float(ess)}
+    for y in YRS:
+        i = yi[y]
+        p = float(np.sum(w * (o["R"][:, i] > OVERSUPPLY)))
+        out[str(y)] = {
+            "p_over": p,
+            "se": float(np.sqrt(p * (1 - p) / ess)),
+            "p_short10": float(np.sum(w * (o["R"][:, i] < 0.9))),
+            "p_below_today": float(np.sum(w * (o["D"][:, i] < 1.0))),
+            "p_below_50": float(np.sum(w * (o["D"][:, i] < 0.5))),
+            "p_jevons": float(np.sum(w * o["jevons"][:, i])),
+            "D_p50": _wquantile(o["D"][:, i], w, 0.5),
+        }
+    return out
+
+
+def _util_density(x, mu, sd):
+    return np.exp(-0.5 * ((x - mu) / sd) ** 2) / sd
+
+
+def prior_sets(s, o):
+    """Importance-reweight the main run to each alternative prior set."""
+    reg = o["regime"]
+    freq = np.bincount(reg, minlength=4) / len(reg)
+    base_u = PARAM_INDEX["util_g0"].args
+    res = {}
+    for key, ps in PRIOR_SETS.items():
+        w = ps["weights"][reg] / freq[reg]
+        if ps["util"]:
+            mu, sd = ps["util"]
+            w = w * _util_density(s["util_g0"], mu, sd) / _util_density(s["util_g0"], base_u["mu"], base_u["sd"])
+        res[key] = {"label": ps["label"], "note": ps["note"], "sources": ps["sources"], **_metrics(o, w)}
+    return res
+
+
+STRUCT_SHORT = {"base": "Main model", "no_signoff": "No radiologist on tier 1–2 AI reads", "unordered": "Tiers automated in any order",
+                "open_demand": "3× unforeseen new demand", "payer_pushback": "Stronger payer pushback"}
+
+
+def structures(n: int = 20000, seed: int = 20261007):
+    """Re-simulate the same sampled futures under each alternative model structure."""
+    s = sample(n, seed=seed)
+    res = {}
+    for key, label in STRUCTURES.items():
+        o = simulate(s, structure=key)
+        res[key] = {"label": STRUCT_SHORT[key], "detail": label, **_metrics(o, np.ones(n))}
+    return res
+
+
+def run(s, o, n: int = 20000, seed: int = 20261007) -> dict:
+    pri = prior_sets(s, o)
+    st = structures(n, seed)
+    band = {}
+    for y in YRS:
+        vals = [v[str(y)]["p_over"] for v in pri.values()] + [v[str(y)]["p_over"] for v in st.values()]
+        jev = [v[str(y)]["p_jevons"] for v in pri.values()] + [v[str(y)]["p_jevons"] for v in st.values()]
+        band[str(y)] = {"lo": min(vals), "hi": max(vals), "jev_lo": min(jev), "jev_hi": max(jev)}
+    return {"priors": pri, "structures": st, "band": band, "n": n}

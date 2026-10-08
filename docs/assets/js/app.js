@@ -20,7 +20,7 @@
   const BT = F.backtest;
   const ROOT = { F, SUM, JEV, REG, X, VAL: F.validation, BT };
   const FMT = { pct: fmt.pct, pct1: fmt.pct1, x2: fmt.x2, chg: fmt.chg, mult: fmt.mult, int: (v) => d3.format(",.0f")(v),
-    r100: (v) => d3.format(",.0f")(Math.round(v / 100) * 100), gr: (v) => fmt.pct(v - 1),
+    r100: (v) => d3.format(",.0f")(Math.round(v / 100) * 100), gr: (v) => fmt.pct(v - 1), pp: (v) => (v * 100).toFixed(1) + " percentage points",
     yr: (v) => String(Math.round(v)) };
   const $ = (s) => document.querySelector(s);
   const has = (s) => !!document.querySelector(s);
@@ -474,6 +474,7 @@
       ["P(demand < 2026)", ys.map((y) => fmt.pct(SUM[y].p_demand_below_today))], ["P(demand < 80% of 2026)", ys.map((y) => fmt.pct(SUM[y].p_demand_below_80))],
       ["P(demand < 50% of 2026)", ys.map((y) => fmt.pct(SUM[y].p_demand_below_50))],
       ["<b>P(meaningful oversupply)</b>", ys.map((y) => `<b>${fmt.pct(SUM[y].p_oversupply)}</b>`)],
+      ["  range under alternative priors and structures", ys.map((y) => F.robust && F.robust.band[y] ? `${fmt.pct(F.robust.band[y].lo)}–${fmt.pct(F.robust.band[y].hi)}` : "–")],
       ["P(severe oversupply, supply ÷ demand > 1.25)", ys.map((y) => fmt.pct(SUM[y].p_severe_oversupply))],
       ["P(supply exceeds demand)", ys.map((y) => fmt.pct(SUM[y].p_supply_exceeds_demand))],
       ["P(meaningful shortage, supply ÷ demand < 0.90)", ys.map((y) => fmt.pct(SUM[y].p_shortage_10))]];
@@ -545,6 +546,22 @@
     const colors = [c.d, c.s, c.a, c.y, c.m, c.g, c.r];
     Charts.stacked("#compChart", { years, height: 360, yDomain: [0, 1], yFmt: d3.format(".0%"), valueFmt: d3.format(".0%"), yLabel: "Share of working time (mean)",
       layers: keys.map((k, i) => ({ label: F.composition_labels[k], values: F.composition[k], color: colors[i] })) });
+  }
+
+  // ------------------------------------------------------------------ robustness: prior sets and model structures
+  function robustTable() {
+    const t = $("#robustTable");
+    if (!t || !F.robust) return;
+    const R = F.robust, ys = ["2035", "2045", "2055"];
+    const row = (v, kind) => `<tr><td>${v.label}${kind ? `<div class="muted small">${kind}</div>` : ""}</td>` +
+      ys.map((y) => `<td class="num">${fmt.pct(v[y].p_over)}</td>`).join("") + `<td class="num">${fmt.pct(v["2045"].p_jevons)}</td></tr>`;
+    const pri = Object.entries(R.priors).map(([k, v]) => row(v, k === "main" ? "main model" : v.note)).join("");
+    const st = Object.entries(R.structures).filter(([k]) => k !== "base").map(([, v]) => row(v, v.detail)).join("");
+    const band = `<tr><td><b>Range across all rows</b></td>${ys.map((y) => `<td class="num"><b>${fmt.pct(R.band[y].lo)}–${fmt.pct(R.band[y].hi)}</b></td>`).join("")}` +
+      `<td class="num"><b>${fmt.pct(R.band["2045"].jev_lo)}–${fmt.pct(R.band["2045"].jev_hi)}</b></td></tr>`;
+    t.innerHTML = `<thead><tr><th>Assumption set or model structure</th>${ys.map((y) => `<th class="num">P(oversupply) ${y}</th>`).join("")}<th class="num">P(Jevons) 2045</th></tr></thead>
+      <tbody><tr><td colspan="5" class="muted small"><b>Different priors</b> (same model, reweighted futures)</td></tr>${pri}
+      <tr><td colspan="5" class="muted small"><b>Different model structures</b> (main priors, re-simulated)</td></tr>${st}${band}</tbody>`;
   }
 
   // ------------------------------------------------------------------ careers
@@ -713,20 +730,19 @@
     stageUI();
     heroChart(); dashChart(); careerTrack(); setYear(curYear, curTag);
     diagram(); regimeChart(); backtestChart(); forecastCharts(); headlineTable(); aiCharts(); jevonsCharts();
-    tornadoChart(); etaChart(); evidenceChart(); compChart(); careerTable(); horizon(); explorerRender();
+    tornadoChart(); etaChart(); evidenceChart(); compChart(); careerTable(); horizon(); explorerRender(); robustTable();
   }
   signposts(); paramTable();
   renderAll();
   cite();
 
   if (has("#themeBtn")) $("#themeBtn").addEventListener("click", () => {
-    const cur = document.documentElement.dataset.theme || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+    const cur = document.documentElement.dataset.theme === "dark" ? "dark" : "light"; // light unless the reader chose dark
     const next = cur === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = next;
     try { localStorage.setItem("theme", next); } catch (e) { /* storage unavailable */ }
     renderAll();
   });
-  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", renderAll);
   let rw = 0, lastW = window.innerWidth;
   window.addEventListener("resize", () => { if (Math.abs(window.innerWidth - lastW) < 40) return; lastW = window.innerWidth; clearTimeout(rw); rw = setTimeout(renderAll, 200); });
   const prog = $("#progress");

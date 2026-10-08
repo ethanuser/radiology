@@ -9,7 +9,9 @@ Interactive version: <https://ethanuser.github.io/radiology/> · Code and data: 
 > (for example <sup>§4.3</sup>) link each claim to the method or evidence behind it, and numbered superscripts link to references.
 > Each reference has ↩ links back to every place it is cited, and your browser's Back button returns you to where you were.
 > The model and text were drafted with an AI assistant (Claude, Anthropic) from the cited sources and should be read
-> critically. This is a forecast, not career, financial or medical advice.
+> critically. This is a forecast, not career, financial or medical advice. The probabilities are conditional on the model's
+> assumptions: read them as structured, model-based judgment (a scenario analysis with explicit weights), not as a calibrated
+> statistical forecast. §8.4 shows how much they move under alternative assumptions and model structures.
 
 ---
 
@@ -52,21 +54,29 @@ for imaging), and propagated through {{f"{n_sims:,}"}} simulated futures.{{m('un
    reading reaches a median {{pct(sm[2045]['autonomous_p50'])}} of interpretive work by 2045. For each tier of exam
    difficulty, the chain from technical capability to clinical validation, FDA authorization, liability and payment
    acceptance, and hospital adoption takes one to two decades.{{m('aiprod')}}{{m('pipeline')}}
-5. **A true Jevons paradox is unlikely.** AI-induced demand (cheaper and faster reads, new applications, follow-up of
-   AI-detected findings, scanner throughput, new radiologist tasks) offsets a median {{pct(jv[2045]['offset_p50'])}} of the
-   labor AI saves by 2045, but exceeds it in only {{pct(jv[2045]['p_jevons'])}} of simulated futures.{{m('jevres')}}
+5. **A true Jevons paradox is unlikely under the main assumptions, but this depends on the demand channels assumed.**
+   AI-induced demand (cheaper and faster reads, new applications, follow-up of AI-detected findings, scanner throughput, new
+   radiologist tasks) offsets a median {{pct(jv[2045]['offset_p50'])}} of the labor AI saves by 2045 and exceeds it in only
+   {{pct(jv[2045]['p_jevons'])}} of simulated futures. If AI creates three times as much new imaging as assumed, that rises to
+   {{pct(rb['structures']['open_demand']['2045']['p_jevons'])}}.{{m('jevres')}}{{m('robust')}}
 6. **What drives the forecast:** the AI-progress regime and future per-capita imaging use. Regulatory delay, new
    applications and scanner throughput are second-order. Residency adjustment matters only over 20+ years. About half the
    spread comes from parameters graded subjective.{{m('sensitivity')}}
-7. **For practicing radiologists, AI risk shows up mainly as slower hiring of new graduates, flatter pay and a changed job,
-   not unemployment.** Attrition of about {{pct(val['attrition_2023'], 1)}} of the workforce a year absorbs gradual declines.
+7. **For practicing radiologists, AI risk would most likely show up as slower hiring of new graduates, flatter pay and a
+   changed job, not unemployment.** The model forecasts only the supply/demand balance; the split between hiring, pay and hours
+   is an interpretation from past gluts, not a model output. Attrition of about {{pct(val['attrition_2023'], 1)}} of the workforce a year absorbs gradual declines.
    Demand falls faster than attrition over some five-year window after 2035 in
    {{pct(x['displacement']['p_any_decline_faster_than_attrition_2035_2066'])}} of futures, and in
    {{pct(x['displacement']['p_any_decline_faster_than_attrition_non_tai'], 1)}} outside the transformative branch.{{m('margins')}}
-8. **The method passes a simple backtest.** Run from 2016 with only the information then available, the same approach gave a
+8. **The method passes a simple backtest.** Run from 2016 with only the information then available, a simplified version of the approach gave a
    {{pct(bt['radiology']['p_shortage'])}} chance of the radiologist shortage observed in 2025, and for software developers,
    translators and medical transcriptionists it was slightly more accurate than BLS projections and trend extrapolation,
    with all three outcomes inside its 80% intervals. Four cases are a sanity check, not proof of skill.{{m('backtest')}}
+9. **The direction is robust; the exact numbers are not.** Under four alternative prior sets and four alternative model
+   structures (including reads with no radiologist and automation that does not follow a difficulty ladder), the 2045
+   oversupply probability ranges from {{pct(rb['band']['2045']['lo'])}} to {{pct(rb['band']['2045']['hi'])}} (main model
+   {{pct(sm[2045]['p_oversupply'])}}). Every variant agrees that near-term risk is low to moderate and rises over a
+   career.{{m('robust')}}
 
 **By career stage** (details in §9{{m('careers')}}):
 
@@ -411,7 +421,9 @@ Calibration checks show that the model reproduces published projections; they do
 To test that, we set the clock back to 2016 and forecast employment in 2025 using only information available then. 2016 is a
 natural start: it is the year of Hinton's "stop training radiologists" remark and of large-scale neural machine translation.
 
-**Protocol** (fixed before computing outcomes and applied the same way to every case; code in `model/backtest.py`):
+**Protocol** (fixed before computing outcomes and applied the same way to every case; code in `model/backtest.py`). The
+backtest replays a simplified version of the method, with the same structure and AI-regime mixture but a generic
+task-exposure model, rather than the full radiology model:
 
 * *Baseline (non-AI) growth* is an equal-weight combination of the BLS 2016–26 projection and the prior decade's trend. Their
   disagreement sets the baseline uncertainty [@clemen_1989].
@@ -587,6 +599,48 @@ Pinning the anchored parameters narrows it by {{pct(ev_shrink('Anchored', 2045))
 Better measurement of the past barely sharpens this forecast. What would sharpen it is information about AI, regulation and
 future imaging use, which is why §9.3 is framed around signposts.
 
+{{anchor('robust')}}
+### 8.4 Beyond parameter uncertainty: alternative priors and model structures
+
+A Monte Carlo simulation propagates uncertainty *within* a model. More simulations reduce numerical noise, but they cannot
+correct errors shared by every simulated future, and possibilities the equations exclude contribute nothing. We therefore
+separate three kinds of uncertainty:
+
+1. **Numerical (Monte Carlo) error.** With {{f"{n_sims:,}"}} futures, the standard error of a probability near 30% is about
+   {{pct(rb['priors']['main']['2045']['se'], 1)}}. Negligible.
+2. **Parameter uncertainty.** The distributions in Appendix A; everything in §7 reflects it.
+3. **Choice of priors and of model structure.** Tested here.
+
+**Alternative prior sets.** The same simulated futures are importance-reweighted so that the most consequential subjective
+inputs follow different, separately motivated priors (effective sample sizes stay above 12,000). *AI-skeptical:* regime
+weights 30/55/12/3, in the spirit of forecasting panels that put far lower odds on rapid transformative AI than AI-lab
+leaders [@leap_2025; @karger_2023]. *AI-bullish:* 5/35/30/30, closer to AI-lab leaders and the AI 2027 scenario [@ai2027;
+@metr_2026]. *Imaging restraint:* per-capita imaging growth centered on 0.6%/yr (Medicare cost pressure, appropriateness
+rules) [@trustees_2026]. *Imaging growth:* centered on 1.8%/yr, nearer recent CT growth [@smith_bindman_2025; @rosenkrantz_2025].
+
+**Alternative model structures.** The main model fixes several things by construction, so four alternatives are
+re-simulated from the same draws:
+
+* *No radiologist on tier 1–2 AI reads:* AI-first reads of radiographs and screening exams need no radiologist time at all,
+  rather than about a fifth of the usual time.
+* *Tiers automated in any order:* capability dates are assigned to tiers at random in each future and regulatory lags are
+  equal across tiers, so AI may master some complex CT tasks before simpler radiographs.
+* *3× unforeseen new demand:* three times the new AI-enabled applications and twice the new radiologist tasks, standing in
+  for channels such as image-derived biomarkers that are hard to forecast from current utilization.
+* *Stronger payer pushback:* twice the AI-enabled utilization management and scope shift to other clinicians.
+
+![Figure 14. P(meaningful oversupply) in 2035, 2045 and 2055 under alternative prior sets and model structures.](figures/fig14_robustness.png)
+
+{{robust_md()}}
+
+The qualitative conclusions survive every variant: oversupply risk is low to moderate in 2035 and rises over a career, and
+regulation and adoption lags matter. The quantitative ones do not: the 2045 oversupply probability spans
+{{pct(rb['band']['2045']['lo'])}}–{{pct(rb['band']['2045']['hi'])}}, driven mostly by the AI and imaging-growth priors. The structural variants
+move it less, except that the Jevons result is fragile: with three times the new demand, a true Jevons paradox occurs in
+{{pct(rb['structures']['open_demand']['2045']['p_jevons'])}} of futures in 2045. These bands are sensitivity ranges, not
+confidence intervals; no variant was fitted to data, and others (a wage-and-hours labor market, regional markets) remain
+untested.
+
 ---
 
 {{anchor('careers')}}
@@ -617,7 +671,8 @@ In order of likelihood:
 3. **Hiring of new graduates.** In surplus worlds, the first adjustment is fewer openings and residency cuts, as in the
    mid-1990s and mid-2010s [@rosenkrantz_2016; @shi_2015]. In other AI-exposed occupations, early-career employment fell first
    while experienced workers were unaffected [@canaries_2025].
-4. **Compensation.** Shortage-driven pay growth would flatten or reverse once the ratio exceeds 1. If AI automates mostly the
+4. **Compensation.** Shortage-driven pay growth would likely flatten or reverse once the ratio exceeds 1, although
+   reimbursement changes could pass part of the productivity gain to hospitals or insurers instead. If AI automates mostly the
    routine parts of the job, the remaining work becomes more expert, which tends to support pay but reduce headcount
    [@autor_thompson_2025]. Pay is not modeled explicitly.
 5. **Unemployment of practicing radiologists** (least likely). Demand falls faster than attrition in some five-year window
@@ -645,13 +700,22 @@ In order of likelihood:
 
 * **National aggregate.** The model has no geography, subspecialty mix, practice type or teleradiology. The shortage is local
   and uneven [@rula_2026; @zamani_2026].
-* **No wage or hours equilibrium.** $R$ is a pressure indicator, not an unemployment rate.
+* **No wage, hours or reimbursement equilibrium.** $R$ is a pressure indicator, not an unemployment rate. A 30% productivity
+  gain could show up as fewer hires, shorter hours, lower pay, shorter backlogs or lower prices; the model does not choose
+  among these, and statements about pay and hiring are interpretations.
+* **The starting point is a judgment.** The 2026 ratio (median 0.93) is inferred from pay, vacancies, workload and workforce
+  projections, not measured. The model has not been shown to reproduce 2015–2026 exam volumes, work RVUs and workforce counts;
+  doing so would strengthen the baseline. A milder starting shortage (0.96) raises the 2045 oversupply probability from about
+  {{pct(sm[2045]['p_oversupply'])}} to {{pct(tor["Today's shortage (2026 S/D)"]['pOver2045_high'])}}.
+* **Structure is only partly tested.** §8.4 tests four alternative structures; others are untested.
 * **The shortage feedback is a one-step approximation** of a coupled system, with a subjective strength.
 * **The regimes are coarse.** The transformative branch is a stylization of a world far stranger than any parameter change
   can capture.
 * **Subjective parameters dominate the spread** (§8.3).
 * **Data definitions differ** (Medicare-enrolled radiologists vs AAMC counts; exams vs RVUs).
-* **Limited validation.** The 2016→2025 backtest (§6.2) covers four cases over nine years; the forecast runs 40 years.
+* **Limited validation.** The 2016→2025 backtest (§6.2) covers four cases over nine years with a simplified version of the
+  method; the forecast runs 40 years. Several start dates, a larger reference class and prospectively recorded forecasts
+  would be stronger.
 * **Recent sources.** Several key sources are preprints, conference results or trade-press summaries. Some JACR figures come
   from abstracts.
 

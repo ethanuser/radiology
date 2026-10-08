@@ -13,7 +13,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from model import analysis, backtest, export_web, plots
+from model import analysis, backtest, export_web, plots, robustness
 from model.params import PARAMS, evidence_counts
 
 ROOT = Path(__file__).parent
@@ -48,6 +48,7 @@ def main():
     val = analysis.validation(s, o)
     extra = analysis.extra_metrics(s, o)
     bt = backtest.run_backtest()
+    rb = robustness.run(s, o, args.n, args.seed)
 
     out = ROOT / "outputs"
     out.mkdir(exist_ok=True)
@@ -62,6 +63,7 @@ def main():
     (out / "validation.json").write_text(json.dumps(val, indent=2, default=float))
     (out / "extra_metrics.json").write_text(json.dumps(extra, indent=2, default=float))
     (out / "backtest.json").write_text(json.dumps(bt, indent=2, default=float))
+    (out / "robustness.json").write_text(json.dumps(rb, indent=2, default=float))
     (out / "parameters.md").write_text(params_markdown())
     for k in ("D", "S", "R", "P", "auto"):
         q = np.percentile(o[k], [5, 10, 25, 50, 75, 90, 95], axis=0)
@@ -70,6 +72,7 @@ def main():
 
     plots.make_all(s, o, probs, tor, eta, ev, ROOT / "figures", eta_ntai=eta_ntai)
     plots.fig_backtest(bt, ROOT / "figures")
+    plots.fig_robustness(rb, ROOT / "figures")
     fj = export_web.forecast_json(s, o, summary, probs, jev, regimes, tor, eta, ev, val)
     fj["eta2_excluding_transformative"] = [
         {k: (export_web._r(r[k]) if k not in ("param", "label", "short", "evidence") else r[k])
@@ -78,6 +81,7 @@ def main():
     fj["evidence_counts"] = evidence_counts()
     fj["extra"] = json.loads(json.dumps(extra, default=float))
     fj["backtest"] = json.loads(json.dumps(bt, default=float))
+    fj["robust"] = json.loads(json.dumps(rb, default=lambda v: v.tolist() if hasattr(v, "tolist") else float(v)))
     export_web.write(ROOT / "docs" / "data", fj, export_web.samples_json(s, o))
     print(f"done in {time.time() - t0:.1f}s  ->  outputs/, figures/, docs/data/")
     with pd.option_context("display.width", 200, "display.max_columns", 50):

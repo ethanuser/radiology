@@ -103,3 +103,29 @@ def test_every_reference_has_link_and_formats():
     for k in REFERENCES:
         assert href(k).startswith("http"), k
         assert format_ama(k, "md") and format_ama(k, "html")
+
+
+def test_alternative_structures():
+    """Alternative structures run, the default is unchanged, and each moves the result in the expected direction."""
+    from model.sampling import sample
+    from model.simulate import simulate
+    s = sample(3000, seed=5)
+    base, base2 = simulate(s), simulate(s, structure="base")
+    assert np.allclose(base["D"], base2["D"])
+    nos = simulate(s, structure="no_signoff")
+    assert (nos["time_saved"] >= base["time_saved"] - 1e-12).all()  # removing sign-off can only save more time
+    opn = simulate(s, structure="open_demand")
+    assert opn["jevons"][:, -1].mean() >= base["jevons"][:, -1].mean()
+    pay = simulate(s, structure="payer_pushback")
+    assert np.median(pay["D"][:, -1]) <= np.median(base["D"][:, -1])
+    unord = simulate(s, structure="unordered")
+    assert np.isfinite(unord["D"]).all()
+
+
+def test_prior_reweighting_main_is_identity():
+    from model import analysis, robustness
+    s, o = analysis.run(3000, seed=9)
+    pri = robustness.prior_sets(s, o)
+    p = (o["R"][:, 2045 - 2026] > 1.10).mean()
+    assert abs(pri["main"]["2045"]["p_over"] - p) < 0.01  # main weights ≈ sampled regime frequencies
+    assert pri["ai_bullish"]["2045"]["p_over"] > pri["ai_skeptic"]["2045"]["p_over"]

@@ -21,20 +21,7 @@
   --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --mono: ui-monospace, "SF Mono", Menlo, monospace;
 }
-@media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) {
-    color-scheme: dark;
-    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232321;
-    --ink: #ffffff; --ink-2: #c3c2b7; --muted: #898781; --grid: #2c2c2a; --axis: #383835;
-    --border: rgba(255, 255, 255, 0.10);
-    --s1: #3987e5; --s2: #d95926; --s3: #199e70; --s4: #c98500;
-    --s5: #d55181; --s6: #008300; --s7: #9085e9; --s8: #e66767;
-    --ramp-1: #184f95; --ramp-2: #256abf; --ramp-3: #5598e7; --ramp-4: #9ec5f4;
-    --good-text: #0ca30c;
-    --accent-wash: rgba(57, 135, 229, 0.16);
-    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35);
-  }
-}
+/* light is the default; dark mode only when the reader chooses it with the toggle (data-theme="dark") */
 :root[data-theme="dark"] {
   color-scheme: dark;
   --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232321;
@@ -178,7 +165,6 @@ tbody tr:hover td { background: var(--accent-wash); }
 .grade.A { background: var(--accent-wash); color: var(--accent); }
 .grade.S { background: rgba(236,131,90,.16); color: #b24a1c; }
 :root[data-theme="dark"] .grade.S { color: #f0a080; }
-@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .grade.S { color: #f0a080; } }
 
 /* model diagram */
 .model-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; align-items: start; margin-top: 20px; }

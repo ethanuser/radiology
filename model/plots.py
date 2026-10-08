@@ -372,3 +372,25 @@ def fig_backtest(bt, out: Path):
     ax.set_title("Radiology in 2025: shortage (observed)")
     ax.invert_yaxis()
     _save(fig, out, "fig13_backtest")
+
+
+def fig_robustness(rb, out):
+    """P(meaningful oversupply) under alternative prior sets and model structures."""
+    rows = [(v["label"], v, "prior") for k, v in rb["priors"].items()] + \
+           [(v["label"], v, "structure") for k, v in rb["structures"].items() if k != "base"]
+    years = ["2035", "2045", "2055"]
+    fig, ax = plt.subplots(figsize=(9, 4.8))
+    for i, (lab, v, kind) in enumerate(rows):
+        for j, y in enumerate(years):
+            ax.scatter(v[y]["p_over"] * 100, i, color=[BLUE, ORANGE, VIOLET][j], s=36 if kind == "prior" else 30,
+                       marker="o" if kind == "prior" else "D", zorder=3, label=f"{y}" if i == 0 else None)
+        ax.plot([v[y]["p_over"] * 100 for y in years], [i] * 3, color=AXIS, lw=1, zorder=1)
+    ax.axhline(len(rb["priors"]) - 0.5, color=AXIS, lw=1, ls="--")
+    ax.set_yticks(range(len(rows)), [r[0] for r in rows])
+    ax.invert_yaxis()
+    ax.set_xlim(0, 60)
+    ax.set_xlabel("P(meaningful oversupply), % of simulated futures")
+    ax.set_ylabel("Prior set (●) or model structure (◆)")
+    ax.set_title("Oversupply probability under alternative choices")
+    ax.legend(title="Year", loc="lower right", fontsize=8.5)
+    _save(fig, out, "fig14_robustness")
