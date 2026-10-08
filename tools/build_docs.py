@@ -199,7 +199,7 @@ def backtest_md():
                     f"{num(r['trend'])} | {'yes' if r['in80'] else 'no'} | {r['fo_prob']:.2f} |")
     rq = bt["radiology"]["ratio_q"]
     rows.append(f"| Radiologists (supply ÷ demand in 2025) | shortage (≈0.93) | {num(rq['p50'])} ({num(rq['p10'])}–{num(rq['p90'])}); "
-                f"P(shortage) {pct(bt['radiology']['p_shortage'])} | — | — | — | yes | 0.0042 |")
+                f"P(shortage) {pct(bt['radiology']['p_shortage'])}; {pct(min(bt['radiology']['sensitivity'].values()))}–{pct(max(bt['radiology']['sensitivity'].values()))} under protocol variants | — | — | — | yes | 0.0042 (physicians and surgeons; not used) |")
     return "\n".join(rows)
 
 
@@ -209,13 +209,17 @@ def robust_md():
             "|---|" + "---|" * (len(ys) + 2)]
     for kind, d in (("Prior", rb["priors"]), ("Structure", rb["structures"])):
         for k, v in d.items():
-            if kind == "Structure" and k == "base":
+            if kind == "Structure" and (k == "base" or v.get("counterfactual")):
                 continue
             rows.append(f"| {kind}: {v['label']} | " + " | ".join(pct(v[y]["p_over"]) for y in ys) +
                         f" | {pct(v['2045']['p_jevons'])} | {num(v['2045']['D_p50'])} |")
     b = rb["band"]
     rows.append("| **Range across rows** | " + " | ".join(f"**{pct(b[y]['lo'])}–{pct(b[y]['hi'])}**" for y in ys) +
                 f" | **{pct(b['2045']['jev_lo'])}–{pct(b['2045']['jev_hi'])}** | |")
+    for k, v in rb["structures"].items():
+        if v.get("counterfactual"):
+            rows.append(f"| Counterfactual: {v['label']} | " + " | ".join(pct(v[y]["p_over"]) for y in ys) +
+                        f" | {pct(v['2045']['p_jevons'])} | {num(v['2045']['D_p50'])} |")
     return "\n".join(rows)
 
 
@@ -417,7 +421,9 @@ def readme_block() -> str:
             f"({pct(m1['p_shortage_2035'])} chance in 2035), with a {pct(sm[2035]['p_oversupply'])} chance of meaningful oversupply. "
             f"Most of that risk sits in a 12%-weighted \"transformative AI\" branch; without it the risk is "
             f"{pct(x['non_tai']['2035']['p_over'])}. Risk grows over a career ({pct(sm[2045]['p_oversupply'])} by 2045, "
-            f"{pct(sm[2055]['p_oversupply'])} by 2055) as autonomous reading clears regulation and payment. A true Jevons paradox, "
+            f"{pct(sm[2055]['p_oversupply'])} by 2055). Most of it comes from AI: with no further AI it would be "
+            f"{pct(rb['structures']['no_ai']['2045']['p_over'])} and {pct(rb['structures']['no_ai']['2055']['p_over'])}; assistive AI drives "
+            f"the near-term risk and AI-first reading adds most of the rest after 2045. A true Jevons paradox, "
             f"where AI-induced imaging outweighs the labor AI saves, is unlikely under the main assumptions (≈{pct(jv[2045]['p_jevons'])} in 2045): induced "
             f"demand offsets about {pct(jv[2045]['offset_p50'])} of the savings. A 2016→2025 backtest gave the method a "
             f"{pct(bt['radiology']['p_shortage'])} chance of today's shortage, driven by supply-versus-demand fundamentals rather than AI; for "

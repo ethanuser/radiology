@@ -129,3 +129,15 @@ def test_prior_reweighting_main_is_identity():
     p = (o["R"][:, 2045 - 2026] > 1.10).mean()
     assert abs(pri["main"]["2045"]["p_over"] - p) < 0.01  # main weights ≈ sampled regime frequencies
     assert pri["ai_bullish"]["2045"]["p_over"] > pri["ai_skeptic"]["2045"]["p_over"]
+
+
+def test_no_ai_counterfactual_equals_baseline():
+    """With AI frozen at 2026, demand is exactly baseline demand and AI saves no time."""
+    from model.sampling import sample
+    from model.simulate import simulate
+    s = sample(2000, seed=13)
+    o = simulate(s, structure="no_ai")
+    assert np.allclose(o["D"], o["B"], atol=1e-9)
+    assert np.allclose(o["time_saved"], 0, atol=1e-12)
+    a = simulate(s, structure="assistive_only")
+    assert np.allclose(a["auto"], 0)

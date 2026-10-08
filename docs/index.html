@@ -11,7 +11,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css?v=1.3">
+<link rel="stylesheet" href="assets/css/style.css?v=1.4">
 <script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
 </head>
 <body data-page="main" data-root=".">
@@ -86,13 +86,17 @@
       will practice in the mid-2030s are already practicing or in training, and imaging demand keeps rising with an aging population. In 2035 the market is
       still short in <span data-v="X.m1.p_shortage_2035" data-f="pct"></span> of futures, and the chance of <a href="#term-oversupply">meaningful oversupply</a> (at least 10% more
       radiologists than the work needs) is <b data-v="SUM.2035.p_oversupply" data-f="pct"></b>.<a class="mlink" href="#m-supply" title="Method: supply">§</a></p>
-    <p><b>The risk grows over a career.</b> As AI moves from drafting reports to reading some studies first, with a radiologist auditing, the chance of oversupply rises to
+    <p><b>The risk grows over a career.</b> The chance of oversupply rises to
       <b data-v="SUM.2045.p_oversupply" data-f="pct"></b> in 2045 and <b data-v="SUM.2055.p_oversupply" data-f="pct"></b> in 2055. That is not only a
       story about extreme AI. The <a href="#term-regimes">transformative-AI regime</a> (AI that can eventually do nearly all of a radiologist's cognitive
       work; 12% of futures) drives the extreme outcomes, such as demand falling below half of today's (<span data-v="SUM.2055.p_demand_below_50" data-f="pct"></span>
       by 2055). Outside it, oversupply is still <span data-v="X.non_tai.2045.p_over" data-f="pct"></span> likely in 2045 and
       <span data-v="X.non_tai.2055.p_over" data-f="pct"></span> in 2055. The opposite, a meaningful shortage, stays about
       <span data-v="SUM.2045.p_shortage_10" data-f="pct"></span> likely from 2035 on.<a class="mlink" href="#m-pipeline" title="Method: regulation and adoption">§</a></p>
+    <p><b>How much of this is AI?</b> Most of it. With no further AI, oversupply would be rare for two decades
+      (<span data-v="F.robust.structures.no_ai.2045.p_over" data-f="pct"></span> in 2045), though supply would slowly overtake slow-growing demand
+      (<span data-v="F.robust.structures.no_ai.2055.p_over" data-f="pct"></span> by 2055). Assistive AI that saves radiologists time accounts for most of the near-term risk;
+      AI-first reading adds most of the rest after 2045 (<a href="#uncertainty">counterfactuals</a>).</p>
     <p><b>"AI will create more imaging than it automates" probably won't hold for radiologists.</b> In the main model, the new work AI creates offsets
       about half of the radiologist time it saves and exceeds it in fewer than 1 in 20 futures. That conclusion depends on which new uses of imaging appear:
       if AI creates three times as many new imaging uses (and twice the new radiologist tasks) as assumed, it holds in about <span data-v="F.robust.structures.open_demand.2045.p_jevons" data-f="pct"></span>
@@ -275,7 +279,8 @@
     <p class="lede">When you enter practice determines which part of the forecast matters to you. Pick your stage <a href="#you">above</a> to highlight your row.</p>
     <div class="tablewrap"><table id="stageTable"></table></div>
     <p class="sans small muted">*Assumes a 1-year fellowship (most U.S. radiologists do one); subtract a year without it, and add one for each gap or research year.
-      "Still a shortage" means supply ÷ demand below 1.</p>
+      "Still a shortage" means supply ÷ demand below 1; it is 100% for anyone starting in 2026–27 because the model assumes a
+      shortage today (see <a href="#uncertainty">"No shortage today"</a> for the alternative).</p>
     <div class="callout sans" style="font-size:15.5px"><b>Already practicing?</b> Your horizon is the years to retirement. The chance there is less radiologist work than today is
       <span data-v="SUM.2035.p_demand_below_today" data-f="pct"></span> in 2035 and <span data-v="SUM.2045.p_demand_below_today" data-f="pct"></span> in 2045. About 2.5–3% of radiologists retire or leave each
       year,<sup class="cite" data-ref="rula_2026"></sup> so a surplus would normally be absorbed partly by hiring fewer new graduates. Demand falls faster than
@@ -384,7 +389,9 @@
     <h2>What drives the forecast?</h2>
     <p class="lede">Two assumptions matter far more than the rest. <b>How fast AI improves</b>: from a low (10th percentile) to a high (90th percentile) value, the
       chance of oversupply in 2045 runs from <span data-v="F.tor.ai.pOver2045_low" data-f="pct"></span> to <span data-v="F.tor.ai.pOver2045_high" data-f="pct"></span>. <b>How fast imaging per person
-      grows</b>: <span data-v="F.tor.util.pOver2045_low" data-f="pct"></span> if growth is low, <span data-v="F.tor.util.pOver2045_high" data-f="pct"></span> if it is high. A third, how much time AI saves on
+      grows</b>: <span data-v="F.tor.util.pOver2045_low" data-f="pct"></span> if growth is low, <span data-v="F.tor.util.pOver2045_high" data-f="pct"></span> if it is high
+      (with all three imaging-growth inputs at their extremes together; the milder "imaging restraint" and "imaging growth" assumption sets give
+      <span data-v="F.robust.priors.imaging_restraint.2045.p_over" data-f="pct"></span> and <span data-v="F.robust.priors.imaging_growth.2045.p_over" data-f="pct"></span>). A third, how much time AI saves on
       each assisted read, moves it from <span data-v="F.tor.assist.pOver2045_low" data-f="pct"></span> to <span data-v="F.tor.assist.pOver2045_high" data-f="pct"></span>. Everything else, including
       regulatory delay, scanner throughput, new imaging uses, today's shortage and how residency programs respond, moves it by
       <span data-v="F.tor_other_max" data-f="pts"></span> or less. By 2055, growth in residency positions joins the top drivers (<span data-v="F.tor.slots.pOver2055_low" data-f="pct"></span> to
@@ -399,7 +406,7 @@
     <div class="chart-card">
       <div class="title">Which assumptions move the forecast? (a "tornado" chart)</div>
       <div class="subtitle">All inputs in a group are set together to a low (10th percentile) and then a high (90th percentile) value while everything else
-        stays uncertain, so swings are larger than for a single input. ● marks six factors often argued about: future imaging use, new applications, scanner throughput, regulatory delay, AI-first adoption and
+        stays uncertain. Unless the inputs move in lockstep, this is more extreme than a single 10th/90th-percentile scenario. ● marks six factors often argued about: future imaging use, new applications, scanner throughput, regulatory delay, AI-first adoption and
         residency response.<a class="mlink" href="#m-sensitivity" title="Method: sensitivity">§</a></div>
       <div class="controls" id="tornadoControls"><span class="lab">Outcome</span>
         <div class="seg" role="group" aria-label="Tornado outcome">
@@ -416,8 +423,8 @@
         <div id="etaChart" class="chart"></div><div class="note">E = empirical, A = anchored on data, S = subjective (see <a href="#assumptions">assumptions</a>).</div></details></div>
       <div class="chart-card"><div class="title">Where does the uncertainty come from?</div><div class="subtitle">How much narrower the 80% range for 2045 demand would be if each class of input were known exactly</div>
         <div id="evidenceChart" class="chart"></div><div class="note">Knowing the judgment-call (subjective) inputs exactly would make the range about
-          <b data-v="F.subj_shrink" data-f="pct"></b> narrower: about half of the uncertainty comes from judgment calls. Better measurement of the inputs graded empirical barely helps, but two
-          measurable quantities, today's per-person imaging growth and today's shortage, are large drivers and worth measuring better.</div></div>
+          <b data-v="F.subj_shrink" data-f="pct"></b> narrower: about half of the spread comes from purely subjective inputs, and nearly all of it involves some judgment (no sampled input is graded
+          purely empirical). Two measurable quantities, today's per-person imaging growth and today's shortage, are large drivers and worth measuring better.</div></div>
     </div>
   </div>
 </section>
@@ -435,8 +442,8 @@
         <li><b>Parameter uncertainty</b><span class="lik">shown everywhere on this page</span><br><span class="ink2">The <span data-v="F.n_params" data-f="int"></span>
           inputs are drawn from ranges; the 80% ranges and the probabilities themselves reflect this.</span></li>
         <li><b>Our choices of ranges and equations</b><span class="lik">shown below</span><br><span class="ink2">Errors shared by every simulated future are never
-          averaged away, and possibilities the equations exclude contribute nothing. So we re-weighted the same futures under four other defensible sets of
-          assumptions and re-ran the model with four alternative structures, including reads with no radiologist at all and automation that does not
+          averaged away, and possibilities the equations exclude contribute nothing. So we re-weighted the same futures under six other sets of assumptions
+          (four single changes and two combinations) and re-ran the model with six alternative structures, including reads with no radiologist at all and automation that does not
           follow a difficulty ladder.</span></li>
       </ol>
     </div>
@@ -471,10 +478,11 @@
           <div class="tile"><div class="label">Average forecast error, roughly the % a forecast was off: method · BLS + trend alone · BLS · trend</div><div class="value" style="font-size:22px"><span data-v="BT.mae_log.model" data-f="pct"></span> · <span data-v="BT.mae_log.combo" data-f="pct"></span> · <span data-v="BT.mae_log.bls" data-f="pct"></span> · <span data-v="BT.mae_log.trend" data-f="pct"></span></div><div class="sub">mean absolute log error; lower is better</div></div>
           <div class="tile"><div class="label">Radiology: chance of a 2025 shortage, as forecast in 2016</div><div class="value" data-v="BT.radiology.p_shortage" data-f="pct"></div><div class="sub">observed: shortage</div></div>
         </div>
-        <p>From 2016, this approach would have given <span data-v="BT.radiology.p_shortage" data-f="pct"></span> odds of a radiologist shortage in 2025, which is what market
-          signals show today (<b>Brier score</b>, the squared error of a probability forecast where 0 is perfect: <span data-v="BT.brier.model" data-f="x2"></span>, against 0.25 for a
-          coin flip). But the result comes from demand growth outpacing a nearly fixed supply, not from the AI layer, and it moves between
-          <span data-v="BT.radiology.sensitivity.start_ratio_1_10" data-f="pct"></span> and <span data-v="BT.radiology.sensitivity.no_ai_layer" data-f="pct"></span> under other reasonable protocol choices.
+        <p>From 2016, a radiology hindcast gives between <span data-v="BT.radiology.sensitivity.start_ratio_1_10" data-f="pct"></span> and
+          <span data-v="BT.radiology.sensitivity.no_ai_layer" data-f="pct"></span> odds of a shortage in 2025, depending on protocol choices (<span data-v="BT.radiology.p_shortage" data-f="pct"></span> as
+          specified; about even odds at the main model's own demand growth). A shortage is what market signals show today, but this is one event, the
+          result comes from demand outpacing a nearly fixed supply rather than from AI, and radiology's AI exposure (0.35) was set by hand rather than from
+          the Frey &amp; Osborne mapping.
           For the other occupations, every outcome fell inside the method's 80% range, but the simple average of the BLS projection and the prior trend was
           more accurate than the full method: the AI layer made the forecasts worse, mainly by over-predicting the decline in medical transcription.</p>
         <p class="sans small ink2"><b>Limits:</b> four cases over nine years cannot establish skill at a 40-year horizon, and say little about calibration. The 2016
@@ -669,8 +677,8 @@
 <button class="backpill" id="backPill" type="button" hidden>↩ Back to where you were</button>
 <div class="tooltip" id="tooltip" role="tooltip"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
-<script src="assets/js/charts.js?v=1.3"></script>
+<script src="assets/js/charts.js?v=1.4"></script>
 <script src="assets/js/backnav.js?v=1.4"></script>
-<script src="assets/js/app.js?v=1.3"></script>
+<script src="assets/js/app.js?v=1.4"></script>
 </body>
 </html>

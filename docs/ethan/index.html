@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/style.css?v=1.3">
+<link rel="stylesheet" href="../assets/css/style.css?v=1.4">
 <script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
 </head>
 <!-- Personal view: same data (../data/forecast.json) and script (../assets/js/app.js) as the public page.
@@ -72,8 +72,9 @@
     <div class="glossary">
       <div class="gcard" id="term-ratio"><h4>Supply ÷ demand</h4><p>Radiologist capacity divided by the work that needs doing. Below 1 is a shortage (today ≈
         <b data-v="F.series.R.p50.0" data-f="x2"></b>); above 1 is a surplus. Charts measure both against <b>2026 demand = 1</b>.</p></div>
-      <div class="gcard" id="term-oversupply"><h4>Meaningful oversupply</h4><p>Supply ÷ demand above <b>1.10</b>: about the size of the mid-1990s and
-        mid-2010s gluts, when new graduates struggled to find jobs.<sup class="cite" data-ref="rosenkrantz_2016,shi_2015"></sup></p></div>
+      <div class="gcard" id="term-oversupply"><h4>Meaningful oversupply</h4><p>Supply ÷ demand above <b>1.10</b>: at least 10% more radiologists than the
+        work needs. The threshold is a convention for a clearly noticeable surplus; past gluts, when new graduates struggled to find jobs, were never
+        measured on this scale.<sup class="cite" data-ref="rosenkrantz_2016,shi_2015"></sup></p></div>
       <div class="gcard" id="term-regimes"><h4>AI-progress regimes</h4><p>Each future is <b>Stall</b> (15%), <b>Trend</b> (55%), <b>Fast</b> (18%) or
         <b>Transformative</b> (12%: AI eventually does nearly all a radiologist's cognitive work). Most of the downside sits in the last one.
         <a href="../#term-regimes">More →</a></p></div>
@@ -251,8 +252,8 @@
 <button class="backpill" id="backPill" type="button" hidden>↩ Back to where you were</button>
 <div class="tooltip" id="tooltip" role="tooltip"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
-<script src="../assets/js/charts.js?v=1.3"></script>
+<script src="../assets/js/charts.js?v=1.4"></script>
 <script src="../assets/js/backnav.js?v=1.4"></script>
-<script src="../assets/js/app.js?v=1.3"></script>
+<script src="../assets/js/app.js?v=1.4"></script>
 </body>
 </html>

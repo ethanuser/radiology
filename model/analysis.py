@@ -243,6 +243,7 @@ def validation(s: dict, o: dict) -> dict:
         c = np.r_[KAPPA * FILLED_HIST[2024], (c - c * HAZARD)[:-1]]
         surv_years.append(c.sum())
     flat_2055 = c.sum() / STOCK_2023
+    sflat = dict(zip(range(2024, 2056), surv_years))
     # independent check: Neiman 2026 update projects +20.9% by 2055 if post-COVID attrition persists (flat positions)
     c_hi = COHORT_2023.copy()
     hz_hi = np.clip(HAZARD * 1.2, 0, 1)
@@ -260,8 +261,9 @@ def validation(s: dict, o: dict) -> dict:
         "supply_flat_2055_vs_2023": flat_2055,
         "christensen_flat_2055": 1.257,
         "supply_flat_2055_high_attrition": flat_2055_high_attr,
-        # approximate no-AI market path: supply from the main run against demand with AI frozen at 2026
-        "noai_ratio_p50": {str(y): float(np.median(o["Sd"][:, yi(y)] / o["B"][:, yi(y)])) for y in (2035, 2055)},
+        # like-for-like with Neiman's "if no action is taken": no further AI, flat residency positions, no market response
+        "noai_flat_ratio_p50": {str(y): float(np.median(np.asarray(s["ratio0"]) * sflat[y] / sflat[2026] / o["B"][:, yi(y)]))
+                                for y in (2035, 2045, 2055)},
         "mean_career_years": mean_career,
         "christensen_career_years": "34.2-35.7",
         "attrition_2023": attr_2023,

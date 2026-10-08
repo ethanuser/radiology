@@ -544,7 +544,7 @@
   }));
   function evidenceChart() {
     if (!has("#evidenceChart")) return;
-    const ev = F.evidence_attribution.filter((r) => r.metric === "D" && r.year === 2045);
+    const ev = F.evidence_attribution.filter((r) => r.metric === "D" && r.year === 2045 && r.n_params > 0);
     const gc = { Empirical: css("--good"), Anchored: css("--s1"), Subjective: css("--serious") };
     Charts.hbars("#evidenceChart", ev.map((r) => ({ label: `${r.grade} (${r.n_params} parameters)`, value: Math.max(0, r.shrink), g: r.grade, tipLabel: "interval narrows by" })),
       { valueFmt: d3.format(".0%"), max: 0.6, colorFn: (r) => gc[r.g], xLabel: "How much narrower the 80% range for 2045 demand gets", yLabel: "Parameters pinned" });
@@ -566,12 +566,14 @@
     const row = (v, kind) => `<tr><td>${v.label}${kind ? `<div class="muted small">${kind}</div>` : ""}</td>` +
       ys.map((y) => `<td class="num">${fmt.pct(v[y].p_over)}</td>`).join("") + `<td class="num">${fmt.pct(v["2045"].p_jevons)}</td></tr>`;
     const pri = Object.entries(R.priors).map(([k, v]) => row(v, k === "main" ? "main model" : v.note)).join("");
-    const st = Object.entries(R.structures).filter(([k]) => k !== "base").map(([, v]) => row(v, v.detail)).join("");
+    const st = Object.entries(R.structures).filter(([k, v]) => k !== "base" && !v.counterfactual).map(([, v]) => row(v, v.detail)).join("");
+    const cf = Object.entries(R.structures).filter(([, v]) => v.counterfactual).map(([, v]) => row(v, v.detail)).join("");
     const band = `<tr><td><b>Range across all rows</b></td>${ys.map((y) => `<td class="num"><b>${fmt.pct(R.band[y].lo)}–${fmt.pct(R.band[y].hi)}</b></td>`).join("")}` +
       `<td class="num"><b>${fmt.pct(R.band["2045"].jev_lo)}–${fmt.pct(R.band["2045"].jev_hi)}</b></td></tr>`;
     t.innerHTML = `<thead><tr><th>Assumption set or model structure</th>${ys.map((y) => `<th class="num">P(oversupply) ${y}</th>`).join("")}<th class="num">P(Jevons) 2045</th></tr></thead>
       <tbody><tr><td colspan="5" class="muted small"><b>Different priors</b> (same model, reweighted futures)</td></tr>${pri}
-      <tr><td colspan="5" class="muted small"><b>Different model structures</b> (main priors, re-simulated)</td></tr>${st}${band}</tbody>`;
+      <tr><td colspan="5" class="muted small"><b>Different model structures</b> (main priors, re-simulated)</td></tr>${st}${band}
+      <tr><td colspan="5" class="muted small"><b>How much of the risk comes from AI?</b> Counterfactuals, not alternatives; excluded from the range</td></tr>${cf}</tbody>`;
   }
 
   // ------------------------------------------------------------------ careers

@@ -18,7 +18,7 @@ import numpy as np
 
 from .params import PARAM_INDEX
 from .sampling import sample
-from .simulate import STRUCTURES, YEARS, simulate
+from .simulate import COUNTERFACTUALS, STRUCTURES, YEARS, simulate
 
 OVERSUPPLY = 1.10
 YRS = (2030, 2035, 2045, 2055, 2066)
@@ -94,7 +94,9 @@ def prior_sets(s, o):
 
 
 STRUCT_SHORT = {"base": "Main model", "no_signoff": "No radiologist on AI-first reads", "unordered": "Tiers automated in any order",
-                "open_demand": "3× unforeseen new demand", "payer_pushback": "Stronger payer pushback"}
+                "open_demand": "3× unforeseen new demand", "payer_pushback": "Stronger payer pushback",
+                "uncapped_new_uses": "New uses not capped by scanners", "no_shortage_today": "No shortage today",
+                "assistive_only": "Assistive AI only (no AI-first reads)", "no_ai": "No further AI"}
 
 
 def structures(n: int = 20000, seed: int = 20261007):
@@ -103,7 +105,14 @@ def structures(n: int = 20000, seed: int = 20261007):
     res = {}
     for key, label in STRUCTURES.items():
         o = simulate(s, structure=key)
-        res[key] = {"label": STRUCT_SHORT[key], "detail": label, **_metrics(o, np.ones(n))}
+        res[key] = {"label": STRUCT_SHORT[key], "detail": label, "counterfactual": key in COUNTERFACTUALS,
+                    **_metrics(o, np.ones(n))}
+    # the main prior rules out a balanced market today (0.85-0.99); re-simulate with no shortage in 2026
+    s2 = dict(s)
+    s2["ratio0"] = np.random.default_rng(seed + 1).uniform(0.95, 1.03, n)
+    res["no_shortage_today"] = {"label": STRUCT_SHORT["no_shortage_today"], "counterfactual": False,
+                                "detail": "Supply ÷ demand in 2026 drawn from 0.95-1.03 instead of 0.85-0.99",
+                                **_metrics(simulate(s2), np.ones(n))}
     return res
 
 
@@ -112,9 +121,10 @@ def run(s, o, n: int = 20000, seed: int = 20261007) -> dict:
     st = structures(n, seed)
     band = {}
     for y in YRS:
-        single = [v[str(y)]["p_over"] for k, v in pri.items() if k not in CORNERS] + [v[str(y)]["p_over"] for v in st.values()]
+        alts = [v for v in st.values() if not v["counterfactual"]]
+        single = [v[str(y)]["p_over"] for k, v in pri.items() if k not in CORNERS] + [v[str(y)]["p_over"] for v in alts]
         vals = single + [pri[k][str(y)]["p_over"] for k in CORNERS]
-        jev = [v[str(y)]["p_jevons"] for v in pri.values()] + [v[str(y)]["p_jevons"] for v in st.values()]
+        jev = [v[str(y)]["p_jevons"] for v in pri.values()] + [v[str(y)]["p_jevons"] for v in alts]
         band[str(y)] = {"lo": min(vals), "hi": max(vals), "single_lo": min(single), "single_hi": max(single),
                         "jev_lo": min(jev), "jev_hi": max(jev)}
     min_ess = min(v["ess"] for v in pri.values())

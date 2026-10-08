@@ -150,7 +150,7 @@ PARAMS: list[Param] = [
       "uniform", dict(lo=0.4, hi=0.9), "ratio", "A", ["cbo_2026"],
       "CBO projects population growth slowing to zero by 2056; aging continues to add imaging per capita."),
     P("util_g0", "demand", "Per-capita (age/sex-adjusted) utilization growth, 2026",
-      "normal", dict(mu=0.6, sd=0.7, lo=-1.5, hi=3.5), "%/yr", "A",
+      "normal", dict(mu=0.6, sd=0.7, lo=-1.5, hi=3.5), "%/yr", "S",
       ["christensen_util", "rula_2026", "smith_bindman_2019", "rosenkrantz_2025", "smith_bindman_2025"],
       "National 2018-22 claims (Christensen et al): projected total utilization in 2055 vs 2023 is +16.9% to +26.9% by modality "
       "from population growth and aging alone, and -5.6% to +45.2% if each modality's recent per-person trend continues to 2030 "
@@ -353,9 +353,10 @@ PARAMS: list[Param] = [
 
     # ======================================= 5. RADIOLOGIST SUPPLY =============================================
     P("attr_mult", "supply", "Attrition hazard multiplier (post-COVID ≈ high end)",
-      "uniform", dict(lo=0.85, hi=1.20), "multiplier", "A", ["christensen_supply", "rula_2026", "parikh_2026"],
-      "Measured attrition rose from 1.1%/yr (2014) to 2.0% (2019) and 2.5% (2022). The modeled rate (≈2.3-3.2%/yr) sits at or above "
-      "these; with flat positions the high end reproduces the Neiman update's +20.9% supply growth by 2055 under post-COVID attrition. "
+      "uniform", dict(lo=0.95, hi=1.25), "multiplier", "A", ["christensen_supply", "rula_2026", "parikh_2026"],
+      "Measured attrition rose from 1.1%/yr (2014) to 2.0% (2019) and 2.5% (2022). With flat residency positions, multipliers of "
+      "1.0 and 1.2 reproduce the published supply projections under blended 2014-23 attrition (+25.7% by 2055) and post-COVID "
+      "attrition (+20.9%); the range is centred between them, nearer the post-COVID case the Neiman 2026 update emphasises. "
       "Turnover between practices also roughly doubled (adjusted odds 1.96, 2022 vs 2013)."),
     P("slot_g", "supply", "Trend growth in DR residency positions (before market response)",
       "normal", dict(mu=1.0, sd=0.8, lo=-1.0, hi=3.0), "%/yr", "A", ["christensen_supply", "nrmp_2026"],

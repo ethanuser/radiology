@@ -302,15 +302,15 @@ def fig_regimes(o, out):
 
 
 def fig_evidence(ev, out):
-    df = ev[ev["metric"] == "D"]
+    df = ev[(ev["metric"] == "D") & (ev["n_params"] > 0)]
     fig, ax = plt.subplots(figsize=(7.5, 3.6))
-    grades = ["Empirical", "Anchored", "Subjective"]
+    grades = [g for g in ["Empirical", "Anchored", "Subjective"] if g in set(df["grade"])]
     yrs = [2035, 2045, 2055]
     w = 0.25
     for k, y in enumerate(yrs):
         vals = [df[(df["grade"] == g) & (df["year"] == y)]["shrink"].iloc[0] * 100 for g in grades]
-        ax.bar(np.arange(3) + (k - 1) * w, vals, width=w - 0.03, color=RAMP[k + 1], label=str(y))
-    ax.set_xticks(range(3), [f"{g}\n({int(df[df['grade'] == g]['n_params'].iloc[0])} params)" for g in grades])
+        ax.bar(np.arange(len(grades)) + (k - 1) * w, vals, width=w - 0.03, color=RAMP[k + 1], label=str(y))
+    ax.set_xticks(range(len(grades)), [f"{g}\n({int(df[df['grade'] == g]['n_params'].iloc[0])} params)" for g in grades])
     ax.set_ylabel("% reduction in 80% interval width")
     ax.set_xlabel("Class of parameters pinned at their medians")
     ax.set_title("Where does the uncertainty come from? (demand)")

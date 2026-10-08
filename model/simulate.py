@@ -98,7 +98,12 @@ STRUCTURES = {
     "unordered": "Tiers automated in any order, with equally hard regulation",
     "open_demand": "Much larger unforeseen new demand (3× new applications, 2× new radiologist tasks)",
     "payer_pushback": "Stronger payer pushback (2× AI utilization management and scope shift)",
+    "uncapped_new_uses": "New AI-enabled uses not limited by scanner capacity (e.g. opportunistic screening of existing scans)",
+    # counterfactuals (not alternatives): how much of the risk comes from AI at all
+    "assistive_only": "Counterfactual: assistive AI only, no AI-first reading",
+    "no_ai": "Counterfactual: AI frozen at its 2026 level",
 }
+COUNTERFACTUALS = ("assistive_only", "no_ai")
 
 
 def simulate(s: dict, structure: str = "base") -> dict:
@@ -167,6 +172,9 @@ def _simulate_once(s: dict, press_cum: np.ndarray, structure: str = "base") -> d
     kappa_a = col("adopt_pressure")
     t_adopt = t + kappa_a * press_cum  # adoption clock: calendar time plus shortage-driven acceleration
     adopt = col("adopt_max") * logistic(t_adopt, col("adopt_mid"), col("adopt_width"))
+    no_ai = structure == "no_ai"
+    if no_ai:
+        cap = {k: np.zeros_like(v) for k, v in cap.items()}
     sig = {k: lift(col(f"m_{k}"), TAI_TASK_CEILINGS[k]) * cap[k] * adopt for k in cap}
 
     # ===================================================================== 3-4. autonomy through the regulatory pipeline
@@ -199,6 +207,8 @@ def _simulate_once(s: dict, press_cum: np.ndarray, structure: str = "base") -> d
         pc_ready = np.where(rj[:, 0] < 2026, 0.0, press_cum[np.arange(n), idx])[:, None]
         tau_j = (t - rj) + kappa_a * np.maximum(0.0, press_cum - pc_ready) * (t >= rj)
         part = w[j] * amax * logistic(tau_j, ahalf, col("awidth"))
+        if structure in ("assistive_only", "no_ai"):
+            part = np.zeros_like(part)
         auto_parts.append(part)
         auto = auto + part
     out["auto"] = auto
@@ -220,10 +230,11 @@ def _simulate_once(s: dict, press_cum: np.ndarray, structure: str = "base") -> d
     out.update(tau=tau, P=tau0 / tau, time_saved=1 - raw, adopt=adopt, cap_interp=cap["interp"], cap_draft=cap["draft"])
 
     # ===================================================================== 5. Jevons / rebound channels
-    thru = col("thru_H") * logistic(t, scaled("thru_T0"), 3.0 * sqM)
+    thru = col("thru_H") * logistic(t, scaled("thru_T0"), 3.0 * sqM) * (0.0 if no_ai else 1.0)
     price_cut = col("pass_through") * (col("pc_share") * (1 - tau) + (1 - col("pc_share")) * 0.5 * thru / (1 + thru))
     J_price = (1 - price_cut) ** col("elasticity") - 1
-    k_new, k_nt, k_um = {"open_demand": (3.0, 2.0, 1.0), "payer_pushback": (1.0, 1.0, 2.0)}.get(structure, (1.0, 1.0, 1.0))
+    k_new, k_nt, k_um = {"open_demand": (3.0, 2.0, 1.0), "payer_pushback": (1.0, 1.0, 2.0),
+                         "no_ai": (0.0, 0.0, 0.0)}.get(structure, (1.0, 1.0, 1.0))
     new_max = k_new * col("new_max") * (1 + (TAI_NEW_MULT - 1) * tai)
     J_new = col("lambda_new") * new_max * logistic(t, scaled("new_T0"), col("new_width") * sqM)
     J_inc = col("iota") * adopt * cap["interp"]
@@ -231,7 +242,11 @@ def _simulate_once(s: dict, press_cum: np.ndarray, structure: str = "base") -> d
     J_acc = col("access") * (1 - tau)  # faster turnaround / 24-7 availability releases rationed demand
     G_pot = J_price + J_new + J_inc + J_lat + J_acc
     capacity = thru + col("cap_invest") * dt / 40 + 0.02
-    G = G_pot * (1 + (G_pot / capacity) ** 4) ** -0.25  # smooth min(G_pot, capacity)
+    if structure == "uncapped_new_uses":  # new uses that need no extra scanner time bypass the capacity cap
+        G_rest = G_pot - J_new
+        G = G_rest * (1 + (np.maximum(G_rest, 0) / capacity) ** 4) ** -0.25 + J_new
+    else:
+        G = G_pot * (1 + (G_pot / capacity) ** 4) ** -0.25  # smooth min(G_pot, capacity)
     share = np.divide(G, G_pot, out=np.zeros_like(G), where=G_pot > 1e-12)
     J_um = k_um * col("um_max") * adopt
     J_scope = k_um * col("scope_max") * (1 + (TAI_SCOPE_MULT - 1) * tai) * logistic(t, ready[1], 4.0)

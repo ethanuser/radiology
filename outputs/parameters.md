@@ -2,7 +2,7 @@
 |---|---|---|---|---|---|
 | `dem_rate`: Demographic (population + aging) growth of radiologist work, 2026-2045 | Normal(μ=0.52, σ=0.1), truncated [0.15, 0.9] | 0.392 / 0.52 / 0.648 | %/yr | A | christensen_util, cbo_2026 |
 | `dem_late`: Demographic growth in 2066 relative to 2026-2045 rate | Uniform(0.4, 0.9) | 0.45 / 0.65 / 0.85 | ratio | A | cbo_2026 |
-| `util_g0`: Per-capita (age/sex-adjusted) utilization growth, 2026 | Normal(μ=0.6, σ=0.7), truncated [-1.5, 3.5] | -0.292 / 0.601 / 1.5 | %/yr | A | christensen_util, rula_2026, smith_bindman_2019, rosenkrantz_2025, smith_bindman_2025 |
+| `util_g0`: Per-capita (age/sex-adjusted) utilization growth, 2026 | Normal(μ=0.6, σ=0.7), truncated [-1.5, 3.5] | -0.292 / 0.601 / 1.5 | %/yr | S | christensen_util, rula_2026, smith_bindman_2019, rosenkrantz_2025, smith_bindman_2025 |
 | `util_ginf`: Long-run per-capita utilization growth (asymptote) | Normal(μ=0.2, σ=0.5), truncated [-1.5, 2.5] | -0.44 / 0.2 / 0.841 | %/yr | S | smith_bindman_2019, christensen_util |
 | `util_half`: Half-life of convergence from current to long-run utilization growth | Uniform(6, 20) | 7.4 / 13 / 18.6 | years | S |  |
 | `cmplx_g0`: Growth in radiologist work per exam (complexity, images/study), 2026 | Normal(μ=0.4, σ=0.3), truncated [-0.2, 1.2] | 0.0476 / 0.407 / 0.782 | %/yr | A | mcdonald_2015 |
@@ -59,7 +59,7 @@
 | `um_max`: AI-enabled utilization management (order decision support, payer AI prior auth) | Triangular(0, mode 0.03, 0.08) | 0.0155 / 0.0353 / 0.06 | share | A | langlotz_2025, trustees_2026 |
 | `scope_max`: Reads shifting to non-radiologists with AI support by 2066 | Triangular(0, mode 0.03, 0.1) | 0.0173 / 0.0408 / 0.0735 | share | S |  |
 | `nt_max`: New radiologist tasks created alongside AI (reinstatement), share of 2026 FTE | Triangular(0, mode 0.04, 0.12) | 0.0219 / 0.0507 / 0.089 | share | S | acemoglu_restrepo_2019, autor_2024, kwee_2025 |
-| `attr_mult`: Attrition hazard multiplier (post-COVID ≈ high end) | Uniform(0.85, 1.2) | 0.885 / 1.02 / 1.17 | multiplier | A | christensen_supply, rula_2026, parikh_2026 |
+| `attr_mult`: Attrition hazard multiplier (post-COVID ≈ high end) | Uniform(0.95, 1.25) | 0.98 / 1.1 / 1.22 | multiplier | A | christensen_supply, rula_2026, parikh_2026 |
 | `slot_g`: Trend growth in DR residency positions (before market response) | Normal(μ=1, σ=0.8), truncated [-1.0, 3.0] | -0.00299 / 1 / 2 | %/yr | A | christensen_supply, nrmp_2026 |
 | `resid_gamma`: Residency-position response to market signal (elasticity to ln D/S) | Uniform(0.3, 1.5) | 0.42 / 0.9 / 1.38 | elasticity | A | sharafinski_2016, rosenkrantz_2016, nicholson_2002 |
 | `fill_kappa`: Fill-rate response to oversupply (applicant flight) | Uniform(0.3, 1.5) | 0.42 / 0.9 / 1.38 | elasticity | A | sharafinski_2016, shi_2015 |
