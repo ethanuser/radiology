@@ -21,7 +21,7 @@
     history.pushState({ jump: stack.length }, "", a.getAttribute("href"));
     target.scrollIntoView({ block: "start" });
     window.scrollBy(0, -70);
-    flash(target.closest("li, tr, h2, h3, h4, section, .card, p") || target);
+    flash(target.closest("li, tr, h2, h3, h4, .gcard, .card, p, section") || target);
     pill.hidden = false;
   });
   function goBack() {
@@ -34,6 +34,6 @@
   pill.addEventListener("click", () => { history.back(); });
   window.addEventListener("popstate", () => { if (stack.length) goBack(); });
   document.addEventListener("keydown", (ev) => {
-    if (ev.key === "Escape" && stack.length) history.back();
+    if (ev.key === "Escape" && stack.length && !document.querySelector(".citepop:not([hidden])")) history.back();
   });
 })();

@@ -8,7 +8,10 @@ import numpy as np
 
 from .analysis import OVERSUPPLY, SEVERE, yi
 from .params import PARAMS, REGIME_NAMES, SHORT, TASK_LABELS, TASK_MEANS, TASKS
-from .references import REFERENCES, format_ama, href
+import json as _json
+from pathlib import Path as _Path
+
+from .references import REFERENCES, USES, format_ama, href
 from .stages import STAGES
 from .simulate import REPORT_YEARS, YEARS
 
@@ -30,7 +33,7 @@ def _quants(arr):
 def forecast_json(s, o, summary, probs, jev, regimes, tor, eta, ev, val) -> dict:
     out = {"years": YEARS.tolist(), "report_years": list(REPORT_YEARS), "n_sims": int(len(o["D"])),
            "oversupply_threshold": OVERSUPPLY, "severe_threshold": SEVERE}
-    out["series"] = {k: _quants(o[k]) for k in ("D", "S", "R", "P", "auto", "B", "W")}
+    out["series"] = {k: _quants(o[k]) for k in ("D", "S", "Sd", "R", "P", "auto", "B", "W")}
     out["series"]["time_saved"] = _quants(1 - 1 / o["P"])
     out["probs"] = {c: _r(probs[c].values) for c in probs.columns if c != "year"}
     out["summary"] = [{k: (_r(v) if not isinstance(v, (int, np.integer)) else int(v)) for k, v in row.items()}
@@ -79,7 +82,9 @@ def forecast_json(s, o, summary, probs, jev, regimes, tor, eta, ev, val) -> dict
                               "evidence": p.evidence, "sources": p.sources, "note": p.note,
                               "loadings": p.loadings, "q10": _r(q10, 3), "q50": _r(q50, 3), "q90": _r(q90, 3)})
     out["task_means"] = dict(zip(TASKS, _r(TASK_MEANS)))
-    out["references"] = {k: {"html": format_ama(k, "html"), "href": href(k)} for k in REFERENCES}
+    passages = _json.loads((_Path(__file__).parent / "passages.json").read_text())
+    out["references"] = {k: {"html": format_ama(k, "html"), "href": href(k), "use": USES.get(k, ""),
+                             "passage": passages.get(k)} for k in REFERENCES}
     out["stages"] = [{"key": k, "label": lab, "start": st} for k, lab, st in STAGES]
     return out
 
@@ -104,7 +109,7 @@ def samples_json(s, o, n_keep: int = 1500, seed: int = 3) -> dict:
         "ready2": enc(o["ready"][:, 1]),
         "ready3": enc(o["ready"][:, 2]),
     }
-    outputs = {k: [enc(o[k][:, j]) for j in range(len(YEARS))] for k in ("D", "S", "R", "P", "auto")}
+    outputs = {k: [enc(o[k][:, j]) for j in range(len(YEARS))] for k in ("D", "Sd", "R", "P", "auto")}
     return {"years": YEARS.tolist(), "n": n_keep, "inputs": inputs, "outputs": outputs}
 
 

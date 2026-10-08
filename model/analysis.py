@@ -33,8 +33,9 @@ def summary_table(o: dict, years=REPORT_YEARS) -> pd.DataFrame:
     for y in years:
         i = yi(y)
         D, S, R, P, A = o["D"][:, i], o["S"][:, i], o["R"][:, i], o["P"][:, i], o["auto"][:, i]
+        Sd = o["Sd"][:, i]  # supply in units of 2026 demand (same scale as demand)
         row = {"year": y}
-        for name, arr in (("demand", D), ("supply", S), ("ratio", R), ("productivity", P), ("autonomous", A)):
+        for name, arr in (("demand", D), ("supply", S), ("supplyd", Sd), ("ratio", R), ("productivity", P), ("autonomous", A)):
             for q, v in zip(QS, np.percentile(arr, QS)):
                 row[f"{name}_p{q}"] = v
         row["p_demand_below_today"] = (D < 1.0).mean()
@@ -296,18 +297,18 @@ def extra_metrics(s: dict, o: dict) -> dict:
     q_u = np.quantile(s["util_g0"], [1 / 3, 2 / 3])
     q_n = np.quantile(s["new_max"], [1 / 3, 2 / 3])
     signposts = [
-        ("All simulated worlds", np.ones(len(D), bool)),
+        ("All simulated futures", np.ones(len(D), bool)),
         ("AI saves >15% of radiologist time by 2031", P[:, yi(2031)] > 1 / (1 - 0.15)),
         ("AI saves <5% of radiologist time by 2031", P[:, yi(2031)] < 1 / (1 - 0.05)),
         (">5% of interpretive work is AI-first/autonomous by 2033", A[:, yi(2033)] > 0.05),
-        ("Autonomous reading of radiographs/screening is paid for before 2035", o["ready"][:, 1] < 2035),
-        ("Autonomous radiograph/screening reads not paid for until after 2045", o["ready"][:, 1] > 2045),
+        ("Autonomous reads paid for through tier 2 (all radiographs & screening) before 2035", o["ready"][:, 1] < 2035),
+        ("Autonomous reads not paid for through tier 2 until after 2045", o["ready"][:, 1] > 2045),
         ("Per-capita imaging growth in the top third (≥~1.3%/yr)", s["util_g0"] > q_u[1]),
         ("Per-capita imaging growth in the bottom third (≤~0.7%/yr)", s["util_g0"] < q_u[0]),
-        ("New AI-enabled imaging applications in the top third", s["new_max"] > q_n[1]),
-        ("New AI-enabled imaging applications in the bottom third", s["new_max"] < q_n[0]),
-        ("Transformative-AI branch", o["regime"] == 3),
-        ("Excluding the transformative-AI branch", o["regime"] != 3),
+        ("Many new AI-enabled imaging uses (top third)†", s["new_max"] > q_n[1]),
+        ("Few new AI-enabled imaging uses (bottom third)†", s["new_max"] < q_n[0]),
+        ("Transformative-AI regime", o["regime"] == 3),
+        ("Any regime except transformative AI", o["regime"] != 3),
     ]
     x["signposts"] = []
     for label, mk in signposts:

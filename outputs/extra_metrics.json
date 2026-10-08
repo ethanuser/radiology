@@ -59,7 +59,7 @@
   },
   "signposts": [
     {
-      "label": "All simulated worlds",
+      "label": "All simulated futures",
       "share": 1.0,
       "n": 20000,
       "p_over_2035": 0.1631,
@@ -99,7 +99,7 @@
       "p_below_2045": 0.7067510548523207
     },
     {
-      "label": "Autonomous reading of radiographs/screening is paid for before 2035",
+      "label": "Autonomous reads paid for through tier 2 (all radiographs & screening) before 2035",
       "share": 0.20655,
       "n": 4131,
       "p_over_2035": 0.5434519486807069,
@@ -109,7 +109,7 @@
       "p_below_2045": 0.6436698136044541
     },
     {
-      "label": "Autonomous radiograph/screening reads not paid for until after 2045",
+      "label": "Autonomous reads not paid for through tier 2 until after 2045",
       "share": 0.2537,
       "n": 5074,
       "p_over_2035": 0.023649980291683092,
@@ -139,7 +139,7 @@
       "p_below_2045": 0.5212239388030598
     },
     {
-      "label": "New AI-enabled imaging applications in the top third",
+      "label": "Many new AI-enabled imaging uses (top third)\u2020",
       "share": 0.33335,
       "n": 6667,
       "p_over_2035": 0.25123743812809357,
@@ -149,7 +149,7 @@
       "p_below_2045": 0.3239838008099595
     },
     {
-      "label": "New AI-enabled imaging applications in the bottom third",
+      "label": "Few new AI-enabled imaging uses (bottom third)\u2020",
       "share": 0.33335,
       "n": 6667,
       "p_over_2035": 0.10304484775761212,
@@ -159,7 +159,7 @@
       "p_below_2045": 0.27253637318134094
     },
     {
-      "label": "Transformative-AI branch",
+      "label": "Transformative-AI regime",
       "share": 0.11855,
       "n": 2371,
       "p_over_2035": 0.9603542808941375,
@@ -169,7 +169,7 @@
       "p_below_2045": 0.9970476592155209
     },
     {
-      "label": "Excluding the transformative-AI branch",
+      "label": "Any regime except transformative AI",
       "share": 0.88145,
       "n": 17629,
       "p_over_2035": 0.055873844233932726,
@@ -474,7 +474,7 @@
     },
     {
       "key": "attending",
-      "label": "Early-career radiologist",
+      "label": "Practicing radiologist",
       "start": 2026,
       "entry_year": 2026,
       "entry_p_over": 0.0,

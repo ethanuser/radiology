@@ -13,7 +13,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from model import analysis, export_web, plots
+from model import analysis, backtest, export_web, plots
 from model.params import PARAMS, evidence_counts
 
 ROOT = Path(__file__).parent
@@ -47,6 +47,7 @@ def main():
     ev = analysis.evidence_attribution(args.tornado_n)
     val = analysis.validation(s, o)
     extra = analysis.extra_metrics(s, o)
+    bt = backtest.run_backtest()
 
     out = ROOT / "outputs"
     out.mkdir(exist_ok=True)
@@ -60,6 +61,7 @@ def main():
     ev.to_csv(out / "evidence_attribution.csv", index=False, float_format="%.4f")
     (out / "validation.json").write_text(json.dumps(val, indent=2, default=float))
     (out / "extra_metrics.json").write_text(json.dumps(extra, indent=2, default=float))
+    (out / "backtest.json").write_text(json.dumps(bt, indent=2, default=float))
     (out / "parameters.md").write_text(params_markdown())
     for k in ("D", "S", "R", "P", "auto"):
         q = np.percentile(o[k], [5, 10, 25, 50, 75, 90, 95], axis=0)
@@ -67,6 +69,7 @@ def main():
           .to_csv(out / f"quantiles_{k}.csv", index=False, float_format="%.4f")
 
     plots.make_all(s, o, probs, tor, eta, ev, ROOT / "figures", eta_ntai=eta_ntai)
+    plots.fig_backtest(bt, ROOT / "figures")
     fj = export_web.forecast_json(s, o, summary, probs, jev, regimes, tor, eta, ev, val)
     fj["eta2_excluding_transformative"] = [
         {k: (export_web._r(r[k]) if k not in ("param", "label", "short", "evidence") else r[k])
@@ -74,6 +77,7 @@ def main():
         for r in eta_ntai.sort_values("Demand 2045", ascending=False).head(15).to_dict("records")]
     fj["evidence_counts"] = evidence_counts()
     fj["extra"] = json.loads(json.dumps(extra, default=float))
+    fj["backtest"] = json.loads(json.dumps(bt, default=float))
     export_web.write(ROOT / "docs" / "data", fj, export_web.samples_json(s, o))
     print(f"done in {time.time() - t0:.1f}s  ->  outputs/, figures/, docs/data/")
     with pd.option_context("display.width", 200, "display.max_columns", 50):

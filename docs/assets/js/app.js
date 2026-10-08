@@ -1,65 +1,92 @@
-/* Page logic: data binding, citations, scrollytelling dashboard, interactive sections. */
+/* Page logic shared by the main page and the personal page.
+   <body data-page="main|personal" data-root="." data-stage="m1" data-start="2035"> */
 /* global d3, Charts */
 (async function () {
   const { fmt, css } = Charts;
-  const F = await (await fetch("data/forecast.json")).json();
+  const BODY = document.body;
+  const ROOTP = BODY.dataset.root || ".";
+  const F = await (await fetch(`${ROOTP}/data/forecast.json`)).json();
   const years = F.years;
-  const yi = (y) => years.indexOf(y);
+  const yi = (y) => years.indexOf(Math.min(2066, Math.max(2026, y)));
   const SUM = Object.fromEntries(F.summary.map((r) => [r.year, r]));
   const JEV = Object.fromEntries(F.jevons.table.map((r) => [r.year, r]));
   const REG = Object.fromEntries(F.regimes.table.map((r) => [r.regime, r]));
   const X = F.extra;
-  F.ratio0_gap = 1 - F.series.R.p50[0];
-  const ROOT = { F, SUM, JEV, REG, X, VAL: F.validation };
-  const FMT = {
-    pct: fmt.pct, pct1: fmt.pct1, x2: fmt.x2, chg: fmt.chg, mult: fmt.mult,
-    int: (v) => d3.format(",.0f")(v),
-  };
+  const S = F.series;
+  F.ratio0_gap = 1 - S.R.p50[0];
+  F.n_params = F.params.length;
+  // how much narrower the 2045 demand range gets if the judgment-call inputs were known exactly
+  F.subj_shrink = (F.evidence_attribution.find((r) => r.metric === "D" && r.year === 2045 && r.grade === "Subjective") || {}).shrink;
+  const BT = F.backtest;
+  const ROOT = { F, SUM, JEV, REG, X, VAL: F.validation, BT };
+  const FMT = { pct: fmt.pct, pct1: fmt.pct1, x2: fmt.x2, chg: fmt.chg, mult: fmt.mult, int: (v) => d3.format(",.0f")(v),
+    r100: (v) => d3.format(",.0f")(Math.round(v / 100) * 100), gr: (v) => fmt.pct(v - 1),
+    yr: (v) => String(Math.round(v)) };
+  const $ = (s) => document.querySelector(s);
+  const has = (s) => !!document.querySelector(s);
+
+  // ------------------------------------------------------------------ career stage (optional personalization)
+  const stages = F.stages;
+  let stage = null;
+  function loadStage() {
+    if (BODY.dataset.stage) {
+      const st = stages.find((s) => s.key === BODY.dataset.stage);
+      stage = { ...st, start: +(BODY.dataset.start || st.start) };
+      return;
+    }
+    try { const k = localStorage.getItem("stage"); if (k) stage = stages.find((s) => s.key === k) || null; } catch (e) { stage = null; }
+  }
+  loadStage();
+  // years from the Match to independent practice: PGY-1 + 4 DR years + 1-year fellowship (data-train="5" without fellowship)
+  const TRAIN = +(BODY.dataset.train || 6);
+  function phaseOf(year) {
+    if (!stage) return "";
+    const A = stage.start;
+    if (year >= A) return year === A ? "starting independent practice" : `${year - A} years into practice`;
+    if (year >= A - TRAIN) return TRAIN === 6 ? "in residency or fellowship" : "in residency";
+    if (year >= A - TRAIN - 4) return "in medical school";
+    return "before medical school";
+  }
 
   // ------------------------------------------------------------------ data binding
-  function resolve(path) {
-    return path.split(".").reduce((o, k) => (o == null ? undefined : o[k]), ROOT);
-  }
+  const resolve = (path) => path.split(".").reduce((o, k) => (o == null ? undefined : o[k]), ROOT);
   function bind(root = document) {
     root.querySelectorAll("[data-v]").forEach((el) => {
       const v = resolve(el.dataset.v);
       if (v === undefined || v === null) return;
-      const f = FMT[el.dataset.f || "x2"];
-      if (el.hasAttribute("data-count") && typeof v === "number") countUp(el, v, f);
-      else el.textContent = f(v);
+      const f = FMT[el.dataset.f] || FMT.x2; // unknown format: fall back rather than break the page
+      if (el.hasAttribute("data-count") && typeof v === "number") countUp(el, v, f); else el.textContent = f(v);
     });
   }
   function countUp(el, v, f) {
-    const io = new IntersectionObserver((ents) => {
-      ents.forEach((e) => {
-        if (!e.isIntersecting) return;
-        io.disconnect();
-        const t0 = performance.now(), dur = 1100;
-        const step = (t) => {
-          const k = Math.min(1, (t - t0) / dur);
-          el.textContent = f(v * d3.easeCubicOut(k));
-          if (k < 1) requestAnimationFrame(step);
-        };
-        requestAnimationFrame(step);
-      });
-    });
+    const io = new IntersectionObserver((ents) => ents.forEach((e) => {
+      if (!e.isIntersecting) return;
+      io.disconnect();
+      const t0 = performance.now();
+      const step = (t) => { const k = Math.min(1, (t - t0) / 1100); el.textContent = f(v * d3.easeCubicOut(k)); if (k < 1) requestAnimationFrame(step); };
+      requestAnimationFrame(step);
+    }));
     io.observe(el);
   }
 
-  // ------------------------------------------------------------------ citations (AMA: numbered by first appearance)
+  // ------------------------------------------------------------------ citations: numbering, pop-overs, back-links
   const refOrder = [];
+  const citeOcc = {};
   function cite(root = document) {
-    root.querySelectorAll("sup.cite[data-ref]").forEach((el) => {
-      const keys = el.dataset.ref.split(/[;,\s]+/).filter(Boolean);
+    root.querySelectorAll("sup.cite[data-ref]:not([data-done])").forEach((el) => {
+      el.dataset.done = "1";
+      const keys = el.dataset.ref.split(/[;,\s]+/).filter((k) => F.references[k]);
       el.replaceChildren();
       keys.forEach((k, i) => {
-        if (!F.references[k]) return;
         if (!refOrder.includes(k)) refOrder.push(k);
         const n = refOrder.indexOf(k) + 1;
+        citeOcc[n] = (citeOcc[n] || 0) + 1;
         const a = document.createElement("a");
         a.href = "#ref-" + n;
+        a.id = `cite-${n}-${citeOcc[n]}`;
+        a.className = "citelink";
+        a.dataset.key = k;
         a.textContent = n;
-        a.title = F.references[k].html.replace(/<[^>]+>/g, "");
         el.appendChild(a);
         if (i < keys.length - 1) el.appendChild(document.createTextNode(","));
       });
@@ -67,384 +94,497 @@
     renderRefs();
   }
   function renderRefs() {
-    const ol = document.getElementById("refList");
+    const ol = $("#refList");
+    if (!ol) return;
     ol.replaceChildren();
+    const letters = "abcdefghijklmnopqrstuvwxyz";
     refOrder.forEach((k, i) => {
+      const n = i + 1;
       const li = document.createElement("li");
-      li.id = "ref-" + (i + 1);
-      const r = F.references[k];
-      // reference HTML is generated by model/references.py (trusted): AMA text with <i> and <a> only
-      li.innerHTML = r.html;
+      li.id = "ref-" + n;
+      const body = document.createElement("span");
+      body.innerHTML = F.references[k].html; // generated by model/references.py: AMA text with <i> and <a> only
+      li.appendChild(body);
+      // only places still on the page (diagram details and filtered tables re-render their citations)
+      const live = [];
+      for (let j = 1; j <= (citeOcc[n] || 0); j++) if (document.getElementById(`cite-${n}-${j}`)) live.push(j);
+      if (live.length) {
+        const back = document.createElement("span");
+        back.className = "backlinks";
+        back.appendChild(document.createTextNode(" Cited at: "));
+        live.forEach((j, m) => {
+          const tag = live.length > 1 ? (letters[m] || String(m + 1)) : "";
+          const a = document.createElement("a");
+          a.href = `#cite-${n}-${j}`;
+          a.textContent = "↩" + tag;
+          a.title = "Back to where this is cited" + (tag ? ` (${tag})` : "");
+          back.appendChild(a);
+          back.appendChild(document.createTextNode(" "));
+        });
+        li.appendChild(back);
+      }
       ol.appendChild(li);
     });
   }
-  const citeHTML = (keys) => `<sup class="cite" data-ref="${keys}"></sup>`;
+  // pop-over
+  const pop = document.createElement("div");
+  pop.id = "citePop";
+  pop.className = "citepop";
+  pop.setAttribute("role", "dialog");
+  pop.setAttribute("aria-label", "Reference details");
+  pop.hidden = true;
+  document.body.appendChild(pop);
+  let popPinned = false, popHideTimer = 0;
+  function showPop(a, pin) {
+    const k = a.dataset.key, r = F.references[k], n = refOrder.indexOf(k) + 1;
+    pop.replaceChildren();
+    const head = document.createElement("div");
+    head.className = "cp-head";
+    head.textContent = `Reference ${n}`;
+    const ref = document.createElement("div");
+    ref.className = "cp-ref";
+    ref.innerHTML = r.html; // trusted, generated
+    pop.append(head, ref);
+    if (r.use) {
+      const u = document.createElement("div");
+      u.className = "cp-use";
+      const b = document.createElement("b");
+      b.textContent = "What this source supports here: ";
+      u.append(b, document.createTextNode(r.use));
+      pop.appendChild(u);
+    }
+    const acts = document.createElement("div");
+    acts.className = "cp-acts";
+    const mk = (href, text, ext) => { const x = document.createElement("a"); x.href = href; x.textContent = text; if (ext) { x.target = "_blank"; x.rel = "noopener"; } return x; };
+    if (r.passage) acts.appendChild(mk(r.passage, "Open source at this passage ↗", true));
+    else acts.appendChild(mk(r.href, "Open source ↗", true));
+    acts.appendChild(mk("#ref-" + n, "Go to reference list ↓"));
+    pop.appendChild(acts);
+    if (r.passage) {
+      const note = document.createElement("div");
+      note.className = "cp-note";
+      note.textContent = "Opens the abstract with the supporting sentence highlighted (browsers with text-fragment support).";
+      pop.appendChild(note);
+    }
+    pop.hidden = false;
+    const rc = a.getBoundingClientRect();
+    const w = Math.min(420, window.innerWidth - 24);
+    pop.style.width = w + "px";
+    pop.style.left = Math.min(window.innerWidth - w - 12, Math.max(12, rc.left - w / 2)) + "px";
+    pop.style.top = rc.bottom + 8 + "px";
+    const ph = pop.offsetHeight;
+    if (rc.bottom + 8 + ph > window.innerHeight - 8) pop.style.top = Math.max(8, rc.top - ph - 8) + "px";
+    popPinned = !!pin;
+  }
+  function hidePop() { pop.hidden = true; popPinned = false; }
+  document.addEventListener("pointerover", (ev) => {
+    const a = ev.target.closest && ev.target.closest("a.citelink");
+    if (a && ev.pointerType !== "touch") { clearTimeout(popHideTimer); if (!popPinned) showPop(a, false); }
+  });
+  document.addEventListener("pointerout", (ev) => {
+    const a = ev.target.closest && ev.target.closest("a.citelink");
+    if (a && !popPinned) popHideTimer = setTimeout(() => { if (!pop.matches(":hover")) hidePop(); }, 300);
+  });
+  pop.addEventListener("pointerleave", () => { if (!popPinned) popHideTimer = setTimeout(hidePop, 250); });
+  pop.addEventListener("pointerenter", () => clearTimeout(popHideTimer));
+  document.addEventListener("focusin", (ev) => { const a = ev.target.closest && ev.target.closest("a.citelink"); if (a) showPop(a, false); });
+  document.addEventListener("click", (ev) => {
+    const a = ev.target.closest && ev.target.closest("a.citelink");
+    if (a) { ev.preventDefault(); ev.stopPropagation(); showPop(a, true); return; }
+    if (!pop.hidden && !pop.contains(ev.target)) hidePop();
+    if (pop.contains(ev.target) && ev.target.closest('a[href^="#"]')) setTimeout(hidePop, 0);
+  }, true);
+  document.addEventListener("keydown", (ev) => { if (ev.key === "Escape") hidePop(); });
+  window.addEventListener("scroll", () => { if (!pop.hidden && !popPinned) hidePop(); }, { passive: true });
 
   bind();
   cite();
 
   // ------------------------------------------------------------------ helpers
-  const S = F.series;
   const col = () => ({ d: css("--s1"), s: css("--s2"), r: css("--s7"), a: css("--s3"), y: css("--s4"), m: css("--s5"), g: css("--s6"), red: css("--s8") });
+  const youMark = () => (stage ? { x: Math.min(2066, stage.start), label: `you start practice (${stage.start})` } : null);
 
-  // ------------------------------------------------------------------ hero chart
+  // ------------------------------------------------------------------ hero
   function heroChart() {
+    if (!has("#heroChart")) return;
     const c = col();
-    Charts.fan("#heroChart", {
-      years, height: 300, animate: true, mark: { x: 2035, label: "attending" },
-      series: [{ label: "Demand", color: c.d, q: S.D }, { label: "Supply", color: c.s, q: S.S }],
-      bands: [[10, 90]],
+    Charts.fan("#heroChart", { years, height: 310, animate: true, mark: youMark(), bands: [[10, 90]],
+      series: [{ label: "Demand", color: c.d, q: S.D }, { label: "Supply", color: c.s, q: S.Sd }], yLabel: "Radiologist FTEs (2026 demand = 1)",
+      extraLines: [{ values: S.B.p50, color: c.d, opacity: 0.8, width: 1.4, dash: "4 4", label: "Demand without new AI (median)", endLabel: "demand without new AI" }] });
+  }
+
+  // ------------------------------------------------------------------ stage selector & stage-dependent text
+  function stageUI() {
+    const sel = $("#stageSelect");
+    if (sel && !sel.options.length) {
+      const o0 = document.createElement("option"); o0.value = ""; o0.textContent = "Just exploring (no personal timeline)"; sel.appendChild(o0);
+      stages.forEach((s) => { const o = document.createElement("option"); o.value = s.key; o.textContent = `${s.label} · practice from ~${s.start}`; sel.appendChild(o); });
+      sel.value = stage ? stage.key : "";
+      sel.addEventListener("change", () => {
+        stage = stages.find((s) => s.key === sel.value) || null;
+        try { if (stage) localStorage.setItem("stage", stage.key); else localStorage.removeItem("stage"); } catch (e) { /* storage unavailable */ }
+        renderAll();
+      });
+    }
+    const out = $("#stageSummary");
+    if (out) {
+      if (!stage) out.textContent = "Pick a stage to mark your own timeline on the charts and in the year-by-year story.";
+      else {
+        const A = stage.start;
+        const p = (y) => fmt.pct(F.probs.p_oversupply[yi(y)]);
+        out.innerHTML = `Typical start of independent practice: <b>${A}</b>. Chance of meaningful oversupply then: <b>${p(A)}</b>; ` +
+          `10 years in: <b>${p(A + 10)}</b>; 20 years in: <b>${p(A + 20)}</b>. Chance the market is still short when you start: <b>${fmt.pct(1 - F.probs.p_supply_exceeds_demand[yi(A)])}</b>.`;
+      }
+    }
+    document.querySelectorAll(".stage-note").forEach((el) => {
+      const y = +el.dataset.year;
+      el.hidden = !stage;
+      if (stage) el.textContent = `Your timeline: in ${y} you would be ${phaseOf(y)}.`;
     });
   }
 
   // ------------------------------------------------------------------ scrollytelling dashboard
-  let dash = null, curYear = 2026;
+  let dash = null, curYear = 2026, curTag = "";
   function dashChart() {
+    if (!has("#dashChart")) return;
     const c = col();
-    dash = Charts.fan("#dashChart", {
-      years, height: 210, reveal: curYear, endLabels: false, yDomain: [0.55, 1.85],
-      series: [{ label: "Demand", color: c.d, q: S.D }, { label: "Supply", color: c.s, q: S.S }],
-      bands: [[10, 90]], refs: [{ y: 1 }],
-    });
+    dash = Charts.fan("#dashChart", { years, height: 230, reveal: curYear, endLabels: false, yDomain: [0.55, 1.85], bands: [[10, 90]],
+      series: [{ label: "Demand", color: c.d, q: S.D }, { label: "Supply", color: c.s, q: S.Sd }], refs: [{ y: 1 }], mark: youMark(), yLabel: "FTEs (2026 demand = 1)" });
   }
   function careerTrack() {
-    const tr = document.getElementById("careerTrack");
+    const tr = $("#careerTrack");
+    if (!tr) return;
     tr.replaceChildren();
-    const x = (y) => ((y - 2026) / 40) * 100 + "%";
-    const segs = [[2026, 2030, "--axis", "MD"], [2030, 2035, "--s4", "Residency"], [2035, 2066, "--s1", "Attending"]];
-    segs.forEach(([a, b, c]) => {
-      const d = document.createElement("div");
-      d.className = "bar"; d.style.left = x(a); d.style.width = `calc(${x(b)} - ${x(a)} - 2px)`; d.style.background = `var(${c})`;
-      tr.appendChild(d);
-    });
-    [[2026, "M1"], [2030, "Match"], [2035, "Attending"], [2045, "+10"], [2055, "+20"], [2066, "+30"]].forEach(([y, t]) => {
-      const l = document.createElement("div");
-      l.className = "lbl"; l.style.left = x(y); l.textContent = t;
-      if (y === 2026) l.style.transform = "none";
-      if (y === 2066) l.style.transform = "translateX(-100%)";
-      tr.appendChild(l);
-    });
-    const now = document.createElement("div");
-    now.className = "now"; now.id = "careerNow"; now.style.left = x(curYear);
-    tr.appendChild(now);
+    const x = (y) => ((Math.min(2066, Math.max(2026, y)) - 2026) / 40) * 100 + "%";
+    if (stage) {
+      const A = stage.start;
+      [[A - TRAIN - 4, A - TRAIN, "--axis"], [A - TRAIN, A, "--s4"], [A, 2066, "--s1"]].forEach(([a, b, cc]) => {
+        if (b <= 2026) return;
+        const d = document.createElement("div");
+        d.className = "bar"; d.style.left = x(a); d.style.width = `calc(${x(b)} - ${x(a)} - 2px)`; d.style.background = `var(${cc})`;
+        tr.appendChild(d);
+      });
+      [[A - TRAIN, "Residency"], [A, "Practice"], [A + 10, "+10"], [A + 20, "+20"], [A + 30, "+30"]].forEach(([y, t]) => {
+        if (y < 2026 || y > 2066) return;
+        const l = document.createElement("div"); l.className = "lbl"; l.style.left = x(y); l.textContent = t; tr.appendChild(l);
+      });
+    } else {
+      const d = document.createElement("div"); d.className = "bar"; d.style.left = "0"; d.style.width = "100%"; d.style.background = "var(--grid)"; tr.appendChild(d);
+      [2026, 2036, 2046, 2056, 2066].forEach((y) => { const l = document.createElement("div"); l.className = "lbl"; l.style.left = x(y); l.textContent = y; tr.appendChild(l); });
+    }
+    const now = document.createElement("div"); now.className = "now"; now.id = "careerNow"; now.style.left = x(curYear); tr.appendChild(now);
   }
   function setYear(y, tag) {
-    curYear = y;
+    if (!has("#dYear")) return;
+    curYear = y; curTag = tag;
     const i = yi(y);
     const q = (k) => [S[k].p10[i], S[k].p50[i], S[k].p90[i]];
-    document.getElementById("dYear").textContent = y;
-    document.getElementById("dTag").textContent = tag;
+    $("#dYear").textContent = y;
+    $("#dTag").textContent = stage ? `${tag} · you: ${phaseOf(y)}` : tag;
     const [r10, r50, r90] = q("R");
-    document.getElementById("dRatio").textContent = fmt.x2(r50);
-    document.getElementById("dRatioR").textContent = `80%: ${fmt.x2(r10)}–${fmt.x2(r90)}`;
+    $("#dRatio").textContent = fmt.x2(r50);
+    $("#dRatioR").textContent = `80% range: ${fmt.x2(r10)}–${fmt.x2(r90)}`;
     const po = F.probs.p_oversupply[i];
-    document.getElementById("dOver").textContent = fmt.pct(po);
-    document.getElementById("dOverM").style.width = Math.min(100, po * 100) + "%";
+    $("#dOver").textContent = fmt.pct(po);
+    $("#dOverM").style.width = Math.min(100, po * 100) + "%";
     const [t10, t50, t90] = q("time_saved");
-    document.getElementById("dSaved").textContent = fmt.pct(t50);
-    document.getElementById("dSavedR").textContent = `80%: ${fmt.pct(t10)}–${fmt.pct(t90)}`;
+    $("#dSaved").textContent = fmt.pct(t50);
+    $("#dSavedR").textContent = `80% range: ${fmt.pct(t10)}–${fmt.pct(t90)}`;
     const [d10, d50, d90] = q("D");
-    document.getElementById("dDem").textContent = y === 2026 ? "1.00" : fmt.chg(d50);
-    document.getElementById("dDemR").textContent = `80%: ${fmt.x2(d10)}–${fmt.x2(d90)}`;
+    $("#dDem").textContent = fmt.x2(d50);
+    $("#dDemR").textContent = `80% range: ${fmt.x2(d10)}–${fmt.x2(d90)}`;
     const [a10, a50, a90] = q("auto");
-    document.getElementById("dAuto").textContent = fmt.pct(a50);
-    document.getElementById("dAutoR").textContent = `80%: ${fmt.pct(a10)}–${fmt.pct(a90)}`;
-    document.getElementById("dBelow").textContent = y === 2026 ? "–" : fmt.pct(F.probs.p_demand_below_today[i]);
-    const now = document.getElementById("careerNow");
+    $("#dAuto").textContent = fmt.pct(a50);
+    $("#dAutoR").textContent = `80% range: ${fmt.pct(a10)}–${fmt.pct(a90)}`;
+    $("#dBelow").textContent = y === 2026 ? "–" : fmt.pct(F.probs.p_demand_below_today[i]);
+    const now = $("#careerNow");
     if (now) now.style.left = ((y - 2026) / 40) * 100 + "%";
     if (dash) dash.setReveal(Math.max(2026.6, y));
   }
   const chapters = [...document.querySelectorAll(".chapter")];
-  const io = new IntersectionObserver((ents) => {
-    ents.forEach((e) => {
-      if (e.isIntersecting) {
-        chapters.forEach((c) => c.classList.toggle("on", c === e.target));
-        setYear(+e.target.dataset.year, e.target.dataset.tag);
-      }
-    });
-  }, { rootMargin: "-45% 0px -45% 0px" });
-  chapters.forEach((c) => io.observe(c));
-  chapters[0].classList.add("on");
+  if (chapters.length) {
+    curTag = chapters[0].dataset.tag;
+    const io = new IntersectionObserver((ents) => ents.forEach((e) => {
+      if (e.isIntersecting) { chapters.forEach((c) => c.classList.toggle("on", c === e.target)); setYear(+e.target.dataset.year, e.target.dataset.tag); }
+    }), { rootMargin: "-45% 0px -45% 0px" });
+    chapters.forEach((c) => io.observe(c));
+    chapters[0].classList.add("on");
+  }
 
   // ------------------------------------------------------------------ model diagram
   const NODES = {
     base: { x: 16, y: 40, t: "1 · Baseline demand", s: "population, aging, utilization" },
-    ai: { x: 286, y: 40, t: "AI-progress factor", s: "4 regimes; drives boxes tagged", factor: true },
-    sup: { x: 556, y: 40, t: "5 · Radiologist supply", s: "cohorts, residency, attrition" },
+    ai: { x: 320, y: 40, t: "AI-progress factor", s: "4 regimes; shifts tagged boxes", factor: true },
+    sup: { x: 624, y: 40, t: "5 · Radiologist supply", s: "cohorts, residency, attrition" },
     prod: { x: 16, y: 160, t: "2 · AI productivity", s: "task-based time savings", ai: true },
-    dem: { x: 286, y: 160, t: "FTE demand", s: "work × time per unit" },
-    rat: { x: 556, y: 160, t: "Supply ÷ demand", s: "shortage ↔ oversupply" },
-    reg: { x: 16, y: 280, t: "4 · Regulation", s: "validation → FDA → payment", ai: true },
-    jev: { x: 286, y: 280, t: "3 · Jevons / rebound", s: "induced & offsetting work", ai: true },
+    dem: { x: 320, y: 160, t: "FTE demand", s: "work × time per unit of work" },
+    rat: { x: 624, y: 160, t: "Supply ÷ demand", s: "shortage ↔ oversupply" },
+    reg: { x: 16, y: 280, t: "4 · Regulation & uptake", s: "validation, FDA, payment", ai: true },
+    jev: { x: 320, y: 280, t: "3 · Jevons / rebound", s: "induced & offsetting work", ai: true },
   };
-  const NW = 188, NH = 62;
+  const NW = 200, NH = 64;
+  const citeHTML = (keys) => `<sup class="cite" data-ref="${keys}"></sup>`;
   const DETAIL = {
-    base: () => `<h4>1 · Baseline imaging demand</h4>
-      <p>Radiologist workload if AI stayed at its 2026 level. It is the product of:</p>
-      <ul><li><b>Demographics</b>: about +0.5%/yr from population growth and aging, from Neiman Institute projections${citeHTML("christensen_util")} shaded down for CBO's 2026 lower-immigration outlook.${citeHTML("cbo_2026")}</li>
-      <li><b>Per-capita utilization</b>: CT use grew 3.7–5.2%/yr and MRI 1.3–2.2%/yr in 2013–16;${citeHTML("smith_bindman_2019")} we start at 1%/yr (wide) and let growth decelerate.</li>
-      <li><b>Work per exam</b>: images per CT/MR study rose ~10× in a decade;${citeHTML("mcdonald_2015")} work per exam grows far more slowly.</li>
-      <li><b>Alternative diagnostics</b> (blood tests, AI-ECG) displace 0–15%.</li></ul>
-      <p>Median result: <b>${fmt.chg(X.baseline["2045"].p50)}</b> workload by 2045 without further AI.</p>`,
-    prod: () => `<h4>2 · AI productivity (task model)</h4>
-      <p>Following Langlotz's task-based analysis,${citeHTML("langlotz_2025")} radiologist time is split into interpretation (42%),
-      measurement & drafting (18%), consultation (13%), administration (15%) and procedures (12%). Each task has its own
-      uncertain AI time-saving ceiling, capability curve and adoption curve.</p>
-      <ul><li>Generative draft reports: −15.5% radiograph reporting time${citeHTML("huang_2025")}</li>
-      <li>AI mammography triage: −44% screen-reading workload${citeHTML("lang_2023")}</li>
-      <li>But real-world meta-analysis: no significant time saving yet${citeHTML("wenderott_2024")}</li></ul>
-      <p>AI also <b>creates</b> oversight work (2–8% of time), the reinstatement effect in Acemoglu & Restrepo's framework.${citeHTML("acemoglu_restrepo_2019")}</p>`,
-    reg: () => `<h4>4 · Regulation & adoption</h4>
-      <p>Autonomous (AI-first) reading is modeled for four tiers of difficulty. Each must pass, in sequence:
-      <b>technical capability → clinical validation → FDA authorization → liability & reimbursement → hospital adoption</b>,
-      then removes 60–95% of radiologist time per study.</p>
-      <ul><li>No U.S. autonomous radiology read authorized as of 2026;${citeHTML("fda_ai_2026")} autonomous retinal AI took 3 years from FDA to payment${citeHTML("abramoff_2018")}</li>
-      <li>Jurors penalize radiologists who disagree with AI${citeHTML("bernstein_2025")}</li></ul>
-      <p>Median year autonomy for complex CT/MR becomes payable: <b>${Math.round(X.stages_p50[2][3])}</b>.</p>`,
-    jev: () => `<h4>3 · Jevons / rebound effects</h4>
-      <p>AI can <i>create</i> work: cheaper reads, faster turnaround, faster scanners, new screening uses, and follow-up of AI-detected
-      findings. Utilization management and a shift of reads to non-radiologists push the other way. Induced exams are capped by
-      scanner and technologist capacity (CT vacancy rate 19.4%).${citeHTML("asrt_2025")}</p>
-      <p>Median offset by 2045: induced demand replaces <b>${fmt.pct(JEV[2045].offset_p50)}</b> of the labor AI saves;
-      P(true Jevons) = <b>${fmt.pct(JEV[2045].p_jevons)}</b>.</p>`,
-    dem: () => `<h4>FTE demand</h4><p>Radiologist FTEs needed = baseline work × (1 + AI-induced work) × time per unit of work
-      + new non-reading tasks. A true Jevons paradox is when this exceeds what demand would have been with AI frozen at 2026.</p>
-      <p>Median 2035: <b>${fmt.chg(SUM[2035].demand_p50)}</b> · 2045: <b>${fmt.chg(SUM[2045].demand_p50)}</b> · 2055: <b>${fmt.chg(SUM[2055].demand_p50)}</b></p>`,
-    sup: () => `<h4>5 · Radiologist supply</h4>
-      <p>A cohort model by years in practice, calibrated so that flat residency positions reproduce the Neiman Institute's
-      +25.7% growth from 2023 to 2055.${citeHTML("christensen_supply")} Mean career ≈ ${fmt.x2(F.validation.mean_career_years).slice(0, 4)} years; attrition
-      ≈ ${fmt.pct1(F.validation.attrition_2023)}/yr.</p>
-      <ul><li>Residency positions start at 1,241 (2026 Match)${citeHTML("nrmp_2026")} and grow ~1%/yr</li>
-      <li>Programs and applicants react to the market with a lag, as in the mid-1990s and mid-2010s gluts${citeHTML("sharafinski_2016")}${citeHTML("shi_2015")}</li>
-      <li>New graduates enter practice 6 years after matching</li></ul>`,
-    rat: () => `<h4>Supply ÷ demand</h4><p>Below 1 = shortage (today ≈ ${fmt.x2(F.series.R.p50[0])}); above 1.10 = meaningful oversupply.
-      The ratio feeds back (lagged) into residency positions and fill rates.</p>
-      <p>P(oversupply): 2035 <b>${fmt.pct(SUM[2035].p_oversupply)}</b> · 2045 <b>${fmt.pct(SUM[2045].p_oversupply)}</b> · 2055 <b>${fmt.pct(SUM[2055].p_oversupply)}</b></p>`,
-    ai: () => `<h4>AI-progress factor</h4><p>One latent factor moves many inputs together: faster AI means earlier capability, higher
-      task ceilings, more new applications and faster scanners. It selects one of four regimes: stall (15%), trend (55%), fast (18%),
-      transformative (12%). These weights are loosely informed by METR,${citeHTML("metr_2025")} AI 2027${citeHTML("ai2027")} and superforecasters.${citeHTML("karger_2023")}</p>`,
+    base: () => `<h4>1 · Baseline imaging demand</h4><p>How much radiologist work there would be if AI stayed at its 2026 level:</p>
+      <ul><li><b>Demographics</b>: about +0.5%/yr from population growth and aging${citeHTML("christensen_util,cbo_2026")}</li>
+      <li><b>Imaging per person</b>: starts near 1.2%/yr (CT grew 3.7–5.2%/yr before 2016) and slows over time${citeHTML("smith_bindman_2019,rosenkrantz_2025")}</li>
+      <li><b>Work per exam</b>: studies keep getting bigger${citeHTML("mcdonald_2015")}</li></ul>
+      <p>Median: <b>${fmt.chg(X.baseline["2045"].p50)}</b> more work by 2045 without further AI. <a href="#m-baseline">Method →</a></p>`,
+    prod: () => `<h4>2 · AI productivity</h4><p>Radiologist time is split into interpretation (42%), drafting and measurement (18%),
+      consultation (13%), administration (15%) and procedures (12%)${citeHTML("langlotz_2025,dhanoa_2013")}. Each task has its own AI time-saving
+      ceiling, capability curve and adoption curve, anchored on measured effects from 0% to 42%${citeHTML("huang_2025,hong_2025,liu_2026")}.
+      AI also <b>adds</b> oversight work${citeHTML("humlum_2025")}. <a href="#m-ai">Method →</a></p>`,
+    reg: () => `<h4>4 · Regulation & uptake</h4><p>Before AI can read a class of exams on its own, it must pass, in order:
+      <b>technical capability → clinical validation → FDA authorization → liability & payment → hospital adoption</b>.
+      No autonomous radiology read is FDA-authorized as of 2026${citeHTML("fda_ai_2026")}. Median year autonomy for complex CT/MR becomes payable:
+      <b>${Math.round(X.stages_p50[2][3])}</b> (tier 3). <a href="#m-pipeline">Method →</a></p>`,
+    jev: () => `<h4>3 · Jevons / rebound</h4><p>Cheaper and faster reads, faster scanners, new screening uses, and follow-up of AI-found
+      findings create <i>more</i> work. Utilization management and reads shifting to other doctors remove some. Scanner and technologist capacity caps
+      the extra exams${citeHTML("asrt_2025")}. By 2045, the new work offsets a median <b>${fmt.pct(JEV[2045].offset_p50)}</b> of the labor AI saves.
+      <a href="#m-jevons">Method →</a></p>`,
+    dem: () => `<h4>FTE demand</h4><p>Radiologist full-time equivalents needed = baseline work × (1 + AI-induced work) × radiologist time per unit
+      of work. Median (2026 = 1): 2035 <b>${fmt.x2(SUM[2035].demand_p50)}</b>, 2045 <b>${fmt.x2(SUM[2045].demand_p50)}</b>.
+      <a href="#term-demand">Definition →</a></p>`,
+    sup: () => `<h4>5 · Radiologist supply</h4><p>A cohort model by years in practice, calibrated to reproduce the Neiman Institute's +25.7% growth
+      (2023–2055) with flat residency positions${citeHTML("christensen_supply")}. Residency positions (1,241 in 2026${citeHTML("nrmp_2026")})
+      react to the market with a lag. New residents become attendings about six years after matching. <a href="#m-supply">Method →</a></p>`,
+    rat: () => `<h4>Supply ÷ demand</h4><p>Below 1 means a shortage (today ≈ ${fmt.x2(S.R.p50[0])}). Above 1.10 is <a href="#term-oversupply">meaningful
+      oversupply</a>. The ratio feeds back into residency positions and, when short, speeds up AI adoption.</p>`,
+    ai: () => `<h4>AI-progress factor</h4><p>One shared factor moves many inputs together: faster AI means earlier capability, higher time-saving
+      ceilings, more new applications and faster scanners. It picks one of four <a href="#term-regimes">regimes</a>: stall 15%, trend 55%,
+      fast 18%, transformative 12%.</p>`,
   };
   function diagram() {
-    const el = document.getElementById("diagram");
+    const el = $("#diagram");
+    if (!el) return;
     el.replaceChildren();
-    const svg = d3.select(el).append("svg").attr("viewBox", "0 0 790 356").attr("role", "img")
-      .attr("aria-label", "Model structure: baseline demand, AI productivity, regulation, Jevons effects and supply feed FTE demand and the supply/demand ratio");
+    const svg = d3.select(el).append("svg").attr("viewBox", "0 0 860 370").attr("role", "img")
+      .attr("aria-label", "Model structure: baseline demand, AI productivity, regulation and Jevons effects determine FTE demand; supply and demand give the supply/demand ratio");
     const defs = svg.append("defs");
     [["arr", css("--s1")], ["arrNeg", css("--s2")], ["arrFb", css("--muted")]].forEach(([id, c]) => {
-      defs.append("marker").attr("id", id).attr("viewBox", "0 0 10 10").attr("refX", 9).attr("refY", 5).attr("markerWidth", 7)
-        .attr("markerHeight", 7).attr("orient", "auto-start-reverse").append("path").attr("d", "M0,0 L10,5 L0,10 z").attr("fill", c);
+      defs.append("marker").attr("id", id).attr("viewBox", "0 0 10 10").attr("refX", 9).attr("refY", 5).attr("markerWidth", 7).attr("markerHeight", 7)
+        .attr("orient", "auto-start-reverse").append("path").attr("d", "M0,0 L10,5 L0,10 z").attr("fill", c);
     });
     const N = NODES;
     const P = (n, fx, fy) => [N[n].x + NW * fx, N[n].y + NH * fy];
     const flows = [
-      [P("base", 1, 0.5), P("dem", 0, 0.3), "", "baseline work"],
-      [P("prod", 1, 0.5), P("dem", 0, 0.7), "neg", ""],
-      [P("reg", 0.5, 0), P("prod", 0.5, 1), "", "AI-first share"],
-      [P("prod", 1, 0.85), P("jev", 0, 0.5), "", "cheaper reads"],
-      [P("jev", 0.5, 0), P("dem", 0.5, 1), "", "induced work"],
-      [P("dem", 1, 0.5), P("rat", 0, 0.5), "", ""],
-      [P("sup", 0.5, 1), P("rat", 0.5, 0), "", ""],
+      [P("base", 1, 0.5), P("dem", 0, 0.3), "", "baseline work", "start"],
+      [P("prod", 1, 0.55), P("dem", 0, 0.75), "neg", "", ""],
+      [P("reg", 0.5, 0), P("prod", 0.5, 1), "", "AI-first share", "v"],
+      [P("prod", 1, 0.9), P("jev", 0, 0.5), "", "cheaper reads", "end"],
+      [P("jev", 0.5, 0), P("dem", 0.5, 1), "", "induced work", "v"],
+      [P("dem", 1, 0.5), P("rat", 0, 0.5), "", "", ""],
+      [P("sup", 0.5, 1), P("rat", 0.5, 0), "", "", ""],
     ];
-    flows.forEach(([a, b, cls, lab], fi) => {
+    flows.forEach(([a, b, cls, lab, pos]) => {
       const p = d3.path();
       p.moveTo(...a);
       if (Math.abs(a[1] - b[1]) < 4 || Math.abs(a[0] - b[0]) < 4) p.lineTo(...b);
       else { const mx = (a[0] + b[0]) / 2; p.bezierCurveTo(mx, a[1], mx, b[1], b[0], b[1]); }
       svg.append("path").attr("d", p.toString()).attr("class", "flow " + cls).attr("marker-end", `url(#${cls === "neg" ? "arrNeg" : "arr"})`);
-      if (lab) {
-        const isV = Math.abs(a[0] - b[0]) < 4;
-        const lx = isV ? a[0] + 8 : (fi === 0 ? a[0] + 8 : b[0] - 8);
-        const ly = isV ? (a[1] + b[1]) / 2 + 4 : (fi === 0 ? a[1] - 7 : b[1] - 9);
-        svg.append("text").attr("class", "flowlab").attr("x", lx).attr("y", ly)
-          .attr("text-anchor", isV || fi === 0 ? "start" : "end").text(lab);
-      }
+      if (!lab) return;
+      const t = svg.append("text").attr("class", "flowlab halo");
+      if (pos === "v") t.attr("x", a[0] + 8).attr("y", (a[1] + b[1]) / 2 + 4);
+      else if (pos === "start") t.attr("x", a[0] + 10).attr("y", a[1] - 9);
+      else t.attr("x", b[0] - 10).attr("y", b[1] - 10).attr("text-anchor", "end");
+      t.text(lab);
     });
-    svg.append("path").attr("d", `M ${N.rat.x + NW} ${N.rat.y + NH / 2} C 786 ${N.rat.y + NH / 2}, 786 ${N.sup.y + NH / 2}, ${N.sup.x + NW} ${N.sup.y + NH / 2}`)
+    svg.append("path").attr("d", `M ${N.rat.x + NW} ${N.rat.y + NH / 2} C 852 ${N.rat.y + NH / 2}, 852 ${N.sup.y + NH / 2}, ${N.sup.x + NW} ${N.sup.y + NH / 2}`)
       .attr("class", "flow fb").attr("marker-end", "url(#arrFb)");
-    svg.append("text").attr("class", "flowlab").attr("x", 782).attr("y", 135).attr("text-anchor", "end").text("lagged signal");
+    svg.append("text").attr("class", "flowlab halo").attr("x", 848).attr("y", 140).attr("text-anchor", "end").text("lagged signal");
     Object.entries(N).forEach(([k, n]) => {
-      const g = svg.append("g").attr("class", "node" + (n.factor ? " factor" : "")).attr("data-k", k)
-        .attr("transform", `translate(${n.x},${n.y})`).attr("tabindex", 0).attr("role", "button").attr("aria-label", n.t)
+      const g = svg.append("g").attr("class", "node" + (n.factor ? " factor" : "")).attr("data-k", k).attr("transform", `translate(${n.x},${n.y})`)
+        .attr("tabindex", 0).attr("role", "button").attr("aria-label", n.t)
         .on("click", () => select(k)).on("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); select(k); } });
       g.append("rect").attr("width", NW).attr("height", NH);
-      g.append("text").attr("x", 12).attr("y", 26).text(n.t);
-      g.append("text").attr("x", 12).attr("y", 46).attr("class", "sub").text(n.s);
-      if (n.factor) {
-        g.append("circle").attr("cx", NW - 16).attr("cy", 41).attr("r", 9).attr("fill", css("--surface")).attr("stroke", css("--s1"));
-        g.append("text").attr("x", NW - 16).attr("y", 41).attr("dy", "0.35em").attr("text-anchor", "middle").attr("class", "badge").text("AI");
-      }
-      if (n.ai) {
-        g.append("circle").attr("cx", NW - 14).attr("cy", 14).attr("r", 10).attr("fill", css("--accent-wash")).attr("stroke", css("--s1"));
-        g.append("text").attr("x", NW - 14).attr("y", 14).attr("dy", "0.35em").attr("text-anchor", "middle").attr("class", "badge").text("AI");
+      const t1 = g.append("text").attr("x", 14).attr("y", 30).text(n.t);
+      const t2 = g.append("text").attr("x", 14).attr("y", 50).attr("class", "sub").text(n.s);
+      [[t1, 15], [t2, 12.5]].forEach(([t, size]) => { // shrink text that would overflow the box
+        let s = size;
+        while (t.node().getComputedTextLength() > NW - 28 && s > 9) { s -= 0.5; t.style("font-size", s + "px"); }
+      });
+      if (n.ai || n.factor) { // badge sits on the box's top edge, clear of the text
+        const b = g.append("g").attr("transform", `translate(${NW - 26},0)`);
+        b.append("rect").attr("x", -16).attr("y", -10).attr("width", 32).attr("height", 20).attr("rx", 10).attr("class", "badge-bg");
+        b.append("text").attr("text-anchor", "middle").attr("dy", "0.35em").attr("class", "badge").text("AI");
       }
     });
     function select(k) {
       svg.selectAll(".node").classed("sel", function () { return this.dataset.k === k; });
-      const d = document.getElementById("diagramDetail");
-      d.innerHTML = DETAIL[k]();  // authored content
+      const d = $("#diagramDetail");
+      d.innerHTML = DETAIL[k](); // authored content
       cite(d);
     }
-    select("prod");
+    select("ai");
   }
 
-  // ------------------------------------------------------------------ regime chart
+  // ------------------------------------------------------------------ charts
   function regimeChart() {
+    if (!has("#regimeChart")) return;
     const ramp = [css("--ramp-1"), css("--ramp-2"), css("--ramp-3"), css("--ramp-4")];
-    Charts.lines("#regimeChart", {
-      years, height: 280, yFmt: fmt.x2, valueFmt: fmt.x2, refs: [{ y: 1 }], mark: { x: 2035, label: "attending" },
-      series: [...F.regimes.names.map((n, r) => ({ label: `${n} (${fmt.pct(F.regimes.weights[r])})`, color: ramp[r], values: F.regimes.D_p50[r] })),
-        { label: "Supply, all worlds (median)", color: css("--s2"), values: S.S.p50, width: 1.5, dash: "4 3" }],
-      yDomain: [0.4, 1.5], legend: true,
-    });
+    Charts.lines("#regimeChart", { years, height: 290, yFmt: fmt.x2, valueFmt: fmt.x2, refs: [{ y: 1 }], mark: youMark(), yDomain: [0.4, 1.5], legend: true,
+      yLabel: "Median FTEs (2026 demand = 1)",
+      series: [...F.regimes.names.map((n, r) => ({ label: `${n} (${fmt.pct(F.regimes.weights[r])} of futures)`, color: ramp[r], values: F.regimes.D_p50[r] })),
+        { label: "Supply, all futures (median)", color: css("--s2"), values: S.Sd.p50, width: 1.5, dash: "4 3" }] });
   }
-
-  // ------------------------------------------------------------------ main forecast charts
+  function backtestChart() {
+    if (!has("#backtestChart")) return;
+    Charts.backtest("#backtestChart", BT);
+    const t = $("#backtestTable");
+    if (t) {
+      const rows = BT.occupations.map((r) => `<tr><td>${r.label}</td><td class="num"><b>${fmt.x2(r.actual)}</b></td><td class="num">${fmt.x2(r.q.p50)} (${fmt.x2(r.q.p10)}–${fmt.x2(r.q.p90)})</td>
+        <td class="num">${fmt.x2(r.bls)}</td><td class="num">${fmt.x2(r.trend)}</td><td class="num">${r.in80 ? "yes" : "no"}</td></tr>`).join("");
+      t.innerHTML = `<thead><tr><th>Occupation (2025 ÷ 2016)</th><th class="num">Actual</th><th class="num">This method: median (80% range)</th><th class="num">BLS</th><th class="num">Trend</th><th class="num">In 80% range?</th></tr></thead><tbody>${rows}</tbody>`;
+    }
+  }
   function forecastCharts() {
     const c = col();
-    Charts.fan("#mainChart", {
-      years, height: 360, mark: { x: 2035, label: "M1 becomes attending" },
-      series: [{ label: "Demand", color: c.d, q: S.D }, { label: "Supply", color: c.s, q: S.S }], refs: [{ y: 1 }],
-    });
-    Charts.fan("#ratioChart", {
-      years, height: 300, yDomain: [0.6, 1.8], endLabels: true,
-      series: [{ label: "S ÷ D", color: c.r, q: S.R }],
-      refs: [{ y: 1, color: css("--ink-2"), label: "balance" }, { y: 1.1, color: c.red, label: "oversupply" }],
-    });
-    Charts.lines("#probChart", {
-      years, height: 300, yDomain: [0, 0.6], mark: { x: 2035, label: "attending" },
+    if (has("#mainChart")) Charts.fan("#mainChart", { years, height: 390, mark: youMark(), showLegend: true,
+      series: [{ label: "Demand", color: c.d, q: S.D }, { label: "Supply", color: c.s, q: S.Sd }], refs: [{ y: 1 }], yLabel: "Radiologist FTEs (2026 demand = 1)",
+      extraLines: [{ values: S.B.p50, color: c.d, opacity: 0.8, width: 1.4, dash: "4 4", label: "Demand without new AI (median)", endLabel: "demand without new AI" }] });
+    if (has("#ratioChart")) Charts.fan("#ratioChart", { years, height: 320, yDomain: [0.6, 1.8], mark: youMark(),
+      series: [{ label: "S ÷ D", color: c.r, q: S.R }], yLabel: "Supply ÷ demand",
+      refs: [{ y: 1, color: css("--ink-2"), label: "balance (1.0)" }, { y: 1.1, color: c.red, label: "meaningful oversupply (1.10)" }] });
+    if (has("#probChart")) Charts.lines("#probChart", { years, height: 320, yDomain: [0, 0.6], mark: youMark(), legend: true, yLabel: "Share of simulated futures",
       series: [
         { label: "Demand below 2026 level", color: c.d, values: F.probs.p_demand_below_today },
-        { label: "Meaningful oversupply (S/D > 1.10)", color: c.s, values: F.probs.p_oversupply },
+        { label: "Meaningful oversupply (supply ÷ demand > 1.10)", color: c.s, values: F.probs.p_oversupply },
         { label: "Demand below 80% of 2026", color: c.a, values: F.probs.p_demand_below_80 },
-        { label: "Demand below 50% of 2026", color: c.y, values: F.probs.p_demand_below_50 },
-      ], legend: true,
-    });
+        { label: "Demand below 50% of 2026", color: c.y, values: F.probs.p_demand_below_50 }] });
   }
-
   function headlineTable() {
-    const t = document.getElementById("headlineTable");
+    const t = $("#headlineTable");
+    if (!t) return;
     const ys = F.report_years;
     const band = (k, f) => ys.map((y) => `${f(SUM[y][k + "_p50"])} <span class="muted">(${f(SUM[y][k + "_p10"])}–${f(SUM[y][k + "_p90"])})</span>`);
     const rows = [
-      ["FTE demand", band("demand", fmt.x2)], ["FTE supply", band("supply", fmt.x2)], ["Supply ÷ demand", band("ratio", fmt.x2)],
-      ["AI productivity", band("productivity", fmt.x2)], ["AI-first / autonomous share", band("autonomous", fmt.pct)],
-      ["P(demand < 2026)", ys.map((y) => fmt.pct(SUM[y].p_demand_below_today))],
-      ["P(demand < 80%)", ys.map((y) => fmt.pct(SUM[y].p_demand_below_80))],
-      ["P(demand < 50%)", ys.map((y) => fmt.pct(SUM[y].p_demand_below_50))],
+      ["FTE demand (2026 demand = 1)", band("demand", fmt.x2)], ["FTE supply (2026 demand = 1)", band("supplyd", fmt.x2)], ["Supply ÷ demand", band("ratio", fmt.x2)],
+      ["AI time saved (share of radiologist time)", ys.map((y) => { const i = yi(y); return `${fmt.pct(S.time_saved.p50[i])} <span class="muted">(${fmt.pct(S.time_saved.p10[i])}–${fmt.pct(S.time_saved.p90[i])})</span>`; })],
+      ["AI-first share of interpretive work", band("autonomous", fmt.pct)],
+      ["P(demand < 2026)", ys.map((y) => fmt.pct(SUM[y].p_demand_below_today))], ["P(demand < 80% of 2026)", ys.map((y) => fmt.pct(SUM[y].p_demand_below_80))],
+      ["P(demand < 50% of 2026)", ys.map((y) => fmt.pct(SUM[y].p_demand_below_50))],
       ["<b>P(meaningful oversupply)</b>", ys.map((y) => `<b>${fmt.pct(SUM[y].p_oversupply)}</b>`)],
-      ["P(severe oversupply, >1.25)", ys.map((y) => fmt.pct(SUM[y].p_severe_oversupply))],
-      ["P(shortage > 10%)", ys.map((y) => fmt.pct(SUM[y].p_shortage_10))],
-    ];
+      ["P(severe oversupply, supply ÷ demand > 1.25)", ys.map((y) => fmt.pct(SUM[y].p_severe_oversupply))],
+      ["P(supply exceeds demand)", ys.map((y) => fmt.pct(SUM[y].p_supply_exceeds_demand))],
+      ["P(meaningful shortage, supply ÷ demand < 0.90)", ys.map((y) => fmt.pct(SUM[y].p_shortage_10))]];
     t.innerHTML = `<thead><tr><th>Metric</th>${ys.map((y) => `<th class="num">${y}</th>`).join("")}</tr></thead>
-      <tbody>${rows.map(([l, v]) => `<tr><td>${l}</td>${v.map((c) => `<td class="num">${c}</td>`).join("")}</tr>`).join("")}</tbody>`;
+      <tbody>${rows.map(([l, v]) => `<tr><td>${l}</td>${v.map((cc) => `<td class="num">${cc}</td>`).join("")}</tr>`).join("")}</tbody>`;
   }
-
-  // ------------------------------------------------------------------ AI charts
   function aiCharts() {
     const c = col();
-    Charts.fan("#prodChart", { years, height: 280, series: [{ label: "Productivity", color: c.d, q: S.P, fmt: fmt.mult }], yDomain: [0.9, 4.2], valueFmt: fmt.mult, yFmt: (d) => d + "×", mark: { x: 2035, label: "2035" } });
-    Charts.fan("#autoChart", { years, height: 280, series: [{ label: "AI-first", color: c.a, q: S.auto, fmt: fmt.pct }], yDomain: [0, 1], valueFmt: fmt.pct, yFmt: d3.format(".0%"), mark: { x: 2035, label: "2035" } });
-    Charts.pipeline("#pipelineChart", F.pipeline);
+    if (has("#prodChart")) Charts.fan("#prodChart", { years, height: 300, series: [{ label: "Time saved", color: c.d, q: S.time_saved, fmt: fmt.pct }], yDomain: [0, 1],
+      valueFmt: fmt.pct, yFmt: d3.format(".0%"), mark: youMark(), yLabel: "Share of radiologist time saved" });
+    if (has("#autoChart")) Charts.fan("#autoChart", { years, height: 300, series: [{ label: "AI-first", color: c.a, q: S.auto, fmt: fmt.pct }], yDomain: [0, 1],
+      valueFmt: fmt.pct, yFmt: d3.format(".0%"), mark: youMark(), yLabel: "Share of interpretive work" });
+    if (has("#pipelineChart")) Charts.pipeline("#pipelineChart", F.pipeline);
   }
-
-  // ------------------------------------------------------------------ Jevons
   function jevonsCharts() {
     const c = col();
-    const chColors = {
-      "Cheaper interpretation (price)": c.d, "Faster turnaround & availability": c.a, "Scanner throughput / latent demand": c.y,
-      "New applications & screening": c.m, "Incidental findings & follow-up": c.g, "New radiologist tasks": c.r,
-      "Utilization management (AI)": c.s, "Scope shift to non-radiologists": c.red,
-    };
-    Charts.stacked("#jevonsChart", {
-      years, height: 360, valueFmt: (v) => d3.format("+.1%")(v).replace("-", "−"), yFmt: d3.format(".0%"),
+    const chColors = { "Cheaper interpretation (price)": c.d, "Faster turnaround & availability": c.a, "Scanner throughput / latent demand": c.y,
+      "New applications & screening": c.m, "Incidental findings & follow-up": c.g, "New radiologist tasks": c.r, "Utilization management (AI)": c.s,
+      "Scope shift to non-radiologists": c.red };
+    if (has("#jevonsChart")) Charts.stacked("#jevonsChart", { years, height: 380, valueFmt: (v) => d3.format("+.1%")(v).replace("-", "−"), yFmt: d3.format(".0%"),
+      yLabel: "Share of 2026 radiologist FTEs (mean)",
       layers: Object.entries(F.jevons.channels).map(([k, v]) => ({ label: k, values: v, color: chColors[k] })),
-      overlays: [{ label: "Labor saved by AI productivity", values: F.jevons.labor_saved_mean, color: css("--ink"), width: 2.4 },
-        { label: "Net induced demand", values: F.jevons.induced_mean, color: css("--ink-2"), width: 2, dash: "6 4" }],
-    });
-    const j = F.jevons;
-    const idx = years.map((y, i) => i).filter((i) => years[i] >= 2028);
-    const ys = idx.map((i) => years[i]);
-    Charts.fan("#offsetChart", {
-      years: ys, height: 280, yDomain: [0, 1.4], valueFmt: fmt.pct, yFmt: d3.format(".0%"), bands: [[10, 90]],
-      series: [{ label: "Offset", color: c.m, q: { p10: idx.map((i) => j.offset_p10[i]), p25: idx.map((i) => j.offset_p10[i]), p50: idx.map((i) => j.offset_p50[i]), p75: idx.map((i) => j.offset_p90[i]), p90: idx.map((i) => j.offset_p90[i]) } }],
-      refs: [{ y: 1, color: c.red, label: "Jevons threshold" }],
-      extraLines: [],
-    });
+      overlays: [{ label: "Radiologist time saved by AI", values: F.jevons.labor_saved_mean, color: css("--ink"), width: 2.4 },
+        { label: "Net new work created by AI", values: F.jevons.induced_mean, color: css("--ink-2"), width: 2, dash: "6 4" }] });
+    if (has("#offsetChart")) {
+      const j = F.jevons;
+      const idx = years.map((y, i) => i).filter((i) => years[i] >= 2028);
+      Charts.fan("#offsetChart", { years: idx.map((i) => years[i]), height: 300, yDomain: [0, 1.4], valueFmt: fmt.pct, yFmt: d3.format(".0%"), bands: [[10, 90]],
+        yLabel: "New work ÷ time saved",
+        series: [{ label: "Offset", color: c.m, q: { p10: idx.map((i) => j.offset_p10[i]), p25: idx.map((i) => j.offset_p10[i]), p50: idx.map((i) => j.offset_p50[i]), p75: idx.map((i) => j.offset_p90[i]), p90: idx.map((i) => j.offset_p90[i]) } }],
+        refs: [{ y: 1, color: c.red, label: "Jevons threshold (1.0)" }] });
+    }
   }
-
-  // ------------------------------------------------------------------ drivers
   let tornadoMetric = "pOver2045";
-  function tornadoChart() { Charts.tornado("#tornadoChart", F.tornado, tornadoMetric); }
+  const METRIC_LABEL = { pOver2035: "P(meaningful oversupply) in 2035", pOver2045: "P(meaningful oversupply) in 2045", pOver2055: "P(meaningful oversupply) in 2055",
+    D2035_p50: "Median FTE demand in 2035 (2026 = 1)", D2045_p50: "Median FTE demand in 2045 (2026 = 1)", D2055_p50: "Median FTE demand in 2055 (2026 = 1)" };
+  function tornadoChart() { if (has("#tornadoChart")) Charts.tornado("#tornadoChart", F.tornado, tornadoMetric, { xLabel: METRIC_LABEL[tornadoMetric] }); }
   document.querySelectorAll("#tornadoControls button").forEach((b) => b.addEventListener("click", () => {
     document.querySelectorAll("#tornadoControls button").forEach((x) => x.setAttribute("aria-pressed", x === b));
     tornadoMetric = b.dataset.m; tornadoChart();
   }));
   let etaScope = "all";
   function etaChart() {
+    if (!has("#etaChart")) return;
     const src = etaScope === "all" ? F.eta2 : F.eta2_excluding_transformative;
     const rows = src.slice().sort((a, b) => b["Demand 2045"] - a["Demand 2045"]).slice(0, 12)
       .map((r) => ({ label: r.short || r.label, value: r["Demand 2045"], ev: r.evidence, tipLabel: "η², demand 2045" }));
     const gc = { E: css("--good"), A: css("--s1"), S: css("--serious") };
-    Charts.hbars("#etaChart", rows, { valueFmt: d3.format(".2f"), max: 0.6, colorFn: (r) => gc[r.ev], badge: (r) => r.ev });
+    Charts.hbars("#etaChart", rows, { valueFmt: d3.format(".2f"), max: 0.6, colorFn: (r) => gc[r.ev], badge: (r) => r.ev,
+      xLabel: "Share of variance in 2045 demand explained (η²)", yLabel: "Input parameter" });
   }
+  // charts inside collapsed <details> are drawn at a default width; redraw at the real width when opened
+  document.querySelectorAll("details").forEach((d) => d.addEventListener("toggle", () => { if (d.open && d.querySelector("#etaChart")) etaChart(); }));
   document.querySelectorAll("[data-s]").forEach((b) => b.addEventListener("click", () => {
     document.querySelectorAll("[data-s]").forEach((x) => x.setAttribute("aria-pressed", x === b));
     etaScope = b.dataset.s; etaChart();
   }));
   function evidenceChart() {
+    if (!has("#evidenceChart")) return;
     const ev = F.evidence_attribution.filter((r) => r.metric === "D" && r.year === 2045);
     const gc = { Empirical: css("--good"), Anchored: css("--s1"), Subjective: css("--serious") };
-    Charts.hbars("#evidenceChart", ev.map((r) => ({ label: `${r.grade} (${r.n_params} params)`, value: Math.max(0, r.shrink), g: r.grade, tipLabel: "interval narrows by" })),
-      { valueFmt: d3.format(".0%"), max: 0.6, colorFn: (r) => gc[r.g] });
+    Charts.hbars("#evidenceChart", ev.map((r) => ({ label: `${r.grade} (${r.n_params} parameters)`, value: Math.max(0, r.shrink), g: r.grade, tipLabel: "interval narrows by" })),
+      { valueFmt: d3.format(".0%"), max: 0.6, colorFn: (r) => gc[r.g], xLabel: "How much narrower the 80% range for 2045 demand gets", yLabel: "Parameters pinned" });
   }
-
-  // ------------------------------------------------------------------ composition
   function compChart() {
+    if (!has("#compChart")) return;
     const c = col();
     const keys = ["interp", "draft", "consult", "admin", "proc", "oversight", "newtasks"];
     const colors = [c.d, c.s, c.a, c.y, c.m, c.g, c.r];
-    Charts.stacked("#compChart", {
-      years, height: 340, yDomain: [0, 1], yFmt: d3.format(".0%"), valueFmt: d3.format(".0%"),
-      layers: keys.map((k, i) => ({ label: F.composition_labels[k], values: F.composition[k], color: colors[i] })),
-    });
+    Charts.stacked("#compChart", { years, height: 360, yDomain: [0, 1], yFmt: d3.format(".0%"), valueFmt: d3.format(".0%"), yLabel: "Share of working time (mean)",
+      layers: keys.map((k, i) => ({ label: F.composition_labels[k], values: F.composition[k], color: colors[i] })) });
   }
 
-  // ------------------------------------------------------------------ M1 cards & signposts
+  // ------------------------------------------------------------------ careers
+  function careerTable() {
+    const t = $("#stageTable");
+    if (!t) return;
+    t.innerHTML = `<thead><tr><th>Where you are in fall 2026</th><th class="num">Typical start of practice*</th><th class="num">P(oversupply) at start</th>
+      <th class="num">10 years in</th><th class="num">20 years in</th><th class="num">30 years in (or 2066)</th><th class="num">P(still a shortage) at start</th></tr></thead><tbody>` +
+      X.stages.map((r) => `<tr class="${stage && stage.key === r.key ? "hl" : ""}"><td>${r.label}</td><td class="num">${r.start}</td><td class="num">${fmt.pct(r.entry_p_over)}</td>
+      <td class="num">${fmt.pct(r.y10_p_over)}</td><td class="num">${fmt.pct(r.y20_p_over)}</td><td class="num">${fmt.pct(r.y30_p_over)} (${r.y30_year})</td>
+      <td class="num">${fmt.pct(r.entry_p_short)}</td></tr>`).join("") + "</tbody>";
+  }
   function horizon() {
-    const el = document.getElementById("horizon");
-    const cards = [[2035, "At graduation"], [2045, "10 years in"], [2055, "20 years in"], [2066, "30 years in"]];
-    el.innerHTML = cards.map(([y, t]) => `<div class="hcard"><div class="y">${y}</div><div class="t">${t}</div>
-      <div class="big">${fmt.pct(SUM[y].p_oversupply)}</div><div class="cap">chance of meaningful oversupply</div>
-      <ul><li>Supply ÷ demand: <b>${fmt.x2(SUM[y].ratio_p50)}</b></li><li>FTE demand: <b>${fmt.chg(SUM[y].demand_p50)}</b> (${fmt.x2(SUM[y].demand_p10)}–${fmt.x2(SUM[y].demand_p90)})</li>
-      <li>AI time saved: <b>${fmt.pct(X.time_saved[String(y)].p50)}</b></li><li>P(demand below today): <b>${fmt.pct(SUM[y].p_demand_below_today)}</b></li></ul></div>`).join("");
+    const el = $("#horizon");
+    if (!el) return;
+    const A = stage ? stage.start : 2035;
+    const cards = [[A, stage ? "When you start practice" : "Mid-2030s entry"], [A + 10, "10 years later"], [A + 20, "20 years later"],
+      [Math.min(A + 30, 2066), A + 30 > 2066 ? `End of forecast (${2066 - A} years in)` : "30 years later"]];
+    el.innerHTML = cards.map(([y, t]) => {
+      const i = yi(y);
+      return `<div class="hcard"><div class="y">${Math.min(y, 2066)}</div><div class="t">${t}</div><div class="big">${fmt.pct(F.probs.p_oversupply[i])}</div>
+      <div class="cap">chance of <a href="#term-oversupply">meaningful oversupply</a></div>
+      <ul><li>Supply ÷ demand: <b>${fmt.x2(S.R.p50[i])}</b></li><li>FTE demand: <b>${fmt.x2(S.D.p50[i])}</b> (80% range ${fmt.x2(S.D.p10[i])}–${fmt.x2(S.D.p90[i])})</li>
+      <li>AI time saved: <b>${fmt.pct(S.time_saved.p50[i])}</b></li><li>P(demand below today): <b>${fmt.pct(F.probs.p_demand_below_today[i])}</b></li></ul></div>`;
+    }).join("");
   }
   function signposts() {
-    const t = document.getElementById("signpostTable");
+    const t = $("#signpostTable");
+    if (!t) return;
     t.innerHTML = `<thead><tr><th>If we observe…</th><th class="num">2035</th><th class="num">2045</th><th class="num">2055</th></tr></thead><tbody>` +
-      X.signposts.map((r) => `<tr><td>${r.label}<div class="muted small">${fmt.pct(r.share)} of worlds</div></td><td class="num">${fmt.pct(r.p_over_2035)}</td><td class="num">${fmt.pct(r.p_over_2045)}</td><td class="num">${fmt.pct(r.p_over_2055)}</td></tr>`).join("") +
-      `</tbody>`;
+      X.signposts.map((r) => `<tr><td>${r.label}<div class="muted small">${fmt.pct(r.share)} of simulated futures</div></td><td class="num">${fmt.pct(r.p_over_2035)}</td><td class="num">${fmt.pct(r.p_over_2045)}</td><td class="num">${fmt.pct(r.p_over_2055)}</td></tr>`).join("") + "</tbody>";
   }
 
   // ------------------------------------------------------------------ parameter table
   const GROUPS = { demand: "Baseline demand", ai_capability: "AI capability", ai_tasks: "AI productivity", autonomy: "Autonomy tiers",
     regulation: "Regulation & adoption", jevons: "Jevons / rebound", supply: "Supply" };
   function paramTable() {
-    const sel = document.getElementById("groupFilter");
+    const sel = $("#groupFilter");
+    if (!sel) return;
     Object.entries(GROUPS).forEach(([k, v]) => { const o = document.createElement("option"); o.value = k; o.textContent = v; sel.appendChild(o); });
     let grade = "all";
+    const nf = (v) => (Math.abs(v) >= 1000 ? d3.format("d")(v) : d3.format(".3~g")(v));
     const render = () => {
-      const q = document.getElementById("paramSearch").value.toLowerCase();
-      const g = sel.value;
-      const rows = F.params.filter((p) => (grade === "all" || p.evidence === grade) && (g === "all" || p.group === g) &&
-        (!q || (p.label + p.name + p.note).toLowerCase().includes(q)));
-      const t = document.getElementById("paramTable");
+      const q = $("#paramSearch").value.toLowerCase(), g = sel.value;
+      const rows = F.params.filter((p) => (grade === "all" || p.evidence === grade) && (g === "all" || p.group === g) && (!q || (p.label + p.name + p.note).toLowerCase().includes(q)));
+      const t = $("#paramTable");
       t.replaceChildren();
       const thead = t.createTHead().insertRow();
-      ["Component", "Parameter", "Distribution", "P10 / P50 / P90", "Grade", "Sources & notes"].forEach((h, i) => {
-        const th = document.createElement("th"); th.textContent = h; if (i === 3) th.className = "num"; thead.appendChild(th);
-      });
+      ["Component", "Parameter", "Distribution", "P10 / P50 / P90", "Grade", "Sources & notes"].forEach((h, i) => { const th = document.createElement("th"); th.textContent = h; if (i === 3) th.className = "num"; thead.appendChild(th); });
       const tb = t.createTBody();
-      const nf = (v) => (Math.abs(v) >= 1000 ? d3.format("d")(v) : d3.format(".3~g")(v));
       rows.forEach((p) => {
         const tr = tb.insertRow();
         tr.insertCell().textContent = GROUPS[p.group];
@@ -466,7 +606,7 @@
       grade = b.dataset.g; render();
     }));
     sel.addEventListener("change", render);
-    document.getElementById("paramSearch").addEventListener("input", render);
+    $("#paramSearch").addEventListener("input", render);
     render();
   }
 
@@ -475,33 +615,30 @@
   const filt = { regime: "any", reg_lag: "any", util_g0: "any", new_max: "any", slot_g: "any" };
   const baseW = F.regimes.weights.slice();
   let userW = baseW.slice();
-  let terc = {};
+  const terc = {};
   async function loadSamples() {
     if (SAM) return;
-    SAM = await (await fetch("data/samples.json")).json();
-    ["reg_lag", "util_g0", "new_max", "slot_g"].forEach((k) => {
-      const v = SAM.inputs[k].slice().sort((a, b) => a - b);
-      terc[k] = [v[Math.floor(v.length / 3)], v[Math.floor((2 * v.length) / 3)]];
-    });
+    SAM = await (await fetch(`${ROOTP}/data/samples.json`)).json();
+    ["reg_lag", "util_g0", "new_max", "slot_g"].forEach((k) => { const v = SAM.inputs[k].slice().sort((a, b) => a - b); terc[k] = [v[Math.floor(v.length / 3)], v[Math.floor((2 * v.length) / 3)]]; });
     const cnt = [0, 0, 0, 0]; SAM.inputs.regime.forEach((r) => cnt[r]++);
     SAM.freq = cnt.map((c) => c / SAM.n);
     explorerRender();
   }
   function weightsUI() {
-    const el = document.getElementById("weights");
+    const el = $("#weights");
+    if (!el) return;
     el.replaceChildren();
     F.regimes.names.forEach((n, r) => {
       const row = document.createElement("label"); row.className = "wslider";
       const a = document.createElement("span"); a.textContent = n;
-      const inp = document.createElement("input"); inp.type = "range"; inp.min = 0; inp.max = 100; inp.value = Math.round(userW[r] * 100);
-      inp.setAttribute("aria-label", n + " weight");
-      const v = document.createElement("span"); v.textContent = inp.value + "%";
+      const inp = document.createElement("input"); inp.type = "range"; inp.min = 0; inp.max = 100; inp.value = Math.round(userW[r] * 100); inp.setAttribute("aria-label", n + " weight");
+      const v = document.createElement("span"); v.className = "wval"; v.textContent = inp.value + "%";
       inp.addEventListener("input", () => { userW[r] = +inp.value / 100; v.textContent = inp.value + "%"; explorerRender(); });
       row.append(a, inp, v); el.appendChild(row);
     });
   }
-  document.getElementById("resetW").addEventListener("click", () => { userW = baseW.slice(); weightsUI(); explorerRender(); });
-  document.querySelectorAll("#filters .seg").forEach((seg) => seg.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
+  if (has("#resetW")) $("#resetW").addEventListener("click", () => { userW = baseW.slice(); weightsUI(); explorerRender(); });
+  document.querySelectorAll("#filters .chips").forEach((seg) => seg.querySelectorAll("button").forEach((b) => b.addEventListener("click", () => {
     seg.querySelectorAll("button").forEach((x) => x.setAttribute("aria-pressed", x === b));
     filt[seg.dataset.filter] = b.dataset.v; explorerRender();
   })));
@@ -513,49 +650,35 @@
     return vals[idx[idx.length - 1]];
   }
   function explorerRender() {
-    if (!SAM) return;
-    const n = SAM.n, I = SAM.inputs;
-    const keep = [], w = [];
+    if (!SAM || !has("#exChart")) return;
+    const n = SAM.n, I = SAM.inputs, keep = [], w = [];
     for (let i = 0; i < n; i++) {
       if (filt.regime !== "any" && I.regime[i] !== +filt.regime) continue;
       let ok = true;
       for (const k of ["reg_lag", "util_g0", "new_max", "slot_g"]) {
         if (filt[k] === "any") continue;
         const v = I[k][i], [a, b] = terc[k];
-        const bin = v < a ? "lo" : v < b ? "mid" : "hi";
-        if (bin !== filt[k]) { ok = false; break; }
+        if ((v < a ? "lo" : v < b ? "mid" : "hi") !== filt[k]) { ok = false; break; }
       }
       if (!ok) continue;
       keep.push(i);
       w.push(filt.regime === "any" ? userW[I.regime[i]] / SAM.freq[I.regime[i]] : 1);
     }
-    const mc = document.getElementById("matchCount");
-    mc.innerHTML = keep.length < 30 ? `<b>${keep.length}</b> of ${n} worlds match. Too few for stable estimates; relax a filter.`
-      : `<b>${keep.length}</b> of ${n} simulated worlds match${filt.regime === "any" ? ", weighted by your regime weights" : ""}.`;
+    const mc = $("#matchCount");
+    mc.innerHTML = keep.length < 30 ? `<b>${keep.length}</b> of ${n} futures match. Too few for stable estimates; relax a filter.`
+      : `<b>${keep.length}</b> of ${n} sampled futures match${filt.regime === "any" ? ", weighted by your regime weights" : ""}.`;
     if (keep.length < 5) return;
     const qs = (key) => {
       const out = { p10: [], p25: [], p50: [], p75: [], p90: [] };
-      SAM.outputs[key].forEach((arr) => {
-        const vals = keep.map((i) => arr[i] / 1000);
-        [10, 25, 50, 75, 90].forEach((q) => out["p" + q].push(wq(vals, w, q / 100)));
-      });
+      SAM.outputs[key].forEach((arr) => { const vals = keep.map((i) => arr[i] / 1000); [10, 25, 50, 75, 90].forEach((q) => out["p" + q].push(wq(vals, w, q / 100))); });
       return out;
     };
-    const D = qs("D"), Sq = qs("S"), R = qs("R");
-    const prob = (key, yr, test) => {
-      const j = SAM.years.indexOf(yr); let s = 0, t = 0;
-      keep.forEach((i, k) => { t += w[k]; if (test(SAM.outputs[key][j][i] / 1000)) s += w[k]; });
-      return s / t;
-    };
-    const tiles = [
-      ["P(oversupply) 2035", fmt.pct(prob("R", 2035, (v) => v > 1.1))],
-      ["P(oversupply) 2045", fmt.pct(prob("R", 2045, (v) => v > 1.1))],
-      ["P(oversupply) 2055", fmt.pct(prob("R", 2055, (v) => v > 1.1))],
-      ["Median demand 2045", fmt.chg(D.p50[yi(2045)])],
-    ];
-    const te = document.getElementById("exTiles");
+    const D = qs("D"), Sq = qs("Sd"), R = qs("R");
+    const prob = (key, yr, test) => { const j = SAM.years.indexOf(yr); let s = 0, t = 0; keep.forEach((i, k) => { t += w[k]; if (test(SAM.outputs[key][j][i] / 1000)) s += w[k]; }); return s / t; };
+    const te = $("#exTiles");
     te.replaceChildren();
-    tiles.forEach(([l, v]) => {
+    [["P(oversupply) 2035", fmt.pct(prob("R", 2035, (v) => v > 1.1))], ["P(oversupply) 2045", fmt.pct(prob("R", 2045, (v) => v > 1.1))],
+      ["P(oversupply) 2055", fmt.pct(prob("R", 2055, (v) => v > 1.1))], ["Median FTE demand 2045", fmt.x2(D.p50[yi(2045)])]].forEach(([l, v]) => {
       const d = document.createElement("div"); d.className = "tile";
       const a = document.createElement("div"); a.className = "label"; a.style.minHeight = "0"; a.textContent = l;
       const b = document.createElement("div"); b.className = "value"; b.style.fontSize = "28px"; b.textContent = v;
@@ -563,34 +686,31 @@
     });
     const c = col();
     const pick = keep.filter((_, k) => k % Math.max(1, Math.floor(keep.length / 24)) === 0).slice(0, 24);
-    Charts.fan("#exChart", {
-      years, height: 320, yDomain: [0.3, 2.0], mark: { x: 2035, label: "attending" }, bands: [[10, 90]], refs: [{ y: 1 }],
+    Charts.fan("#exChart", { years, height: 340, yDomain: [0.3, 2.0], mark: youMark(), bands: [[10, 90]], refs: [{ y: 1 }], yLabel: "Radiologist FTEs (2026 demand = 1)",
       series: [{ label: "Demand", color: c.d, q: D }, { label: "Supply", color: c.s, q: Sq }],
-      extraLines: pick.map((i) => ({ values: SAM.outputs.D.map((arr) => arr[i] / 1000), color: c.d, opacity: 0.28, width: 0.9 })),
-    });
-    Charts.fan("#exRatio", {
-      years, height: 240, yDomain: [0.5, 2.0], bands: [[10, 90], [25, 75]],
-      series: [{ label: "S ÷ D", color: c.r, q: R }],
-      refs: [{ y: 1, color: css("--ink-2"), label: "balance" }, { y: 1.1, color: c.red, label: "oversupply" }],
-    });
+      extraLines: pick.map((i) => ({ values: SAM.outputs.D.map((arr) => arr[i] / 1000), color: c.d, opacity: 0.28, width: 0.9 })) });
+    Charts.fan("#exRatio", { years, height: 260, yDomain: [0.5, 2.0], bands: [[10, 90], [25, 75]], yLabel: "Supply ÷ demand",
+      series: [{ label: "S ÷ D", color: c.r, q: R }], refs: [{ y: 1, color: css("--ink-2"), label: "balance" }, { y: 1.1, color: c.red, label: "oversupply" }] });
   }
-  const exIO = new IntersectionObserver((e) => { if (e.some((x) => x.isIntersecting)) { exIO.disconnect(); loadSamples(); } }, { rootMargin: "400px" });
-  exIO.observe(document.getElementById("explore"));
-  weightsUI();
+  if (has("#explore")) {
+    const exIO = new IntersectionObserver((e) => { if (e.some((x) => x.isIntersecting)) { exIO.disconnect(); loadSamples(); } }, { rootMargin: "400px" });
+    exIO.observe($("#explore"));
+    weightsUI();
+  }
 
   // ------------------------------------------------------------------ render all + theme/resize
   function renderAll() {
-    heroChart(); dashChart(); careerTrack(); setYear(curYear, document.getElementById("dTag").textContent);
-    diagram(); regimeChart(); forecastCharts(); headlineTable(); aiCharts(); jevonsCharts();
-    tornadoChart(); etaChart(); evidenceChart(); compChart(); explorerRender();
+    stageUI();
+    heroChart(); dashChart(); careerTrack(); setYear(curYear, curTag);
+    diagram(); regimeChart(); backtestChart(); forecastCharts(); headlineTable(); aiCharts(); jevonsCharts();
+    tornadoChart(); etaChart(); evidenceChart(); compChart(); careerTable(); horizon(); explorerRender();
   }
-  horizon(); signposts(); paramTable();
+  signposts(); paramTable();
   renderAll();
   cite();
 
-  document.getElementById("themeBtn").addEventListener("click", () => {
-    const cur = document.documentElement.dataset.theme ||
-      (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+  if (has("#themeBtn")) $("#themeBtn").addEventListener("click", () => {
+    const cur = document.documentElement.dataset.theme || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
     const next = cur === "dark" ? "light" : "dark";
     document.documentElement.dataset.theme = next;
     try { localStorage.setItem("theme", next); } catch (e) { /* storage unavailable */ }
@@ -598,19 +718,13 @@
   });
   window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", renderAll);
   let rw = 0, lastW = window.innerWidth;
-  window.addEventListener("resize", () => {
-    if (Math.abs(window.innerWidth - lastW) < 40) return;
-    lastW = window.innerWidth;
-    clearTimeout(rw); rw = setTimeout(renderAll, 200);
-  });
-
-  // progress bar + active nav
-  const prog = document.getElementById("progress");
+  window.addEventListener("resize", () => { if (Math.abs(window.innerWidth - lastW) < 40) return; lastW = window.innerWidth; clearTimeout(rw); rw = setTimeout(renderAll, 200); });
+  const prog = $("#progress");
   const navs = [...document.querySelectorAll(".navlinks a[href^='#']")];
   const secs = navs.map((a) => document.querySelector(a.getAttribute("href")));
   window.addEventListener("scroll", () => {
     const h = document.documentElement;
-    prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100 + "%";
+    if (prog) prog.style.width = (h.scrollTop / (h.scrollHeight - h.clientHeight)) * 100 + "%";
     let act = -1;
     secs.forEach((s, i) => { if (s && s.getBoundingClientRect().top < 120) act = i; });
     navs.forEach((a, i) => a.classList.toggle("active", i === act));

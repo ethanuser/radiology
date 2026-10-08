@@ -103,6 +103,7 @@ def simulate(s: dict) -> dict:
     press_cum[:, 1:] = np.cumsum(pressure[:, :-1], axis=1)  # lagged one year
     out = _simulate_once(s, press_cum)
     out["pressure_pass1"] = pressure
+    out["Sd"] = out["R"] * out["D"]  # supply in units of 2026 demand: lines cross where supply = demand
     return out
 
 

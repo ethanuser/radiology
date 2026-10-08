@@ -3,43 +3,38 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Radiology 2066 · Will AI take the job you're training for?</title>
-<meta name="description" content="A probabilistic Monte Carlo forecast of the U.S. diagnostic radiology workforce, 2026–2066: imaging demand, AI productivity, regulation, Jevons effects and radiologist supply, written for a first-year medical student.">
+<title>Radiology 2066 · Will AI take radiology jobs?</title>
+<meta name="description" content="A probabilistic Monte Carlo forecast of the U.S. diagnostic radiology workforce, 2026–2066: imaging demand, AI time savings, regulation, Jevons effects and radiologist supply. For anyone considering, training in, or practicing radiology.">
 <meta property="og:title" content="Radiology 2066: a probabilistic forecast of the radiologist workforce">
-<meta property="og:description" content="20,000 simulated futures of U.S. diagnostic radiology under AI. What the job market might look like when a 2026 M1 becomes an attending, and 10, 20 and 30 years later.">
+<meta property="og:description" content="20,000 simulated futures of U.S. diagnostic radiology under AI, with a 2016→2025 backtest and every assumption graded and sourced.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232a78d6'/%3E%3Cpath d='M6 22 C11 20 13 12 16 12 C19 12 21 16 26 9' stroke='white' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="assets/css/style.css">
-<script>
-  try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
-</script>
+<link rel="stylesheet" href="assets/css/style.css?v=1.2">
+<script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
 </head>
-<body>
+<body data-page="main" data-root=".">
 <a class="skip" href="#main">Skip to content</a>
 
 <nav class="topnav" aria-label="Sections">
   <div class="wrap">
-    <a class="brand" href="#top">
-      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--s1)"/><path d="M6 22 C11 20 13 12 16 12 C19 12 21 16 26 9" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/></svg>
-      Radiology 2066
-    </a>
+    <a class="brand" href="#top"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--s1)"/><path d="M6 22 C11 20 13 12 16 12 C19 12 21 16 26 9" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/></svg>Radiology 2066</a>
     <div class="navlinks">
+      <a href="#answer">Answer</a>
+      <a href="#terms">Key terms</a>
       <a href="#story">Timeline</a>
-      <a href="#model">Model</a>
-      <a href="#forecast">Forecast</a>
-      <a href="#ai">AI &amp; regulation</a>
-      <a href="#jevons">Jevons</a>
+      <a href="#careers">Careers</a>
+      <a href="#why">Why</a>
       <a href="#drivers">Drivers</a>
+      <a href="#track">How sure</a>
+      <a href="#signposts">What to watch</a>
       <a href="#explore">Explore</a>
-      <a href="#m1">For an M1</a>
-      <a href="#assumptions">Assumptions</a>
+      <a href="#forecast">All numbers</a>
+      <a href="#methods">Methods</a>
       <a href="report.html">Full report</a>
     </div>
-    <a class="iconbtn" href="https://github.com/ethanuser/radiology" aria-label="Source code on GitHub">
-      <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-    </a>
+    <a class="iconbtn" href="https://github.com/ethanuser/radiology" aria-label="Source code on GitHub"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg></a>
     <button class="iconbtn" id="themeBtn" type="button" aria-label="Toggle dark mode">◐</button>
   </div>
   <div class="progress" id="progress"></div>
@@ -52,257 +47,294 @@
     <div class="hero-grid">
       <div>
         <div class="kicker">A probabilistic forecast · 2026 → 2066</div>
-        <h1>Will AI take the radiology job you're training for?</h1>
-        <p class="dek">We simulated <b data-v="F.n_sims" data-f="int">20,000</b> futures of the U.S. radiologist workforce, modeling imaging demand,
-          AI productivity, regulation, rebound effects and the residency pipeline separately, to see what the market looks like
-          for someone who starts medical school in 2026 and becomes an attending around 2035.</p>
-        <p class="byline">October 2026 · <a href="report.html">Full technical report</a> ·
-          <a href="https://github.com/ethanuser/radiology">Python model &amp; data</a> ·
+        <h1>Will AI take radiology jobs?</h1>
+        <p class="dek">We simulated <b data-v="F.n_sims" data-f="int">20,000</b> possible futures of the U.S. radiologist workforce, modeling
+          imaging demand, how much time AI saves, regulation, the new imaging AI creates, and the training pipeline. The forecast is for
+          anyone considering, training in, or practicing diagnostic radiology.</p>
+        <p class="byline">October 2026 · <a href="report.html">Full technical report</a> · <a href="https://github.com/ethanuser/radiology">Python model &amp; data</a> ·
           Drafted with an AI assistant (Claude) from cited public sources. Not career advice.</p>
       </div>
       <figure class="hero-chart" style="margin:0">
-        <div class="cap">Radiologist FTE <span style="color:var(--s1);font-weight:650">demand</span> vs
-          <span style="color:var(--s2);font-weight:650">supply</span>, 2026 = 1 · median with 80% range</div>
+        <div class="cap">Radiologist <span style="color:var(--s1);font-weight:650">demand</span> vs <span style="color:var(--s2);font-weight:650">supply</span>,
+          indexed so 2026 demand = 1 (about 41,000 radiologists at today's average hours). Median line, 80% range shaded; dashed line, demand if AI stayed at its 2026
+          level. Supply starts below demand because there is a shortage today.</div>
         <div id="heroChart" class="chart" role="img" aria-label="Fan chart of radiologist demand and supply, 2026 to 2066"></div>
       </figure>
     </div>
     <div class="tiles">
-      <div class="tile"><div class="label">Chance of meaningful <b>oversupply</b> the year you become an attending (2035)</div>
+      <div class="tile"><div class="label">Chance of <a href="#term-oversupply">meaningful oversupply</a> (10%+ more radiologists than the work needs) in 2035</div>
         <div class="value" data-v="SUM.2035.p_oversupply" data-f="pct" data-count>–</div>
-        <div class="sub"><span data-v="X.non_tai.2035.p_over" data-f="pct">–</span> if AI doesn't turn out to be transformative</div></div>
-      <div class="tile"><div class="label">Median share of radiologist time AI saves by 2045</div>
-        <div class="value" data-v="X.time_saved.2045.p50" data-f="pct" data-count>–</div>
-        <div class="sub">80% range <span data-v="X.time_saved.2045.p10" data-f="pct"></span>–<span data-v="X.time_saved.2045.p90" data-f="pct"></span></div></div>
-      <div class="tile"><div class="label">Chance that AI-induced demand outweighs the labor AI saves (a true <b>Jevons paradox</b>), 2045</div>
-        <div class="value" data-v="JEV.2045.p_jevons" data-f="pct" data-count>–</div>
-        <div class="sub">induced demand offsets a median <span data-v="JEV.2045.offset_p50" data-f="pct"></span> of savings</div></div>
+        <div class="sub"><span data-v="X.non_tai.2035.p_over" data-f="pct">–</span> if we set aside the 12% of futures with <a href="#term-regimes">transformative AI</a></div></div>
+      <div class="tile"><div class="label">Chance of meaningful oversupply in 2045, ten years later</div>
+        <div class="value" data-v="SUM.2045.p_oversupply" data-f="pct" data-count>–</div>
+        <div class="sub"><span data-v="X.non_tai.2045.p_over" data-f="pct">–</span> setting aside transformative AI</div></div>
+      <div class="tile"><div class="label">Chance there is <i>less</i> radiologist work in 2045 than today</div>
+        <div class="value" data-v="SUM.2045.p_demand_below_today" data-f="pct" data-count>–</div>
+        <div class="sub">median future: <span data-v="SUM.2045.demand_p50" data-f="gr"></span> more work than today</div></div>
     </div>
   </div>
 </header>
 
 <!-- =========================================================== SHORT ANSWER -->
-<section class="block" id="answer" style="border-top:0;padding-top:24px">
+<section class="block" id="answer" style="padding-top:36px">
   <div class="wrap narrow">
     <h2>The short answer</h2>
-    <p><b>The job market when you finish residency will probably still be good.</b> The radiologists who will practice in 2035 have
-      mostly already been trained, and imaging demand keeps rising as the population ages. In our median world the supply/demand
-      ratio in 2035 is <b data-v="SUM.2035.ratio_p50" data-f="x2"></b> (below 1 means a shortage). There is a
-      <b data-v="X.m1.p_shortage_2035" data-f="pct"></b> chance you graduate into a shortage and a
-      <b data-v="SUM.2035.p_oversupply" data-f="pct"></b> chance of meaningful oversupply.</p>
-    <p><b>The risk is back-loaded, with a fat tail.</b> As AI moves from drafting reports to reading studies on its own, the
-      probability of oversupply climbs to <b data-v="SUM.2045.p_oversupply" data-f="pct"></b> ten years into your career and
-      <b data-v="SUM.2055.p_oversupply" data-f="pct"></b> twenty years in. Demand collapsing below half of today's level is a
-      ~<span data-v="SUM.2055.p_demand_below_50" data-f="pct"></span> tail, almost entirely in worlds where AI becomes
-      transformative.</p>
-    <p><b>"AI creates more imaging than it automates" is unlikely to hold for radiologists.</b> Cheaper and faster reads, new
-      screening programs and AI-found incidental findings do generate more work, but they offset only about half of the labor AI
-      saves, and exceed it in fewer than 1 in 20 simulated worlds.</p>
-    <p class="muted small sans">Scroll to walk through the career year by year. The dashboard on the right updates as you go.</p>
+    <p><b>Probably not, in the sense of less work.</b> AI will save a growing share of radiologist time, but imaging keeps growing too. In the median future
+      radiologists have <b data-v="SUM.2045.demand_p50" data-f="gr"></b> more work in 2045 than today, and there is less work than today in only about
+      <b data-v="SUM.2045.p_demand_below_today" data-f="pct"></b> of futures. The real risk is a different one: more radiologists than the work needs.</p>
+    <p><b>For about the next decade, radiologists will probably stay in short supply, which is good for job seekers.</b> Most radiologists who will
+      practice in the mid-2030s are already practicing or in training, and imaging demand keeps rising with an aging population. In 2035 the chance of
+      <a href="#term-oversupply">meaningful oversupply</a> (at least 10% more radiologists than the work needs, like the gluts of the mid-1990s and
+      mid-2010s) is <b data-v="SUM.2035.p_oversupply" data-f="pct"></b>.<a class="mlink" href="#m-supply" title="Method: supply">§</a></p>
+    <p><b>The risk grows over a career.</b> As AI moves from drafting reports to reading some studies first, with a radiologist auditing, the chance of oversupply rises to
+      <b data-v="SUM.2045.p_oversupply" data-f="pct"></b> in 2045 and <b data-v="SUM.2055.p_oversupply" data-f="pct"></b> in 2055. That is not only a
+      story about extreme AI. The <a href="#term-regimes">transformative-AI regime</a> (AI that can eventually do nearly all of a radiologist's cognitive
+      work; 12% of futures) drives the extreme outcomes, such as demand falling below half of today's (<span data-v="SUM.2055.p_demand_below_50" data-f="pct"></span>
+      by 2055). Outside it, oversupply is still <span data-v="X.non_tai.2045.p_over" data-f="pct"></span> likely in 2045 and
+      <span data-v="X.non_tai.2055.p_over" data-f="pct"></span> in 2055. The opposite, a meaningful shortage, stays about
+      <span data-v="SUM.2045.p_shortage_10" data-f="pct"></span> likely from 2035 on.<a class="mlink" href="#m-pipeline" title="Method: regulation and adoption">§</a></p>
+    <p><b>"AI will create more imaging than it automates" is unlikely to hold for radiologists.</b> The new work AI creates offsets about half of
+      the radiologist time it saves and, from 2035 on, exceeds it in fewer than 1 in 20 futures.<a class="mlink" href="#m-jevons" title="Method: Jevons accounting">§</a></p>
+    <p><b>What it means.</b> People entering practice in the next decade will probably start in a favorable market; the chance of a weaker one rises
+      through the 2040s. For radiologists already in practice, the main effects are a changing job and, in surplus futures, fewer openings and flatter
+      pay. Layoffs would need demand to fall faster than retirements, which happens in about
+      <span data-v="X.displacement.p_any_decline_faster_than_attrition_2035_2066" data-f="pct"></span> of futures, nearly all transformative.
+      <a href="#careers">By career stage →</a></p>
+    <p><b>How sure.</b> These are odds, not certainties. About half of the uncertainty comes from judgment calls, chiefly how fast AI improves and how
+      fast imaging per person grows; you can change the AI assumptions in the <a href="#explore">explorer</a>. A <a href="#track">backtest</a> (re-running the method with only 2016
+      information) suggests the method is reasonable, but no method has a strong record 20–40 years out.</p>
+    <p class="muted small sans">Reading tips: "§" links go to the method behind a claim, superscript numbers show the source when you hover or tap them, and a
+      "Back to where you were" button appears after any jump.</p>
+  </div>
+</section>
+
+<!-- =========================================================== KEY TERMS -->
+<section class="block" id="terms">
+  <div class="wrap">
+    <h2>Key terms</h2>
+    <p class="lede">Each term is defined once here; links elsewhere on the page point back to these cards.</p>
+    <div class="glossary">
+      <div class="gcard" id="term-ranges"><h4>Medians, ranges and P(X)</h4>
+        <p>Every number comes from <span data-v="F.n_sims" data-f="int"></span> simulated futures. The <b>median</b> is the middle one. The
+          <b>80% range</b> contains the middle 80% of futures (10th to 90th percentile); the <b>50% range</b> the middle half.
+          <b>P(X)</b>, or "chance of X", is the share of futures in which X happens.</p></div>
+      <div class="gcard" id="term-demand"><h4>Demand and supply (FTEs)</h4>
+        <p><b>Demand</b>: the number of full-time radiologists (FTEs) needed to read the imaging patients and doctors want, given the AI in use.
+          <b>Supply</b>: practicing radiologists × the hours each works. Both are indexed so <b>2026 demand = 1.00</b>: today's work needs about
+          41,000 full-time radiologists, and about 38,300 are practicing, so supply starts at about 0.93. Demand of 1.10 means 10% more work than today.</p></div>
+      <div class="gcard" id="term-ratio"><h4>Supply ÷ demand</h4>
+        <p>The single best summary of the job market. <b>Below 1</b> is a shortage, <b>above 1</b> a surplus. Today it is about
+          <b data-v="F.series.R.p50.0" data-f="x2"></b> (80% range 0.88–0.96): a moderate shortage.<sup class="cite" data-ref="rula_2026"></sup></p></div>
+      <div class="gcard" id="term-oversupply"><h4>Meaningful oversupply (and shortage)</h4>
+        <p>Supply ÷ demand <b>above 1.10</b>: at least 10% more radiologist capacity nationally than the work requires, roughly the size of the
+          mid-1990s and mid-2010s gluts, when new graduates struggled to find jobs.<sup class="cite" data-ref="rosenkrantz_2016,shi_2015"></sup>
+          <b>Severe oversupply</b> is above 1.25. A <b>meaningful shortage</b> is the mirror image, below 0.90.</p></div>
+      <div class="gcard" id="term-ai"><h4>AI-assisted vs AI-first (autonomous) reading</h4>
+        <p><b>AI-assisted</b>: the radiologist reads; AI drafts, measures and flags, saving part of the time. <b>AI-first (autonomous)</b>: AI reads and
+          reports first; a radiologist audits, signs or handles escalations, which still takes about a fifth of the usual time. No future in the model has
+          reads with no radiologist at all. <b>AI time saved</b> combines both (saving 28% of time = 1.38× as much work per hour); the <b>AI-first share</b>
+          is the share of interpretive work read AI-first.</p></div>
+      <div class="gcard" id="term-tiers"><h4>Tiers of exam difficulty</h4>
+        <p>Interpretive work is split into four tiers that AI can take over one after another: <b>1</b> normal radiographs and negative screens (≈7% of the
+          work), <b>2</b> all other radiographs, screening mammograms and routine follow-ups (≈17%), <b>3</b> complex CT, MRI, ultrasound and nuclear medicine
+          (≈47%), <b>4</b> the hardest remaining work (≈29%). Each must clear validation, the FDA, liability and payment.</p></div>
+      <div class="gcard" id="term-regimes"><h4>AI-progress regimes</h4>
+        <p>How fast general AI improves is the largest unknown, so each simulated future falls into one of four regimes:
+          <b>Stall</b> (15% of futures: radiology AI takes 1.6–3 times as long to arrive as under Trend), <b>Trend</b> (55%: today's pace continues),
+          <b>Fast</b> (18%: about twice as fast), and <b>Transformative AI</b> (12%: AI eventually does nearly all of a radiologist's cognitive work, and
+          institutions adapt faster). The weights are judgment calls; you can change them in the <a href="#explore">explorer</a>.</p></div>
+      <div class="gcard" id="term-jevons"><h4>Jevons paradox</h4>
+        <p>Making something more efficient can raise total use of it rather than lower it, as with coal in 19th-century Britain.<sup class="cite" data-ref="jevons_1865"></sup>
+          Here: AI makes reads cheaper and faster, which creates new imaging. A true Jevons paradox means the new work exceeds the radiologist time AI saves.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================== STAGE SELECTOR -->
+<section class="block stagebar" id="you">
+  <div class="wrap narrow">
+    <h3 style="margin-top:0">Optional: put yourself on the timeline</h3>
+    <div class="controls"><label class="lab" for="stageSelect">I am currently a…</label><select id="stageSelect"></select></div>
+    <p class="sans small ink2" id="stageSummary"></p>
   </div>
 </section>
 
 <!-- =========================================================== SCROLLYTELLING -->
-<section class="block" id="story" style="padding-top:20px">
+<section class="block" id="story" style="padding-top:28px">
   <div class="wrap">
+    <h2>Year by year, 2026–2066</h2>
+    <p class="lede">Each chapter follows the median future; the panel beside it shows the full range for that year and updates as you scroll.</p>
     <div class="scrolly">
       <div class="story">
-
-        <article class="chapter" data-year="2026" data-tag="You start medical school">
-          <div class="yearlabel">2026 · You are here</div>
+        <article class="chapter" data-year="2026" data-tag="Today">
+          <div class="yearlabel">2026 · Today</div>
           <h3>A specialty that was supposed to be automated is short of people</h3>
-          <p>In 2016 a founder of deep learning told an audience to stop training radiologists, predicting that within five years
-            AI would outperform them.<sup class="cite" data-ref="hinton_2016"></sup> Ten years later,
-            diagnostic-radiology programs offered a record 1,241 positions and filled 97.6% of them.<sup class="cite" data-ref="nrmp_2026"></sup>
-            Average pay rose 6.6% in a year,<sup class="cite" data-ref="doximity_2026"></sup> and federal workforce projections still
-            show a shortage a decade out.<sup class="cite" data-ref="rula_2026"></sup></p>
-          <p>AI has not gone away. The FDA lists more than 1,600 AI-enabled devices, about three-quarters of them in
-            radiology.<sup class="cite" data-ref="fda_ai_2026"></sup> Yet insurance claims show that only a handful are used at
-            scale,<sup class="cite" data-ref="wu_2024"></sup> and a meta-analysis of real-world deployments found no significant
-            time savings.<sup class="cite" data-ref="wenderott_2024"></sup> Generative AI that drafts radiograph reports did cut
-            reporting time 15.5% in one large health system, with no loss of accuracy.<sup class="cite" data-ref="huang_2025"></sup></p>
-          <div class="callout">The model starts here: a market short by about <b data-v="F.ratio0_gap" data-f="pct">7%</b>,
-            AI that saves almost no radiologist time yet, and roughly
-            <b data-v="X.supply.head_2026_p50" data-f="int"></b> practicing radiologists.</div>
+          <p>In 2016 Geoffrey Hinton, a pioneer of deep learning, said we should stop training radiologists because AI would soon outperform them.<sup class="cite" data-ref="hinton_2016"></sup>
+            Ten years later, diagnostic-radiology programs offered a record 1,241 positions and filled 97.6% of them.<sup class="cite" data-ref="nrmp_2026"></sup>
+            Average pay rose 6.6% in a year,<sup class="cite" data-ref="doximity_2026"></sup> and workforce projections still show a shortage a decade out.<sup class="cite" data-ref="rula_2026"></sup></p>
+          <p>AI has not gone away. More than 1,600 AI devices are FDA-listed, about three-quarters in radiology,<sup class="cite" data-ref="fda_ai_2026"></sup>
+            but few are used at scale.<sup class="cite" data-ref="wu_2024"></sup> Measured time savings range from none to 42% depending on the task and
+            the study.<sup class="cite" data-ref="wenderott_2024,huang_2025,hong_2025"></sup><a class="mlink" href="#m-ai" title="Method: AI time savings">§</a></p>
+          <div class="callout">Starting point: <a href="#term-ratio">supply ÷ demand</a> ≈ <b data-v="F.series.R.p50.0" data-f="x2"></b> (a shortage of about
+            <b data-v="F.ratio0_gap" data-f="pct"></b>), AI saving almost no radiologist time yet, and about <b data-v="X.supply.head_2026_p50" data-f="r100"></b>
+            practicing radiologists.</div>
+          <p class="stage-note sans small" data-year="2026" hidden></p>
         </article>
-
-        <article class="chapter" data-year="2030" data-tag="Residency match">
-          <div class="yearlabel">2030 · Match Day</div>
+        <article class="chapter" data-year="2030" data-tag="AI writes the first draft">
+          <div class="yearlabel">2030</div>
           <h3>AI writes the first draft</h3>
-          <p>You match into diagnostic radiology. In the median simulated world, AI-drafted reports, automatic measurements and
-            protocoling assistants now save about <b data-v="X.time_saved.2030.p50" data-f="pct"></b> of radiologist time. That is
-            far below the one-third that Langlotz's task model calls the five-year potential,<sup class="cite" data-ref="langlotz_2025"></sup>
-            because adopting tools takes years even after they work.<sup class="cite" data-ref="lehman_2015"></sup></p>
-          <p>Demand is still rising: the population is older, CT and MRI use per person keeps growing, and each study is more complex.
-            Radiologist FTE demand is up <b data-v="SUM.2030.demand_p50" data-f="chg"></b> from 2026 while supply is up only
-            <b data-v="SUM.2030.supply_p50" data-f="chg"></b>.</p>
-          <div class="callout">Probability of meaningful oversupply in 2030: <b data-v="SUM.2030.p_oversupply" data-f="pct"></b>.
-            Autonomous reading of normal chest X-rays is technically possible (it was approved in Europe in 2022<sup class="cite" data-ref="oxipit_2022"></sup>)
-            but in most simulated worlds is not yet FDA-authorized or paid for in the U.S.</div>
+          <p>In the median future, AI-drafted reports, automatic measurements and protocoling tools (which choose how each scan is done) save about
+            <b data-v="X.time_saved.2030.p50" data-f="pct"></b> of radiologist time. That is well below the one-third that a leading task-based analysis
+            calls the five-year potential,<sup class="cite" data-ref="langlotz_2025"></sup> because adopting tools takes years even after they work.<sup class="cite" data-ref="lehman_2015"></sup><a class="mlink" href="#m-ai" title="Method: adoption">§</a></p>
+          <p>Demand is still rising with an older population and bigger studies. Measured against 2026 demand, <a href="#term-demand">demand</a> is
+            <b data-v="SUM.2030.demand_p50" data-f="x2"></b> and supply <b data-v="SUM.2030.supplyd_p50" data-f="x2"></b>, so the shortage is about unchanged:
+            supply ÷ demand is <b data-v="SUM.2030.ratio_p50" data-f="x2"></b>.<a class="mlink" href="#m-baseline" title="Method: baseline demand">§</a></p>
+          <div class="callout">Chance of <a href="#term-oversupply">meaningful oversupply</a> in 2030: <b data-v="SUM.2030.p_oversupply" data-f="pct"></b>.
+            Autonomous reading of normal chest X-rays (<a href="#term-tiers">tier 1</a>) is already approved in Europe.<sup class="cite" data-ref="oxipit_2022"></sup>
+            In the median future the FDA authorizes it around 2029, but payment and liability acceptance take until the early 2030s.<a class="mlink" href="#m-pipeline" title="Method: regulatory pipeline">§</a></div>
+          <p class="stage-note sans small" data-year="2030" hidden></p>
         </article>
-
-        <article class="chapter" data-year="2035" data-tag="You become an attending">
-          <div class="yearlabel">2035 · Your first attending job</div>
-          <h3>The shortage narrows, but probably hasn't flipped</h3>
-          <p>In the median world AI now saves <b data-v="X.time_saved.2035.p50" data-f="pct"></b> of radiologist time and
-            reads <b data-v="SUM.2035.autonomous_p50" data-f="pct"></b> of studies AI-first, mostly normal radiographs and negative
-            screens. Demand is <b data-v="SUM.2035.demand_p50" data-f="chg"></b> versus 2026 and supply
-            <b data-v="SUM.2035.supply_p50" data-f="chg"></b>, giving a supply/demand ratio of
-            <b data-v="SUM.2035.ratio_p50" data-f="x2"></b>.</p>
-          <p>The range of outcomes is already wide. There is a <b data-v="X.m1.p_shortage_2035" data-f="pct"></b> chance you
-            enter a market that is still short, and a <b data-v="SUM.2035.p_oversupply" data-f="pct"></b> chance of
-            meaningful oversupply. Most of that oversupply risk comes from the 12% of worlds where AI turns out to be
-            transformative. In those worlds AI already roughly doubles radiologist productivity by 2035.</p>
-          <div class="callout">Excluding transformative-AI worlds, oversupply risk at graduation is
-            <b data-v="X.non_tai.2035.p_over" data-f="pct"></b>.</div>
+        <article class="chapter" data-year="2035" data-tag="The shortage narrows">
+          <div class="yearlabel">2035</div>
+          <h3>The shortage narrows but probably hasn't flipped</h3>
+          <p>AI now saves a median <b data-v="X.time_saved.2035.p50" data-f="pct"></b> of radiologist time and reads <b data-v="SUM.2035.autonomous_p50" data-f="pct"></b>
+            of interpretive work <a href="#term-ai">AI-first</a>, mostly tier-1 normal radiographs and negative screens. Demand is <b data-v="SUM.2035.demand_p50" data-f="x2"></b>
+            and supply <b data-v="SUM.2035.supplyd_p50" data-f="x2"></b>, so supply ÷ demand is <b data-v="SUM.2035.ratio_p50" data-f="x2"></b>.</p>
+          <p>The range is already wide: a <b data-v="X.m1.p_shortage_2035" data-f="pct"></b> chance the market is still short, and a
+            <b data-v="SUM.2035.p_oversupply" data-f="pct"></b> chance of meaningful oversupply. Most of that oversupply risk is in the
+            <a href="#term-regimes">transformative-AI regime</a>, where radiologist productivity roughly doubles by 2035.<a class="mlink" href="#m-uncertainty" title="Method: regimes">§</a></p>
+          <div class="callout">Outside the transformative-AI regime, the chance of oversupply in 2035 is <b data-v="X.non_tai.2035.p_over" data-f="pct"></b>.</div>
+          <p class="stage-note sans small" data-year="2035" hidden></p>
         </article>
-
-        <article class="chapter" data-year="2045" data-tag="10 years into practice">
-          <div class="yearlabel">2045 · Ten years in</div>
+        <article class="chapter" data-year="2045" data-tag="A coin flip">
+          <div class="yearlabel">2045</div>
           <h3>A coin flip between shortage and surplus</h3>
-          <p>Autonomous reading has cleared the slow chain of clinical validation, FDA authorization, liability and payment for
-            radiographs and screening exams in most worlds. The median AI-first share is
-            <b data-v="SUM.2045.autonomous_p50" data-f="pct"></b> and AI productivity is
-            <b data-v="SUM.2045.productivity_p50" data-f="mult"></b>. Your day contains less dictation and more consultation,
-            procedures and auditing of AI output.</p>
-          <p>Demand is up <b data-v="SUM.2045.demand_p50" data-f="chg"></b> in the median world, and the supply/demand ratio is
-            <b data-v="SUM.2045.ratio_p50" data-f="x2"></b>, roughly balanced. There is a
-            <b data-v="SUM.2045.p_oversupply" data-f="pct"></b> chance of meaningful oversupply and a
-            <b data-v="SUM.2045.p_demand_below_today" data-f="pct"></b> chance that demand is below 2026's level.</p>
-          <div class="callout">Even in surplus worlds, falling demand mostly shows up as fewer openings for new graduates and
-            flatter pay. About 2.7% of radiologists retire or leave each year, so incumbents are rarely laid off.</div>
+          <p>In most futures, autonomous reading of all radiographs and screening exams (tiers 1–2) has cleared validation, the FDA, liability and
+            payment.<a class="mlink" href="#m-pipeline" title="Method: regulatory pipeline">§</a> AI saves a median <b data-v="X.time_saved.2045.p50" data-f="pct"></b>
+            of radiologist time. The job has less dictation and more consultation, procedures and checking AI output.</p>
+          <p>Supply exceeds demand in <b data-v="SUM.2045.p_supply_exceeds_demand" data-f="pct"></b> of futures. A meaningful shortage
+            (<b data-v="SUM.2045.p_shortage_10" data-f="pct"></b>) is about as likely as meaningful oversupply (<b data-v="SUM.2045.p_oversupply" data-f="pct"></b>),
+            and the median supply ÷ demand, <b data-v="SUM.2045.ratio_p50" data-f="x2"></b>, is close to balance.</p>
+          <div class="callout">In surplus futures, the gap mostly shows up as fewer openings for new graduates and flatter pay rather than layoffs
+            (<a href="#careers">why</a>).<sup class="cite" data-ref="canaries_2025"></sup></div>
+          <p class="stage-note sans small" data-year="2045" hidden></p>
         </article>
-
-        <article class="chapter" data-year="2055" data-tag="20 years into practice">
-          <div class="yearlabel">2055 · Twenty years in</div>
+        <article class="chapter" data-year="2055" data-tag="Complex reads automate">
+          <div class="yearlabel">2055</div>
           <h3>Complex reads begin to be automated</h3>
-          <p>In the median world, autonomous reading of complex CT and MRI is becoming payable only now. The AI-first share is
-            <b data-v="SUM.2055.autonomous_p50" data-f="pct"></b>, but the range is enormous (80% interval
-            <span data-v="SUM.2055.autonomous_p10" data-f="pct"></span>–<span data-v="SUM.2055.autonomous_p90" data-f="pct"></span>).</p>
-          <p>Median demand is <b data-v="SUM.2055.demand_p50" data-f="chg"></b>, with an 80% interval of
-            <span data-v="SUM.2055.demand_p10" data-f="x2"></span>–<span data-v="SUM.2055.demand_p90" data-f="x2"></span>.
-            Oversupply probability is <b data-v="SUM.2055.p_oversupply" data-f="pct"></b>, demand below 80% of 2026 has probability
-            <b data-v="SUM.2055.p_demand_below_80" data-f="pct"></b>, and demand below half of 2026 has probability
-            <b data-v="SUM.2055.p_demand_below_50" data-f="pct"></b>.</p>
+          <p>In the median future, autonomous reading of complex CT and MRI (tier 3) becomes payable in the early 2050s. The AI-first share is
+            <b data-v="SUM.2055.autonomous_p50" data-f="pct"></b>, with a very wide range (<span data-v="SUM.2055.autonomous_p10" data-f="pct"></span>–<span data-v="SUM.2055.autonomous_p90" data-f="pct"></span>).</p>
+          <p>Median demand is <b data-v="SUM.2055.demand_p50" data-f="x2"></b> (80% range <span data-v="SUM.2055.demand_p10" data-f="x2"></span>–<span data-v="SUM.2055.demand_p90" data-f="x2"></span>)
+            and median supply <b data-v="SUM.2055.supplyd_p50" data-f="x2"></b>, so the median market is near balance (<span data-v="SUM.2055.ratio_p50" data-f="x2"></span>). The chance of oversupply is <b data-v="SUM.2055.p_oversupply" data-f="pct"></b>. Demand below 80% of today has a <b data-v="SUM.2055.p_demand_below_80" data-f="pct"></b> chance,
+            and below half of today a <b data-v="SUM.2055.p_demand_below_50" data-f="pct"></b> chance.</p>
+          <p class="stage-note sans small" data-year="2055" hidden></p>
         </article>
-
-        <article class="chapter" data-year="2066" data-tag="30 years into practice">
-          <div class="yearlabel">2066 · Thirty years in</div>
+        <article class="chapter" data-year="2066" data-tag="A different job">
+          <div class="yearlabel">2066</div>
           <h3>A different job, and probably still a job</h3>
-          <p>By the end of the forecast the median AI-first share is <b data-v="SUM.2066.autonomous_p50" data-f="pct"></b> and
-            AI productivity <b data-v="SUM.2066.productivity_p50" data-f="mult"></b>. The residency pipeline has had three decades
-            to adjust, and the median ratio is <b data-v="SUM.2066.ratio_p50" data-f="x2"></b>. Across your whole career there is a
-            <b data-v="X.m1.p_any_over_2035_2066" data-f="pct"></b> chance of at least one year of meaningful oversupply.</p>
-          <p>The forecast cannot tell you which of these worlds you will live in. Its job is to tell you how likely each is, and
-            what to watch so you can update as evidence comes in.</p>
-          <p class="sans small"><a href="#m1">Jump to the M1 summary →</a></p>
+          <p>By the end of the forecast the median AI-first share is <b data-v="SUM.2066.autonomous_p50" data-f="pct"></b>, yet AI saves only about
+            <b data-v="X.time_saved.2066.p50" data-f="pct"></b> of radiologist time: interpretive work is about 60% of the job (interpretation 42% plus drafting
+            18%), and AI-first reads still need a radiologist's audit or sign-off.</p>
+          <p>Residency positions keep growing about 1% a year and respond to a surplus only after several years, so supply keeps rising even as AI absorbs
+            demand. The chance of oversupply, <b data-v="SUM.2066.p_oversupply" data-f="pct"></b>, is the highest of any year shown, though the median
+            supply ÷ demand is only <b data-v="SUM.2066.ratio_p50" data-f="x2"></b>. The forecast cannot say which future will happen; it says how likely each is
+            and <a href="#signposts">what to watch</a>.</p>
+          <p class="stage-note sans small" data-year="2066" hidden></p>
         </article>
       </div>
-
       <aside class="dash" id="dash" aria-live="polite">
-        <div class="dash-head">
-          <div class="dash-year" id="dYear">2026</div>
-          <div class="dash-tag" id="dTag">You start medical school</div>
-        </div>
+        <div class="dash-head"><div class="dash-year" id="dYear">2026</div><div class="dash-tag" id="dTag">Today</div></div>
         <div class="dash-chart chart" id="dashChart"></div>
-        <div class="dash-legend">
-          <span class="key"><i style="background:var(--s1)"></i>FTE demand</span>
-          <span class="key"><i style="background:var(--s2)"></i>FTE supply</span>
-          <span class="key"><i class="box" style="background:var(--s1);opacity:.2"></i>80% range</span>
-        </div>
+        <div class="dash-legend"><span class="key"><i style="background:var(--s1)"></i>FTE demand</span><span class="key"><i style="background:var(--s2)"></i>FTE supply</span><span class="key"><i class="box" style="background:var(--s1);opacity:.2"></i>80% range</span></div>
         <div class="stats">
-          <div class="stat"><div class="l">Supply ÷ demand</div><div class="v" id="dRatio">–</div><div class="r" id="dRatioR"></div></div>
-          <div class="stat"><div class="l">P(oversupply)</div><div class="v" id="dOver">–</div><div class="meter"><span id="dOverM"></span></div></div>
-          <div class="stat"><div class="l">AI time saved</div><div class="v" id="dSaved">–</div><div class="r" id="dSavedR"></div></div>
-          <div class="stat"><div class="l">FTE demand</div><div class="v" id="dDem">–</div><div class="r" id="dDemR"></div></div>
-          <div class="stat"><div class="l">AI-first share</div><div class="v" id="dAuto">–</div><div class="r" id="dAutoR"></div></div>
-          <div class="stat"><div class="l">P(demand &lt; today)</div><div class="v" id="dBelow">–</div><div class="r">vs 2026</div></div>
+          <div class="stat"><div class="l"><a href="#term-ratio">Supply ÷ demand</a></div><div class="v" id="dRatio">–</div><div class="r" id="dRatioR"></div></div>
+          <div class="stat"><div class="l"><a href="#term-oversupply">P(oversupply)</a></div><div class="v" id="dOver">–</div><div class="meter"><span id="dOverM"></span></div></div>
+          <div class="stat"><div class="l"><a href="#term-ai">AI time saved</a></div><div class="v" id="dSaved">–</div><div class="r" id="dSavedR"></div></div>
+          <div class="stat"><div class="l"><a href="#term-demand">FTE demand</a></div><div class="v" id="dDem">–</div><div class="r" id="dDemR"></div></div>
+          <div class="stat"><div class="l"><a href="#term-ai">AI-first share</a></div><div class="v" id="dAuto">–</div><div class="r" id="dAutoR"></div></div>
+          <div class="stat"><div class="l">P(demand &lt; 2026)</div><div class="v" id="dBelow">–</div><div class="r">share of futures</div></div>
         </div>
-        <div class="career" aria-hidden="true">
-          <div class="track" id="careerTrack"></div>
-        </div>
+        <div class="career" aria-hidden="true"><div class="track" id="careerTrack"></div></div>
       </aside>
     </div>
   </div>
 </section>
 
-<!-- =========================================================== MODEL -->
-<section class="block" id="model">
+<!-- =========================================================== CAREERS -->
+<section class="block" id="careers">
   <div class="wrap">
-    <h2>How the model works</h2>
-    <p class="lede">Five components are modeled separately and linked. Every arrow carries an uncertain parameter drawn from a
-      probability distribution, and the components are correlated: faster AI raises productivity <i>and</i> creates new imaging
-      applications <i>and</i> speeds up scanners. Click a box to see what's inside.</p>
-    <div class="model-grid">
-      <div class="card diagram" id="diagram"></div>
-      <div class="card detail" id="diagramDetail"></div>
-    </div>
-    <div class="chart-card">
-      <div class="title">AI-progress regimes: the biggest single assumption</div>
-      <div class="subtitle">General-AI forecasts (METR task horizons,<sup class="cite" data-ref="metr_2025"></sup><sup class="cite" data-ref="metr_2026"></sup>
-        AI 2027,<sup class="cite" data-ref="ai2027"></sup> superforecaster tournaments<sup class="cite" data-ref="karger_2023"></sup>) are used only loosely, to
-        weight four regimes and stretch or compress how soon radiology capabilities arrive. Median FTE demand by regime:</div>
-      <div id="regimeChart" class="chart"></div>
-      <div class="note">Weights are subjective. You can change them in the <a href="#explore">explorer</a>.</div>
-    </div>
+    <h2>What it means at each career stage</h2>
+    <p class="lede">When you enter practice determines which part of the forecast matters to you. Pick your stage <a href="#you">above</a> to highlight your row.</p>
+    <div class="tablewrap"><table id="stageTable"></table></div>
+    <p class="sans small muted">*Assumes a 1-year fellowship (most U.S. radiologists do one); subtract a year without it, and add one for each gap or research year.
+      "Still a shortage" means supply ÷ demand below 1.</p>
+    <div class="callout sans" style="font-size:15.5px"><b>Already practicing?</b> Your horizon is the years to retirement. The chance there is less radiologist work than today is
+      <span data-v="SUM.2035.p_demand_below_today" data-f="pct"></span> in 2035 and <span data-v="SUM.2045.p_demand_below_today" data-f="pct"></span> in 2045. About 2.7% of radiologists retire or leave each year,<sup class="cite" data-ref="christensen_supply"></sup>
+      so a surplus is normally absorbed by hiring fewer new graduates. Layoffs would require demand to fall faster than that. This happens in some five-year
+      window after 2035 in <b data-v="X.displacement.p_any_decline_faster_than_attrition_2035_2066" data-f="pct"></b> of futures, almost all in the transformative-AI
+      regime; outside it, in <span data-v="X.displacement.p_any_decline_faster_than_attrition_non_tai" data-f="pct1"></span> of futures.</div>
+    <h3>Where would AI risk show up?</h3>
+    <ol class="margins">
+      <li><b>What the job involves</b><span class="lik">near-certain</span><br><span class="ink2">Drafting, measurement and protocoling shrink; consultation, procedures and AI oversight grow (see <a href="#day">How a radiologist's day changes</a>).</span></li>
+      <li><b>Workload intensity</b><span class="lik">likely while short</span><br><span class="ink2">In shortage futures, time saved becomes more studies per hour rather than shorter days.<sup class="cite" data-ref="zamani_2026"></sup></span></li>
+      <li><b>Hiring of new graduates</b><span class="lik">first to be affected in surplus futures</span><br><span class="ink2">Fewer openings and residency cuts, as in the mid-1990s and mid-2010s.<sup class="cite" data-ref="rosenkrantz_2016,shi_2015"></sup> In other AI-exposed jobs, early-career employment fell first.<sup class="cite" data-ref="canaries_2025"></sup></span></li>
+      <li><b>Pay</b><span class="lik">follows supply ÷ demand</span><br><span class="ink2">Shortage-driven pay growth flattens or reverses once supply exceeds demand.<sup class="cite" data-ref="autor_thompson_2025"></sup></span></li>
+      <li><b>Layoffs of practicing radiologists</b><span class="lik">least likely</span><br><span class="ink2">Requires demand to fall faster than retirements; see the box above.</span></li>
+    </ol>
+    <p class="sans" style="font-size:16px;margin-top:20px"><b>Skills that appear slower to automate.</b> Under this model's assumptions, procedures (median
+      AI time-saving ceiling ≈7%) and consultation (≈24%) are the least automatable tasks, which favors interventional radiology (IR), breast intervention and
+      consultation-heavy work; informatics and AI governance are new tasks AI creates. Geographic flexibility matters most in surplus futures, which hit new
+      graduates first.</p>
   </div>
 </section>
 
-<!-- =========================================================== FORECAST -->
-<section class="block" id="forecast">
-  <div class="wrap">
-    <h2>The forecast</h2>
-    <p class="lede">Demand for radiologists grows much more slowly than imaging itself, because AI absorbs most of the growth.
-      Supply is nearly locked in for a decade. The two cross in the median world in the early 2040s.</p>
-    <div class="chart-card">
-      <div class="title">Radiologist FTE demand and supply (2026 = 1)</div>
-      <div class="subtitle">Median line, 50% and 80% intervals. Hover for values.</div>
-      <div id="mainChart" class="chart"></div>
-    </div>
-    <div class="two">
-      <div class="chart-card">
-        <div class="title">Supply ÷ demand</div>
-        <div class="subtitle">Below 1 = shortage; above 1.10 = meaningful oversupply</div>
-        <div id="ratioChart" class="chart"></div>
-      </div>
-      <div class="chart-card">
-        <div class="title">Probability of bad outcomes</div>
-        <div class="subtitle">Share of the simulated worlds in each year</div>
-        <div id="probChart" class="chart"></div>
-      </div>
-    </div>
-    <h3>Headline numbers</h3>
-    <p class="sans small muted">Median (10th–90th percentile). Demand and supply are indices with 2026 = 1.</p>
-    <div class="tablewrap"><table id="headlineTable"></table></div>
+<!-- =========================================================== WHY -->
+<section class="block" id="why">
+  <div class="wrap narrow">
+    <h2>Why: the forecast in four numbers</h2>
+    <p>For the median future in 2045, each relative to 2026 demand:</p>
+    <ol class="margins">
+      <li><b>Without new AI, radiologist work would grow by <span data-v="X.baseline.2045.p50" data-f="gr"></span></b><br><span class="ink2">An older
+        population, more imaging per person and bigger studies.<a class="mlink" href="#m-baseline" title="Method: baseline demand">§</a></span></li>
+      <li><b>AI saves <span data-v="X.time_saved.2045.p50" data-f="pct"></span> of radiologist time</b><br><span class="ink2">Mostly drafting and measurement
+        first, then AI-first reading of simpler exams as regulation and payment allow (<a href="#ai">below</a>).</span></li>
+      <li><b>New work AI creates gives back about half of that saving</b><br><span class="ink2">New screening uses, faster scanners, follow-up of AI-found
+        findings and new tasks (<a href="#jevons">below</a>). Net: demand is <span data-v="SUM.2045.demand_p50" data-f="x2"></span>.</span></li>
+      <li><b>Supply grows from 0.93 to <span data-v="SUM.2045.supplyd_p50" data-f="x2"></span></b><br><span class="ink2">Supply changes slowly: training
+        takes about six years after medical school, about 2.7% of radiologists leave each year, and residency positions grow about 1% a year and respond to
+        a surplus only after several years.<a class="mlink" href="#m-supply" title="Method: supply">§</a></span></li>
+    </ol>
+    <p>So the median market drifts from shortage to rough balance, and the spread of possible futures, mostly how fast AI improves and how fast imaging
+      grows, decides whether it tips into oversupply.</p>
   </div>
 </section>
 
 <!-- =========================================================== AI & REGULATION -->
 <section class="block" id="ai">
   <div class="wrap">
-    <h2>AI productivity and the regulatory pipeline</h2>
-    <p class="lede">Being able to read a study is not the same as being allowed and paid to read it. For each class of exam the
-      model chains technical capability → clinical validation → FDA authorization → liability and reimbursement →
-      hospital adoption → actual labor substitution.</p>
+    <h2>Why: AI time savings and the regulatory pipeline</h2>
+    <p class="lede">Being able to read a study is not the same as being allowed and paid to read it. For each <a href="#term-tiers">tier</a> of exams the model chains:
+      technical capability → clinical validation → FDA authorization → liability and payment → hospital adoption → actual time saved.<a class="mlink" href="#m-pipeline" title="Method: pipeline">§</a></p>
+    <div class="callout sans" style="font-size:15px">What can today's AI do compared with radiologists, and what can't it? Two good overviews: a review of AI image
+      interpretation in the <i>New England Journal of Medicine</i><sup class="cite" data-ref="rajpurkar_2023"></sup> and an accessible essay on why AI has not
+      replaced radiologists.<sup class="cite" data-ref="mousa_2025"></sup> The <a href="report.html#sec-evidence">full report</a> summarizes the 2024–2026 studies.</div>
     <div class="two">
-      <div class="chart-card">
-        <div class="title">AI productivity multiplier</div>
-        <div class="subtitle">Imaging work per radiologist-hour, 2026 = 1</div>
-        <div id="prodChart" class="chart"></div>
-      </div>
-      <div class="chart-card">
-        <div class="title">AI-first / autonomous share of interpretive work</div>
-        <div class="subtitle">Radiologist audits, signs off or handles escalations</div>
-        <div id="autoChart" class="chart"></div>
-      </div>
+      <div class="chart-card"><div class="title">AI time saved</div><div class="subtitle">Share of radiologist time per study that AI removes</div><div id="prodChart" class="chart"></div></div>
+      <div class="chart-card"><div class="title">AI-first share</div><div class="subtitle">Share of interpretive work where AI reads first</div><div id="autoChart" class="chart"></div></div>
     </div>
     <div class="chart-card">
-      <div class="title">From capability to labor substitution, by tier of difficulty</div>
-      <div class="subtitle">Dot = median year each stage is reached; line = 80% range. Tiers 1–2 are only about 30% of interpretive work.</div>
+      <div class="title">From capability to time saved, by tier of exam difficulty</div>
+      <div class="subtitle">Tiers: 1 normal radiographs and negative screens (≈7%), 2 other radiographs and screening (≈17%), 3 complex CT/MRI/US/NM (≈47%),
+        4 hardest remaining work (≈29%). Dot = median year each stage is reached; line = 80% range.</div>
       <div id="pipelineChart" class="chart"></div>
-      <div class="note">Anchors: autonomous normal-CXR AI CE-marked in the EU in 2022;<sup class="cite" data-ref="oxipit_2022"></sup> MASAI trial ~4 years from
-        randomization to main results;<sup class="cite" data-ref="lang_2023"></sup><sup class="cite" data-ref="hernstrom_2025"></sup> autonomous retinal AI took 3 years from
-        FDA to a CPT code;<sup class="cite" data-ref="abramoff_2018"></sup> mock jurors penalize radiologists who overrule AI;<sup class="cite" data-ref="bernstein_2025"></sup>
-        mammography CAD spread within years of Medicare payment.<sup class="cite" data-ref="lehman_2015"></sup></div>
+      <div class="note">Anchors: autonomous normal-chest-X-ray AI approved in the EU in 2022;<sup class="cite" data-ref="oxipit_2022"></sup> AI could safely self-report ~8–18% of chest X-rays;<sup class="cite" data-ref="plesner_2023,plesner_2024"></sup>
+        MASAI, a Swedish randomized trial of AI-supported mammography screening, took ~5 years from enrollment to its main result;<sup class="cite" data-ref="gommers_2026"></sup> no autonomous radiology read is FDA-authorized yet;<sup class="cite" data-ref="fda_ai_2026,aidoc_2026"></sup>
+        jurors penalize radiologists who overrule AI;<sup class="cite" data-ref="bernstein_2025"></sup> mammography computer-aided detection spread within years of Medicare payment.<sup class="cite" data-ref="lehman_2015"></sup></div>
+    </div>
+    <div class="chart-card" id="day">
+      <div class="title">How a radiologist's day changes</div>
+      <div class="subtitle">Share of radiologist working time by task, mean across futures. The most certain effect of AI is on <i>what</i> radiologists do.<sup class="cite" data-ref="langlotz_2025,dhanoa_2013,autor_2024"></sup></div>
+      <div id="compChart" class="chart"></div>
     </div>
   </div>
 </section>
@@ -310,31 +342,21 @@
 <!-- =========================================================== JEVONS -->
 <section class="block" id="jevons">
   <div class="wrap">
-    <h2>The Jevons question</h2>
-    <p class="lede">When coal engines became more efficient, Britain burned more coal.<sup class="cite" data-ref="jevons_1865"></sup>
-      Could cheaper, faster AI reads likewise create so much new imaging that radiologists end up busier? We add up every channel
-      separately, net of the countervailing ones.</p>
-    <div class="chart-card">
-      <div class="title">Labor saved by AI vs demand induced by AI</div>
-      <div class="subtitle">Mean across worlds, as a share of 2026 radiologist FTEs. Hover a year for the breakdown.</div>
-      <div id="jevonsChart" class="chart"></div>
-    </div>
+    <h2>Why: the Jevons question</h2>
+    <p class="lede">Could cheaper, faster AI reads create so much new imaging that radiologists end up busier? The model adds up each channel separately,
+      including the ones pushing the other way.<a class="mlink" href="#m-jevons" title="Method: Jevons accounting">§</a></p>
+    <div class="chart-card"><div class="title">Radiologist time saved by AI vs new work created by AI</div>
+      <div class="subtitle">Averages across futures, in units of 2026 radiologist FTEs, so larger than the medians quoted elsewhere. Hover a year for the breakdown.</div><div id="jevonsChart" class="chart"></div></div>
     <div class="two">
-      <div class="chart-card">
-        <div class="title">How much of the saving is offset?</div>
-        <div class="subtitle">Induced ÷ labor saved: median and 80% range. Above 1 = a true Jevons paradox.</div>
-        <div id="offsetChart" class="chart"></div>
-      </div>
+      <div class="chart-card"><div class="title">How much of the saving is offset?</div><div class="subtitle">New work ÷ time saved: median and 80% range. Above 1 = a true <a href="#term-jevons">Jevons paradox</a>.</div><div id="offsetChart" class="chart"></div></div>
       <div class="card sans" style="font-size:15px;align-self:start;margin-top:22px">
         <h4 style="font-family:var(--sans);font-size:16px">Why cheaper reads don't create much demand</h4>
-        <p>The radiologist's interpretation fee is only about 10%–30% of the all-in price of a scan.<sup class="cite" data-ref="pc_share"></sup>
-          Imaging demand is price-inelastic (≈ −0.2).<sup class="cite" data-ref="manning_1987"></sup><sup class="cite" data-ref="brot_goldberg_2017"></sup>
-          Halving interpretation cost therefore adds only ~1–2% more exams.</p>
-        <p>The bigger channels are <b>new applications</b> (opportunistic CT screening,<sup class="cite" data-ref="lee_2026"></sup> lung screening uptake
-          of 18%<sup class="cite" data-ref="bandi_2024"></sup>), <b>new radiologist tasks</b>,<sup class="cite" data-ref="acemoglu_restrepo_2019"></sup>
-          <b>scanner throughput</b><sup class="cite" data-ref="johnson_2023"></sup> and <b>faster turnaround</b>.<sup class="cite" data-ref="larson_2011"></sup>
-          They are capped by technologist shortages (CT vacancy rate 19.4%<sup class="cite" data-ref="asrt_2025"></sup>).</p>
-        <p style="margin:0">In Bessen's terms, radiology looks like a mature market where demand is no longer very elastic.<sup class="cite" data-ref="bessen_2019"></sup></p>
+        <p>The radiologist's fee is only ~20–25% of an exam's price,<sup class="cite" data-ref="pc_share"></sup> and imaging demand barely responds to price
+          (a 10% price cut raises use by about 2%).<sup class="cite" data-ref="manning_1987,brot_goldberg_2017"></sup> So halving interpretation cost adds only about 2% more exams.</p>
+        <p>The bigger channels are new uses (opportunistic screening on CTs done for other reasons,<sup class="cite" data-ref="lee_2026"></sup> raising lung-screening uptake from 18%<sup class="cite" data-ref="bandi_2024"></sup>),
+          new radiologist tasks,<sup class="cite" data-ref="acemoglu_restrepo_2019"></sup> faster scanners<sup class="cite" data-ref="johnson_2023"></sup> and faster turnaround.<sup class="cite" data-ref="larson_2011"></sup>
+          AI also adds some radiologist work, such as oversight and follow-up of incidental findings,<sup class="cite" data-ref="kwee_2025"></sup> which the model includes.
+          Technologist shortages cap the extra exams.<sup class="cite" data-ref="asrt_2025"></sup></p>
       </div>
     </div>
   </div>
@@ -344,40 +366,123 @@
 <section class="block" id="drivers">
   <div class="wrap">
     <h2>What drives the forecast?</h2>
-    <p class="lede">Each group of assumptions is pinned at its 10th and then its 90th percentile while everything else stays
-      uncertain. Wide bars are the assumptions worth arguing about. Dots mark the six assumptions the brief asked about.</p>
+    <p class="lede">Two assumptions matter far more than the rest. <b>How fast AI improves</b>: across its plausible range, the chance of oversupply in
+      2045 runs from about 17% to near-certain. <b>How fast imaging per person grows</b>: about 81% if growth is low, 11% if it is high (at its 10th vs 90th percentile). A third, how much
+      time AI saves on each assisted read, moves it from 20% to 44%. Everything else, including regulatory delay, scanner throughput, new imaging uses and
+      how residency programs respond, moves it by roughly 10 percentage points or less. By 2055, growth in residency positions joins the top drivers
+      (26% to 48%).</p>
     <div class="chart-card">
-      <div class="controls" id="tornadoControls">
-        <span class="lab">Outcome</span>
+      <div class="title">The biggest single assumption: how fast AI progresses</div>
+      <div class="subtitle">Median FTE demand in each <a href="#term-regimes">AI-progress regime</a>. Forecasts of general AI (how long a task AI can complete on its own,<sup class="cite" data-ref="metr_2025,metr_2026"></sup>
+        researcher surveys,<sup class="cite" data-ref="grace_2025"></sup> the AI 2027 scenario,<sup class="cite" data-ref="ai2027"></sup> and forecasting panels<sup class="cite" data-ref="leap_2025,karger_2023"></sup>)
+        are used only to weight these regimes. None is a forecast about medicine.</div>
+      <div id="regimeChart" class="chart"></div>
+    </div>
+    <div class="chart-card">
+      <div class="title">Which assumptions move the forecast? (a "tornado" chart)</div>
+      <div class="subtitle">Each group of assumptions is set to a low (10th percentile) and then a high (90th percentile) value while everything else stays
+        uncertain. ● marks six factors often argued about: future imaging use, new applications, scanner throughput, regulatory delay, AI-first adoption and
+        residency response.<a class="mlink" href="#m-sensitivity" title="Method: sensitivity">§</a></div>
+      <div class="controls" id="tornadoControls"><span class="lab">Outcome</span>
         <div class="seg" role="group" aria-label="Tornado outcome">
-          <button data-m="pOver2035">P(oversupply) 2035</button>
-          <button data-m="pOver2045" aria-pressed="true">P(oversupply) 2045</button>
-          <button data-m="pOver2055">P(oversupply) 2055</button>
-          <button data-m="D2035_p50">Demand 2035</button>
-          <button data-m="D2045_p50">Demand 2045</button>
-          <button data-m="D2055_p50">Demand 2055</button>
-        </div>
-      </div>
+          <button data-m="pOver2035">P(oversupply) 2035</button><button data-m="pOver2045" aria-pressed="true">P(oversupply) 2045</button><button data-m="pOver2055">P(oversupply) 2055</button>
+          <button data-m="D2035_p50">Demand 2035</button><button data-m="D2045_p50">Demand 2045</button><button data-m="D2055_p50">Demand 2055</button>
+        </div></div>
       <div id="tornadoChart" class="chart"></div>
-      <div class="note"><span class="key"><i class="box" style="background:var(--s1)"></i>group at 10th percentile</span> &nbsp;
-        <span class="key"><i class="box" style="background:var(--s2)"></i>group at 90th percentile</span></div>
+      <div class="note"><span class="key"><i class="box" style="background:var(--s1)"></i>group at its 10th percentile</span> &nbsp; <span class="key"><i class="box" style="background:var(--s2)"></i>group at its 90th percentile</span></div>
     </div>
     <div class="two">
-      <div class="chart-card">
-        <div class="title">Variance explained (η²), demand in 2045</div>
-        <div class="controls"><div class="seg" role="group" aria-label="Sensitivity scope">
-          <button data-s="all" aria-pressed="true">All worlds</button>
-          <button data-s="nt">Excluding transformative AI</button></div></div>
-        <div id="etaChart" class="chart"></div>
-        <div class="note">Badges: E = empirical, A = anchored on data, S = subjective.</div>
+      <div class="chart-card"><details class="datatable"><summary>More detail: share of the variance in 2045 demand explained by each input (η²)</summary>
+        <div class="subtitle">η² ("eta squared"): 1 would mean the input alone determines 2045 demand. This measures the spread of demand, not the chance of oversupply.</div>
+        <div class="controls"><div class="seg" role="group" aria-label="Sensitivity scope"><button data-s="all" aria-pressed="true">All futures</button><button data-s="nt">Excluding transformative AI</button></div></div>
+        <div id="etaChart" class="chart"></div><div class="note">E = empirical, A = anchored on data, S = subjective (see <a href="#assumptions">assumptions</a>).</div></details></div>
+      <div class="chart-card"><div class="title">Where does the uncertainty come from?</div><div class="subtitle">How much narrower the 80% range for 2045 demand would be if each class of input were known exactly</div>
+        <div id="evidenceChart" class="chart"></div><div class="note">Knowing the judgment-call (subjective) inputs exactly would make the range about
+          <b data-v="F.subj_shrink" data-f="pct"></b> narrower: about half of the uncertainty comes from judgment calls. Better measurement of the past barely helps.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================== TRACK RECORD -->
+<section class="block" id="track">
+  <div class="wrap">
+    <h2>How sure? A backtest, and how forecasts are made</h2>
+    <p class="lede">We set the clock back to 2016, the year of the "stop training radiologists" remark and of the first large-scale neural machine translation
+      (relevant to translators), and used only information available then to forecast 2025. We did this for radiology and for three other
+      occupations exposed to automation, and compared the results with the alternatives people actually used.<a class="mlink" href="#m-validation" title="Method: backtest">§</a></p>
+    <div class="track-grid">
+      <div>
+        <div class="chart-card">
+          <div class="title">Forecasts made with 2016 information vs what happened by 2025</div>
+          <div class="subtitle">Employment in 2025 relative to 2016. Blue bars are this method's 50% and 80% ranges.</div>
+          <div id="backtestChart" class="chart"></div>
+        </div>
+        <div class="tablewrap"><table id="backtestTable"></table></div>
+        <p class="sans small ink2">Sources: BLS Occupational Outlook Handbook employment and projections from the 2008, 2018 and 2026 editions;<sup class="cite" data-ref="bls_ooh_2008_mt,bls_ooh_2008_tr,bls_ooh_2010_sw,bls_ooh_2018_mt,bls_ooh_2018_tr,bls_ooh_2018_sw,bls_ooh_2026_mt,bls_ooh_2026_tr,bls_ooh_2026_sw"></sup>
+          automation probabilities from Frey &amp; Osborne.<sup class="cite" data-ref="frey_osborne_2013"></sup></p>
+        <div class="three" style="margin-top:12px">
+          <div class="tile"><div class="label">Outcomes inside this method's 80% range</div><div class="value"><span data-v="BT.coverage80" data-f="pct"></span></div><div class="sub">3 occupations (expect about 80%); radiology scored separately</div></div>
+          <div class="tile"><div class="label">Average forecast error, roughly the % a forecast was off: method · BLS · trend</div><div class="value" style="font-size:26px"><span data-v="BT.mae_log.model" data-f="pct"></span> · <span data-v="BT.mae_log.bls" data-f="pct"></span> · <span data-v="BT.mae_log.trend" data-f="pct"></span></div><div class="sub">mean absolute log error; lower is better</div></div>
+          <div class="tile"><div class="label">Radiology: chance of a 2025 shortage, as forecast in 2016</div><div class="value" data-v="BT.radiology.p_shortage" data-f="pct"></div><div class="sub">observed: shortage</div></div>
+        </div>
+        <p>From 2016, this approach would have given about two-in-three odds of a radiologist shortage in 2025, which is what happened. Its
+          <b>Brier score</b> (the squared error of a probability forecast: 0 is perfect, 1 a confident miss) is <span data-v="BT.brier.model" data-f="x2"></span>,
+          against 0.25 for a coin flip and <span data-v="BT.brier.hinton" data-f="x2"></span> for a forecaster who put 5% on a 2025 shortage, roughly the 2016
+          displacement view.
+          For the other occupations the method was about as accurate as the official BLS projections and better than simple trend extrapolation, and every
+          outcome fell inside its 80% range. It overestimated the decline in medical transcription (the simple trend was closer) and the growth in translation
+          (BLS was closer).</p>
+        <p class="sans small ink2"><b>Limits:</b> four cases cannot establish skill. The 2016 inputs were chosen in 2026, so some hindsight may leak in even though
+          the rules were applied mechanically. Wide ranges are easy to "cover". This is a sanity check, not proof.</p>
       </div>
-      <div class="chart-card">
-        <div class="title">Where does the uncertainty come from?</div>
-        <div class="subtitle">How much narrower the 80% interval for 2045 demand would be if each class of parameter were known exactly</div>
-        <div id="evidenceChart" class="chart"></div>
-        <div class="note">Better measurement of the past barely helps. The spread comes from judgments about the future of AI,
-          regulation and imaging use.</div>
-      </div>
+      <aside class="card howto" id="how-forecast">
+        <h4>How forecasts are made, and why this one is built this way</h4>
+        <details open><summary>Ask an expert</summary><p>Fast and rich in context, but in a 20-year study experts' long-range forecasts barely beat chance,
+          specialists did no better than informed generalists, and confident "big idea" thinkers did worst.<sup class="cite" data-ref="tetlock_2005"></sup> In a 2022
+          tournament, AI experts and superforecasters were about equally accurate overall, and both underestimated AI benchmark progress.<sup class="cite" data-ref="fri_xpt_2025"></sup></p></details>
+        <details><summary>Ask a crowd (superforecasters, prediction markets)</summary><p>Aggregating many trained forecasters, or letting people bet, beats
+          most individuals.<sup class="cite" data-ref="mellers_2014,arrow_2008,metaculus"></sup> But there are few long-horizon markets on niche questions like radiology jobs.</p></details>
+        <details><summary>Extend the trend / use base rates</summary><p>The "outside view": start from what usually happens in similar cases.<sup class="cite" data-ref="kahneman_1993"></sup>
+          Simple and hard to beat over short horizons,<sup class="cite" data-ref="makridakis_2020"></sup> but blind to turning points (translation employment stopped growing; transcription fell faster than its trend).</p></details>
+        <details><summary>Official projections (BLS)</summary><p>Careful, but they assume technology changes slowly. BLS projected medical transcription <i>growth</i> of 14% for 2006–16;
+          employment fell 41%.<sup class="cite" data-ref="bls_ooh_2008_mt"></sup></p></details>
+        <details><summary>Exposure indices</summary><p>Rate which jobs are automatable.<sup class="cite" data-ref="frey_osborne_2013,eloundou_2024"></sup> They rank risk well
+          (transcription high, software low) but say nothing about timing, regulation, or new demand.</p></details>
+        <details><summary>Scenarios</summary><p>Vivid stories of possible futures, such as AI 2027.<sup class="cite" data-ref="ai2027"></sup> Good for imagining extremes, but no probabilities.</p></details>
+        <details><summary>Structured probabilistic model (this site)</summary><p>Breaks the question into parts that each have evidence, combines forecasts rather
+          than picking one,<sup class="cite" data-ref="clemen_1989,makridakis_2020"></sup> keeps every assumption explicit and graded, and outputs probabilities that can be
+          updated as signals arrive.<sup class="cite" data-ref="tetlock_2015"></sup> Weakness: only as good as its inputs. About half the uncertainty comes from
+          judgment calls (see <a href="#drivers">What drives the forecast</a>).</p></details>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================== SIGNPOSTS -->
+<section class="block" id="signposts">
+  <div class="wrap">
+    <h2>What would change the forecast</h2>
+    <p class="lede">If we observe X in the next few years, how likely is meaningful oversupply? Each row is the share of matching simulated futures. Rows
+      that split futures into thirds are less extreme than the 10th-vs-90th-percentile swings in the tornado chart.</p>
+    <div class="tablewrap"><table id="signpostTable"></table></div>
+    <p class="sans small ink2"><b>These are signals, not levers.</b> Early payment for autonomous reads, or many new AI uses (†), mostly tell you that AI is moving
+      fast, and fast AI is what raises the risk. Holding AI speed fixed, faster regulation moves 2045 oversupply only from about 24% to 33% (see the <a href="#drivers">tornado</a>),
+      and more new uses slightly <i>lower</i> it. <a href="#term-tiers">Tiers</a> are defined in Key terms.</p>
+    <div class="signals">
+      <div class="card"><h4><span class="status-dot" style="background:var(--critical)"></span>Signals that would raise oversupply risk</h4><ul>
+        <li>Multi-site studies showing ≥15% real-world time savings from AI-drafted reports by ~2030</li>
+        <li>FDA authorization of autonomous reads for a U.S. exam class before 2028, earlier than the median future<sup class="cite" data-ref="fda_ai_2026"></sup></li>
+        <li>Payers paying for AI-first (autonomous) reads, or liability safe harbors<sup class="cite" data-ref="mello_2024"></sup></li>
+        <li>Imaging per person flattening as Medicare's trust fund runs short<sup class="cite" data-ref="trustees_2026"></sup></li>
+        <li>Radiology residency positions passing ~1,400 a year before the mid-2030s (on trend, around 2038)</li>
+        <li>Frontier AI reliably completing multi-day clinical reasoning tasks<sup class="cite" data-ref="metr_2026"></sup></li></ul></div>
+      <div class="card"><h4><span class="status-dot" style="background:var(--good)"></span>Signals that would lower oversupply risk</h4><ul>
+        <li>Real-world AI time savings staying in single digits<sup class="cite" data-ref="wenderott_2024,liu_2026"></sup></li>
+        <li>Autonomous products stalling at FDA, liability or payment</li>
+        <li>CT and MRI volumes continuing to grow strongly<sup class="cite" data-ref="rosenkrantz_2025"></sup></li>
+        <li>Screening programs scaling with radiologists in the loop</li>
+        <li>AI creating paid radiologist-led services (quantitative imaging, theranostics, AI governance)</li>
+        <li>Attrition staying at post-COVID highs<sup class="cite" data-ref="parikh_2026"></sup></li></ul></div>
     </div>
   </div>
 </section>
@@ -385,119 +490,99 @@
 <!-- =========================================================== EXPLORER -->
 <section class="block" id="explore">
   <div class="wrap">
-    <h2>Explore the simulated worlds</h2>
-    <p class="lede">Filter 1,500 of the simulated futures by what you think will happen, or re-weight the AI regimes. Everything
-      updates from the same Monte Carlo draws, without re-running the model.</p>
+    <h2>Explore the simulated futures</h2>
+    <p class="lede">Filter a random sample of 1,500 of the <span data-v="F.n_sims" data-f="int"></span> futures by what you believe, or re-weight the
+      <a href="#term-regimes">AI regimes</a>. Everything updates instantly; numbers can differ from the rest of the page by a point because of sampling.</p>
     <div class="explorer">
       <div class="filters card" id="filters">
-        <fieldset><legend>AI progress regime</legend>
-          <div class="seg" data-filter="regime">
-            <button data-v="any" aria-pressed="true">Any</button><button data-v="0">Stall</button><button data-v="1">Trend</button><button data-v="2">Fast</button><button data-v="3">Transformative</button>
-          </div></fieldset>
-        <fieldset><legend>Regulation / liability / payment</legend>
-          <div class="seg" data-filter="reg_lag">
-            <button data-v="any" aria-pressed="true">Any</button><button data-v="lo">Fast-track</button><button data-v="mid">Typical</button><button data-v="hi">Slow</button>
-          </div><div class="hint">Terciles of total lag for autonomous radiograph reading</div></fieldset>
-        <fieldset><legend>Per-capita imaging growth</legend>
-          <div class="seg" data-filter="util_g0">
-            <button data-v="any" aria-pressed="true">Any</button><button data-v="lo">Low</button><button data-v="mid">Mid</button><button data-v="hi">High</button>
-          </div></fieldset>
-        <fieldset><legend>New AI-enabled applications</legend>
-          <div class="seg" data-filter="new_max">
-            <button data-v="any" aria-pressed="true">Any</button><button data-v="lo">Few</button><button data-v="mid">Some</button><button data-v="hi">Many</button>
-          </div></fieldset>
-        <fieldset><legend>Residency slot growth</legend>
-          <div class="seg" data-filter="slot_g">
-            <button data-v="any" aria-pressed="true">Any</button><button data-v="lo">Flat</button><button data-v="mid">Moderate</button><button data-v="hi">Fast</button>
-          </div></fieldset>
-        <fieldset><legend>Your regime weights</legend>
-          <div id="weights"></div>
-          <div class="hint">Default: 15 / 55 / 18 / 12. Applies when regime = Any.</div>
-          <button class="iconbtn" id="resetW" type="button" style="margin-top:6px">Reset weights</button>
-        </fieldset>
+        <fieldset><legend>AI-progress regime</legend><div class="chips" data-filter="regime"><button data-v="any" aria-pressed="true">Any</button><button data-v="0">Stall</button><button data-v="1">Trend</button><button data-v="2">Fast</button><button data-v="3">Transformative</button></div></fieldset>
+        <fieldset><legend>Regulation, liability &amp; payment</legend><div class="chips" data-filter="reg_lag"><button data-v="any" aria-pressed="true">Any</button><button data-v="lo">Fast-track</button><button data-v="mid">Typical</button><button data-v="hi">Slow</button></div><div class="hint">Fastest, middle and slowest third of futures by time from capability to payment for autonomous radiograph reads</div></fieldset>
+        <fieldset><legend>Imaging growth per person</legend><div class="chips" data-filter="util_g0"><button data-v="any" aria-pressed="true">Any</button><button data-v="lo">Low</button><button data-v="mid">Mid</button><button data-v="hi">High</button></div></fieldset>
+        <fieldset><legend>New AI-enabled imaging uses</legend><div class="chips" data-filter="new_max"><button data-v="any" aria-pressed="true">Any</button><button data-v="lo">Few</button><button data-v="mid">Some</button><button data-v="hi">Many</button></div><div class="hint">Many new uses mostly occur in fast-AI futures (see <a href="#signposts">signals, not levers</a>)</div></fieldset>
+        <fieldset><legend>Residency position growth</legend><div class="chips" data-filter="slot_g"><button data-v="any" aria-pressed="true">Any</button><button data-v="lo">Flat</button><button data-v="mid">Moderate</button><button data-v="hi">Fast</button></div><div class="hint">All filters except the regime split futures into thirds</div></fieldset>
+        <fieldset><legend>Your regime weights</legend><div id="weights"></div><div class="hint">Default 15 / 55 / 18 / 12. Used when regime = Any.</div><button class="iconbtn" id="resetW" type="button" style="margin-top:8px">Reset weights</button></fieldset>
       </div>
       <div>
         <div class="matchcount" id="matchCount"></div>
         <div class="mini-tiles" id="exTiles"></div>
-        <div class="chart-card" style="margin-top:8px">
-          <div class="title">Demand and supply in the matching worlds</div>
-          <div class="subtitle">Median, 80% range, and 24 individual worlds (thin lines)</div>
-          <div id="exChart" class="chart"></div>
-        </div>
-        <div class="chart-card">
-          <div class="title">Supply ÷ demand in the matching worlds</div>
-          <div id="exRatio" class="chart"></div>
-        </div>
+        <div class="chart-card" style="margin-top:8px"><div class="title">Demand and supply in the matching futures</div><div class="subtitle">Median, 80% range, and 24 individual futures (thin lines)</div><div id="exChart" class="chart"></div></div>
+        <div class="chart-card"><div class="title">Supply ÷ demand in the matching futures</div><div id="exRatio" class="chart"></div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- =========================================================== THE DAY -->
-<section class="block" id="day">
+<!-- =========================================================== FORECAST (reference) -->
+<section class="block" id="forecast">
   <div class="wrap">
-    <h2>How a radiologist's day changes</h2>
-    <p class="lede">The most certain effect of AI is on <i>what</i> radiologists do, not how many are needed. Drafting and
-      measurement shrink first, followed by primary interpretation. Consultation, procedures and new oversight work take up a
-      growing share of the day.<sup class="cite" data-ref="langlotz_2025"></sup><sup class="cite" data-ref="dhanoa_2013"></sup><sup class="cite" data-ref="autor_2024"></sup></p>
+    <h2>All the numbers</h2>
+    <p class="lede">The full forecast for reference. Demand for radiologists grows much more slowly than imaging itself, because AI absorbs most of the growth;
+      supply is predictable for a decade because training takes years.</p>
     <div class="chart-card">
-      <div class="title">Share of radiologist working time by task (mean across worlds)</div>
-      <div id="compChart" class="chart"></div>
+      <div class="title">Radiologist FTE demand and supply</div>
+      <div class="subtitle">Both indexed so 2026 demand = 1. Median line with 50% and 80% ranges. Hover for values.</div>
+      <div id="mainChart" class="chart"></div>
     </div>
+    <div class="two">
+      <div class="chart-card"><div class="title">Supply ÷ demand</div><div class="subtitle">Below 1 = shortage; above 1.10 = <a href="#term-oversupply">meaningful oversupply</a></div><div id="ratioChart" class="chart"></div></div>
+      <div class="chart-card"><div class="title">Chance of oversupply or falling demand, by year</div><div class="subtitle">Share of the simulated futures</div><div id="probChart" class="chart"></div></div>
+    </div>
+    <div class="tablewrap"><table id="headlineTable"></table></div>
+    <p class="sans small muted">Median (10th–90th percentile). Demand and supply are indexed so 2026 demand = 1. The median of supply ÷ demand is not exactly median supply
+      divided by median demand, because the two move together across futures.</p>
   </div>
 </section>
 
-<!-- =========================================================== M1 -->
-<section class="block" id="m1">
+<!-- =========================================================== METHODS -->
+<section class="block" id="methods">
   <div class="wrap">
-    <h2>For an M1 considering radiology</h2>
-    <p class="lede">A concise reading of the model for someone deciding in 2026.</p>
-    <div class="horizon" id="horizon"></div>
-
-    <div class="two" style="align-items:start">
-      <div>
-        <h3 style="margin-top:0">Where would AI risk show up?</h3>
-        <ol class="margins">
-          <li><b>Task composition</b><span class="lik">near-certain</span><br><span class="ink2">Drafting, measurement and protocoling shrink; consultation, procedures and AI oversight grow.</span></li>
-          <li><b>Workload intensity</b><span class="lik">likely, especially while short</span><br><span class="ink2">In shortage worlds, productivity gains become more studies per hour rather than shorter days.</span></li>
-          <li><b>Hiring</b><span class="lik">the first margin in surplus worlds</span><br><span class="ink2">Fewer openings for new graduates and residency cuts, as in the mid-1990s and mid-2010s.<sup class="cite" data-ref="rosenkrantz_2016"></sup><sup class="cite" data-ref="shi_2015"></sup></span></li>
-          <li><b>Compensation</b><span class="lik">follows the ratio</span><br><span class="ink2">Pay growth that is now driven by the shortage flattens or reverses once supply exceeds demand.</span></li>
-          <li><b>Unemployment of practicing radiologists</b><span class="lik">least likely</span><br><span class="ink2">Demand falls faster than natural attrition in some five-year window of your career in <b data-v="X.displacement.p_any_decline_faster_than_attrition_2035_2066" data-f="pct"></b> of worlds, almost all of them transformative-AI worlds (<b data-v="X.displacement.p_any_decline_faster_than_attrition_non_tai" data-f="pct1"></b> otherwise).</span></li>
-        </ol>
-      </div>
-      <div>
-        <h3 style="margin-top:0">What would change the forecast</h3>
-        <p class="sans small ink2" style="margin-top:-4px">Conditional probabilities from the simulation: if we observe X, how likely is meaningful oversupply?</p>
-        <div class="tablewrap"><table id="signpostTable"></table></div>
-      </div>
+    <h2>How the model works</h2>
+    <p class="lede">Five pieces are modeled separately and then linked. Each arrow carries uncertain inputs drawn from probability distributions, and the
+      pieces are correlated: faster AI raises time savings <i>and</i> creates new imaging uses <i>and</i> speeds up scanners. Click a box for details.</p>
+    <div class="model-grid" id="model">
+      <div class="card diagram" id="diagram"></div>
+      <div class="card detail" id="diagramDetail"></div>
     </div>
-
-    <div class="signals">
-      <div class="card"><h4><span class="status-dot" style="background:var(--critical)"></span>Signals to be more pessimistic</h4>
-        <ul>
-          <li>Prospective, multi-site studies showing ≥15% real-world time savings from generative reporting by ~2030</li>
-          <li>FDA authorization of autonomous reads for any U.S. radiology exam class</li>
-          <li>CMS or major payers paying for AI-only reads, or malpractice safe-harbor laws</li>
-          <li>Per-capita imaging flattening or falling (utilization management, Medicare's 2033 trust-fund squeeze<sup class="cite" data-ref="trustees_2026"></sup>)</li>
-          <li>DR residency positions passing ~1,400 a year</li>
-          <li>Frontier AI reliably completing multi-day clinical reasoning tasks<sup class="cite" data-ref="metr_2026"></sup></li>
-        </ul></div>
-      <div class="card"><h4><span class="status-dot" style="background:var(--good)"></span>Signals to be more optimistic</h4>
-        <ul>
-          <li>Real-world AI time savings staying in single digits</li>
-          <li>Autonomous-reading products stalling at FDA, liability or payment</li>
-          <li>CT/MRI volume growth staying at 3%+ a year<sup class="cite" data-ref="smith_bindman_2019"></sup></li>
-          <li>Screening (lung, opportunistic CT) scaling with radiologists in the loop</li>
-          <li>AI creating paid radiologist-led services: quantitative imaging, theranostics, AI governance</li>
-          <li>Attrition staying at post-COVID highs<sup class="cite" data-ref="christensen_supply"></sup></li>
-        </ul></div>
-    </div>
-    <div class="callout" style="margin-top:28px;font-size:17.5px">
-      <b>Bottom line.</b> On a 10-year horizon, radiology looks like a reasonable bet; its risks come late and sit mostly in a
-      transformative-AI tail. To hedge, build skills in the tasks that are slower to automate (procedures and IR, consultation,
-      breast intervention, informatics and AI governance), stay geographically flexible, and update each year on the signals
-      above rather than on headlines.
-    </div>
+  </div>
+  <div class="wrap narrow" style="margin-top:28px">
+    <h3 style="margin-top:0">Methods in brief</h3>
+    <p>The "§" links above point here. The <a href="report.html">full report</a> has every equation, table and source.</p>
+    <h3 id="m-baseline">Baseline demand</h3>
+    <p>Radiologist work grows with demographics (+0.52%/yr, from projections<sup class="cite" data-ref="christensen_util"></sup> adjusted for lower immigration<sup class="cite" data-ref="cbo_2026"></sup>),
+      imaging per person (starting at 1.2%/yr and slowing<sup class="cite" data-ref="smith_bindman_2019,rosenkrantz_2025"></sup>) and work per exam (0.4%/yr, slowing<sup class="cite" data-ref="mcdonald_2015"></sup>),
+      minus up to 15% displaced by blood tests and other alternatives. Today's shortage (supply ÷ demand: median 0.93, 80% range 0.88–0.96) comes from
+      workforce projections and market signals.<sup class="cite" data-ref="rula_2026,zamani_2026,parikh_2026"></sup> <a href="report.html#sec-baseline">Report §4.1</a></p>
+    <h3 id="m-ai">AI time savings</h3>
+    <p>Radiologist time is split into five tasks: interpretation 42%, drafting and measurement 18%, consultation 13%, administration 15%, procedures
+      12%.<sup class="cite" data-ref="langlotz_2025,dhanoa_2013"></sup> Each has an uncertain maximum AI time saving, a capability curve and an adoption curve.
+      Maximums are anchored on measured effects: 15.5% faster documentation in live use,<sup class="cite" data-ref="huang_2025"></sup> 42% faster reading in a
+      reader study,<sup class="cite" data-ref="hong_2025"></sup> and no significant pooled saving in real-world deployments.<sup class="cite" data-ref="wenderott_2024,liu_2026"></sup>
+      AI also adds oversight work.<sup class="cite" data-ref="humlum_2025"></sup> Adoption speeds up while there is a shortage. <a href="report.html#sec-ai">Report §4.2</a></p>
+    <h3 id="m-pipeline">Regulation and adoption</h3>
+    <p>Each of the four <a href="#term-tiers">tiers</a> must pass validation, FDA authorization, and liability and payment acceptance before adoption can begin,
+      and an AI-first study still needs about a fifth of the radiologist's time for audit and sign-off. Lags are anchored on MASAI (~5 years),<sup class="cite" data-ref="gommers_2026"></sup>
+      the scarcity of clinical validation,<sup class="cite" data-ref="chouffani_2024"></sup> autonomous retinal AI (3 years from FDA to payment),<sup class="cite" data-ref="abramoff_2018"></sup>
+      liability research,<sup class="cite" data-ref="mello_2024,bernstein_2025"></sup> and the spread of computer-aided detection and electronic health records.<sup class="cite" data-ref="lehman_2015,adler_milstein_2017"></sup>
+      Tier sizes come from autonomous-AI studies.<sup class="cite" data-ref="plesner_2023,plesner_2024,lauritzen_2024"></sup> <a href="report.html#sec-pipeline">Report §4.3</a></p>
+    <h3 id="m-jevons">Jevons accounting</h3>
+    <p>New work created by AI = cheaper reads (price elasticity ≈ −0.2<sup class="cite" data-ref="manning_1987,aron_dine_2013"></sup> × fee share ≈ 20%<sup class="cite" data-ref="pc_share"></sup>)
+      + faster turnaround + scanner throughput + new uses + follow-up of AI-found findings + new radiologist tasks − AI utilization management − reads shifting
+      to other doctors, capped by scanner capacity. Time saved = baseline work × share of time AI saves. A Jevons paradox means new work exceeds time saved.
+      <a href="report.html#sec-jevons">Report §4.4</a></p>
+    <h3 id="m-supply">Supply</h3>
+    <p>A cohort model tracks radiologists by years in practice (mean career ≈ 35 years; attrition ≈ 2.7%/yr), calibrated so that flat residency positions
+      reproduce the Neiman Institute's +25.7% by 2055.<sup class="cite" data-ref="christensen_supply"></sup> Positions (1,241 in 2026<sup class="cite" data-ref="nrmp_2026"></sup>) grow
+      ~1%/yr and react to the market with a lag. New residents enter practice ~6 years after matching. <a href="report.html#sec-supply">Report §4.5</a></p>
+    <h3 id="m-uncertainty">Uncertainty and regimes</h3>
+    <p><span data-v="F.n_params" data-f="int"></span> uncertain inputs are drawn from explicit distributions and correlated through three shared factors: AI progress,
+      regulatory friction and appetite for imaging. The AI factor picks one of the four <a href="#term-regimes">regimes</a>. Each input is graded empirical,
+      anchored or subjective (<a href="#assumptions">see all</a>). <a href="report.html#sec-uncertainty">Report §4.6</a></p>
+    <h3 id="m-validation">Validation</h3>
+    <p>The supply model reproduces published projections, unit tests check the accounting identities, and a <a href="#track">2016→2025 backtest</a>
+      compares the method with official projections, trend extrapolation and expert claims. <a href="report.html#sec-validation">Report §6</a></p>
+    <h3 id="m-sensitivity">Sensitivity analysis</h3>
+    <p>Tornado: each assumption group is pinned at its 10th and then its 90th percentile (8,000 runs each). η²: the share of output variance explained by each
+      input. Evidence attribution: how much the ranges shrink if each class of input were known exactly. <a href="report.html#sec-sensitivity">Report §8</a></p>
   </div>
 </section>
 
@@ -505,58 +590,39 @@
 <section class="block" id="assumptions">
   <div class="wrap">
     <h2>Every assumption, graded</h2>
-    <p class="lede">Each parameter in the model, its probability distribution, its 10th/50th/90th percentiles, and where it comes from.
-      <span class="grade E">E</span> empirical, <span class="grade A">A</span> anchored on data plus judgment,
-      <span class="grade S">S</span> subjective. Be skeptical of the S rows; they drive most of the uncertainty.</p>
+    <p class="lede">Each input, its distribution and percentiles, and where it comes from. <span class="grade E">E</span> empirical,
+      <span class="grade A">A</span> anchored on data plus judgment, <span class="grade S">S</span> subjective. Be most skeptical of the S rows: they account for
+      about half of the uncertainty.</p>
     <div class="controls">
-      <div class="seg" role="group" aria-label="Filter by evidence" id="gradeFilter">
-        <button data-g="all" aria-pressed="true">All</button><button data-g="E">Empirical</button><button data-g="A">Anchored</button><button data-g="S">Subjective</button>
-      </div>
+      <div class="seg" role="group" aria-label="Filter by evidence" id="gradeFilter"><button data-g="all" aria-pressed="true">All</button><button data-g="E">Empirical</button><button data-g="A">Anchored</button><button data-g="S">Subjective</button></div>
       <select id="groupFilter" aria-label="Filter by component"><option value="all">All components</option></select>
       <input type="search" id="paramSearch" placeholder="Search parameters" aria-label="Search parameters">
     </div>
     <div class="tablewrap" style="max-height:640px"><table id="paramTable"></table></div>
-    <p class="sans small muted">Fixed calibration targets (not sampled): 37,482 radiologists in 2023 and +25.7% supply growth to 2055 with flat
-      residency positions;<sup class="cite" data-ref="christensen_supply"></sup> 34.6-year mean career; 1,241 DR positions at a 97.6% fill rate in 2026;<sup class="cite" data-ref="nrmp_2026"></sup>
-      6-year training lag; task shares from Langlotz and Dhanoa.<sup class="cite" data-ref="langlotz_2025"></sup><sup class="cite" data-ref="dhanoa_2013"></sup></p>
   </div>
 </section>
 
-<!-- =========================================================== METHOD NOTES + REFS -->
+<!-- =========================================================== REFERENCES -->
 <section class="block" id="sources">
   <div class="wrap narrow">
-    <h2>How to read this forecast</h2>
-    <p>This is a forecast in the sense used by forecasting tournaments: explicit probabilities, an outside view first, and named
-      signposts for updating.<sup class="cite" data-ref="tetlock_2015"></sup><sup class="cite" data-ref="mellers_2014"></sup><sup class="cite" data-ref="kahneman_1993"></sup><sup class="cite" data-ref="metaculus"></sup>
-      Long-range numbers like "<span data-v="SUM.2055.p_oversupply" data-f="pct"></span> in 2055" are coarse. Treat them as "roughly two
-      in five," not as precise measurements. Most of the spread comes from judgments about AI, regulation and future imaging use,
-      and those judgments are listed and graded above.</p>
-    <p>The economic frame is the task-based model of automation: AI displaces labor from some tasks, raises demand through
-      productivity, and reinstates labor through new tasks.<sup class="cite" data-ref="acemoglu_restrepo_2018"></sup><sup class="cite" data-ref="acemoglu_restrepo_2019"></sup>
-      The workforce baseline comes from the Neiman Institute's 2025–2055 projections of imaging utilization and radiologist
-      supply,<sup class="cite" data-ref="christensen_util"></sup><sup class="cite" data-ref="christensen_supply"></sup> adjusted for CBO's 2026 lower-immigration demographic
-      outlook.<sup class="cite" data-ref="cbo_2026"></sup></p>
-    <p>The <a href="report.html">full report</a> has every equation, validation check, sensitivity table and limitation.
-      The <a href="https://github.com/ethanuser/radiology">repository</a> has the Python model, which reproduces every number on
-      this page in about 15 seconds.</p>
-    <h2 style="margin-top:48px">References</h2>
+    <h2>References</h2>
+    <p class="sans small ink2">AMA style, numbered in order of first appearance. Hover or tap a citation number in the text to see what the source supports
+      and open it at the passage. "↩" links return to each place a source is cited.</p>
     <ol class="refs" id="refList"></ol>
   </div>
 </section>
 </main>
 
-<footer>
-  <div class="wrap">
-    <p>Radiology 2066 · A probabilistic forecast of the U.S. diagnostic radiology workforce · October 2026 ·
-      <a href="https://github.com/ethanuser/radiology">Source</a> · <a href="report.html">Report</a></p>
-    <p>Model, code and text drafted with an AI assistant (Claude, Anthropic) from public sources; numbers are generated by the
-      model in the repository. This is not career, financial or medical advice. Figures from cited sources belong to their authors.</p>
-  </div>
-</footer>
+<footer><div class="wrap">
+  <p>Radiology 2066 · A probabilistic forecast of the U.S. diagnostic radiology workforce · October 2026 · <a href="https://github.com/ethanuser/radiology">Source</a> · <a href="report.html">Report</a></p>
+  <p>Model, code and text drafted with an AI assistant (Claude, Anthropic) from public sources; numbers are generated by the model in the repository. Not career, financial or medical advice.</p>
+</div></footer>
 
+<button class="backpill" id="backPill" type="button" hidden>↩ Back to where you were</button>
 <div class="tooltip" id="tooltip" role="tooltip"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
-<script src="assets/js/charts.js"></script>
-<script src="assets/js/app.js"></script>
+<script src="assets/js/charts.js?v=1.2"></script>
+<script src="assets/js/backnav.js?v=1.2"></script>
+<script src="assets/js/app.js?v=1.2"></script>
 </body>
 </html>

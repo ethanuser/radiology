@@ -1,0 +1,253 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Radiology 2066 · Personal view</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%232a78d6'/%3E%3Cpath d='M6 22 C11 20 13 12 16 12 C19 12 21 16 26 9' stroke='white' stroke-width='3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../assets/css/style.css?v=1.2">
+<script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
+</head>
+<!-- Personal view: same data (../data/forecast.json) and script (../assets/js/app.js) as the public page.
+     data-stage / data-start / data-train pin the career timeline: M1 in fall 2026, 5 years of residency, independent practice from July 2035. -->
+<body data-page="personal" data-root=".." data-stage="m1" data-start="2035" data-train="5">
+<a class="skip" href="#main">Skip to content</a>
+
+<nav class="topnav" aria-label="Sections">
+  <div class="wrap">
+    <a class="brand" href="#top"><svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--s1)"/><path d="M6 22 C11 20 13 12 16 12 C19 12 21 16 26 9" stroke="white" stroke-width="3" fill="none" stroke-linecap="round"/></svg>Radiology 2066 · personal</a>
+    <div class="navlinks">
+      <a href="#short">Short version</a>
+      <a href="#story">Your timeline</a>
+      <a href="#decisions">Decision points</a>
+      <a href="#horizonSec">Career horizon</a>
+      <a href="#explore">Explore</a>
+      <a href="../">Public site</a>
+      <a href="../report.html">Full report</a>
+    </div>
+    <button class="iconbtn" id="themeBtn" type="button" aria-label="Toggle dark mode">◐</button>
+  </div>
+  <div class="progress" id="progress"></div>
+</nav>
+
+<main id="main">
+<header class="hero" id="top">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <div class="kicker">Personal view · M1 in fall 2026</div>
+        <h1>Your radiology forecast</h1>
+        <p class="dek">Same model, same 20,000 simulated futures as the <a href="../">public site</a>, read along your own timeline:
+          medical school to 2030, residency 2030–2035, and independent practice from about <b>2035</b> (2036 with a fellowship).</p>
+        <p class="byline">Unlisted page; not linked from the public site. Numbers update automatically whenever the model is re-run.
+          Drafted with an AI assistant (Claude). Not career advice.</p>
+      </div>
+      <figure class="hero-chart" style="margin:0">
+        <div class="cap"><span style="color:var(--s1);font-weight:650">Demand</span> vs <span style="color:var(--s2);font-weight:650">supply</span> of radiologists
+          (2026 demand = 1). The dashed line marks when you would start practice.</div>
+        <div id="heroChart" class="chart" role="img" aria-label="Fan chart of radiologist demand and supply with your practice start marked"></div>
+      </figure>
+    </div>
+    <div class="tiles">
+      <div class="tile"><div class="label">Chance of <a href="#term-oversupply">meaningful oversupply</a> when you finish residency (2035)</div>
+        <div class="value" data-v="X.m1.p_over_2035" data-f="pct" data-count>–</div>
+        <div class="sub">still a shortage: <span data-v="X.m1.p_shortage_2035" data-f="pct"></span> · after a fellowship (2036): <span data-v="X.m1.p_over_2036" data-f="pct"></span></div></div>
+      <div class="tile"><div class="label">10 years into practice (2045)</div>
+        <div class="value" data-v="SUM.2045.p_oversupply" data-f="pct" data-count>–</div>
+        <div class="sub">chance of meaningful oversupply</div></div>
+      <div class="tile"><div class="label">At least one oversupplied year during your career (2035–2066)</div>
+        <div class="value" data-v="X.m1.p_any_over_2035_2066" data-f="pct" data-count>–</div>
+        <div class="sub">within the first five years (2035–40): <span data-v="X.m1.p_any_over_2035_2040" data-f="pct"></span></div></div>
+    </div>
+  </div>
+</header>
+
+<section class="block" id="terms" style="padding-top:28px">
+  <div class="wrap">
+    <h2>Three terms you need</h2>
+    <div class="glossary">
+      <div class="gcard" id="term-ratio"><h4>Supply ÷ demand</h4><p>Radiologist capacity divided by the work that needs doing. Below 1 is a shortage (today ≈
+        <b data-v="F.series.R.p50.0" data-f="x2"></b>); above 1 is a surplus. Charts measure both against <b>2026 demand = 1</b>.</p></div>
+      <div class="gcard" id="term-oversupply"><h4>Meaningful oversupply</h4><p>Supply ÷ demand above <b>1.10</b>: about the size of the mid-1990s and
+        mid-2010s gluts, when new graduates struggled to find jobs.<sup class="cite" data-ref="rosenkrantz_2016,shi_2015"></sup></p></div>
+      <div class="gcard" id="term-regimes"><h4>AI-progress regimes</h4><p>Each future is <b>Stall</b> (15%), <b>Trend</b> (55%), <b>Fast</b> (18%) or
+        <b>Transformative</b> (12%: AI eventually does nearly all a radiologist's cognitive work). Most of the downside sits in the last one.
+        <a href="../#term-regimes">More →</a></p></div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="short">
+  <div class="wrap narrow">
+    <h2>The short version for you</h2>
+    <p><b>Your first job market (2035) probably still favors you.</b> The chance of a shortage then is <b data-v="X.m1.p_shortage_2035" data-f="pct"></b>,
+      and the chance of meaningful oversupply is <b data-v="X.m1.p_over_2035" data-f="pct"></b>. Most of the radiologists you will compete with are
+      already in training, and imaging demand keeps rising with an older population.</p>
+    <p><b>Nearly all of the 2035 risk is one scenario.</b> If AI becomes <a href="#term-regimes">transformative</a> (12% of futures), oversupply by 2035 is
+      close to certain. In the other 88% of futures it is <b data-v="X.non_tai.2035.p_over" data-f="pct"></b>. So the most useful thing you can do is
+      watch for the early signs of that scenario (<a href="#decisions">below</a>) before you commit.</p>
+    <p><b>The risk grows during your career.</b> By 2045 the chance of oversupply is <b data-v="SUM.2045.p_oversupply" data-f="pct"></b>, and by 2055
+      <b data-v="SUM.2055.p_oversupply" data-f="pct"></b>. In surplus futures, the usual pattern is fewer openings for new graduates and flatter pay rather than
+      layoffs, which favors people who are already established by then.<sup class="cite" data-ref="canaries_2025,christensen_supply"></sup></p>
+    <p><b>The work itself will change regardless.</b> Expect less dictating and measuring, more consulting, procedures and checking AI.
+      AI saves a median <b data-v="X.time_saved.2045.p50" data-f="pct"></b> of radiologist time by 2045.</p>
+    <p class="sans small ink2" id="stageSummary"></p>
+  </div>
+</section>
+
+<section class="block" id="story" style="padding-top:20px">
+  <div class="wrap">
+    <div class="scrolly">
+      <div class="story">
+        <article class="chapter" data-year="2026" data-tag="M1">
+          <div class="yearlabel">2026 · You are an M1</div>
+          <h3>Radiology is short of people despite a decade of AI</h3>
+          <p>Diagnostic radiology programs offered a record 1,241 positions this year and filled 97.6%.<sup class="cite" data-ref="nrmp_2026"></sup>
+            Pay rose 6.6% in a year.<sup class="cite" data-ref="doximity_2026"></sup> More than 1,600 AI devices are FDA-listed, but measured
+            real-world time savings are still small.<sup class="cite" data-ref="fda_ai_2026,wenderott_2024"></sup></p>
+          <p class="stage-note sans small" data-year="2026" hidden></p>
+        </article>
+        <article class="chapter" data-year="2029" data-tag="M3 · choosing a specialty">
+          <div class="yearlabel">2029 · Specialty decision</div>
+          <h3>The most important time to update</h3>
+          <p>By your M3 year you will have three more years of evidence. In the median future AI saves only a few percent of radiologist time by now.
+            If multi-site studies instead show 15% or more, the forecast shifts sharply toward oversupply (see the <a href="#decisions">signposts</a>).</p>
+          <p class="stage-note sans small" data-year="2029" hidden></p>
+        </article>
+        <article class="chapter" data-year="2032" data-tag="Residency">
+          <div class="yearlabel">2032 · Residency</div>
+          <h3>AI writes most first drafts</h3>
+          <p>You train alongside AI drafting, measurement and triage tools. Radiologist demand is up about <b data-v="SUM.2030.demand_p50" data-f="chg"></b> from
+            2026 by 2030, and supply barely moves because training takes years.</p>
+          <p class="stage-note sans small" data-year="2032" hidden></p>
+        </article>
+        <article class="chapter" data-year="2035" data-tag="You enter practice">
+          <div class="yearlabel">2035 · First job</div>
+          <h3>Probably still a seller's market</h3>
+          <p>Median supply ÷ demand is <b data-v="SUM.2035.ratio_p50" data-f="x2"></b>. AI saves about <b data-v="X.time_saved.2035.p50" data-f="pct"></b> of
+            radiologist time and reads <b data-v="SUM.2035.autonomous_p50" data-f="pct"></b> of studies AI-first. Chance of meaningful oversupply:
+            <b data-v="SUM.2035.p_oversupply" data-f="pct"></b>.</p>
+          <p class="stage-note sans small" data-year="2035" hidden></p>
+        </article>
+        <article class="chapter" data-year="2045" data-tag="10 years in">
+          <div class="yearlabel">2045 · Mid-career</div>
+          <h3>A coin flip between shortage and surplus</h3>
+          <p>Autonomous reading of radiographs and screening exams is authorized and paid for in most futures. The chance of oversupply is
+            <b data-v="SUM.2045.p_oversupply" data-f="pct"></b>. If it happens, it shows up first as fewer openings and slower pay growth.</p>
+          <p class="stage-note sans small" data-year="2045" hidden></p>
+        </article>
+        <article class="chapter" data-year="2055" data-tag="20 years in">
+          <div class="yearlabel">2055 · Senior radiologist</div>
+          <h3>Complex reads begin to be automated</h3>
+          <p>The AI-first share is a median <b data-v="SUM.2055.autonomous_p50" data-f="pct"></b> with a very wide range. Chance of oversupply
+            <b data-v="SUM.2055.p_oversupply" data-f="pct"></b>; demand below half of today, <b data-v="SUM.2055.p_demand_below_50" data-f="pct"></b>.</p>
+          <p class="stage-note sans small" data-year="2055" hidden></p>
+        </article>
+        <article class="chapter" data-year="2066" data-tag="31 years in">
+          <div class="yearlabel">2066 · End of the forecast</div>
+          <h3>A different job, and probably still a job</h3>
+          <p>Median supply ÷ demand <b data-v="SUM.2066.ratio_p50" data-f="x2"></b>, AI productivity <b data-v="SUM.2066.productivity_p50" data-f="mult"></b>.</p>
+          <p class="stage-note sans small" data-year="2066" hidden></p>
+        </article>
+      </div>
+      <aside class="dash" id="dash" aria-live="polite">
+        <div class="dash-head"><div class="dash-year" id="dYear">2026</div><div class="dash-tag" id="dTag">M1</div></div>
+        <div class="dash-chart chart" id="dashChart"></div>
+        <div class="dash-legend"><span class="key"><i style="background:var(--s1)"></i>FTE demand</span><span class="key"><i style="background:var(--s2)"></i>FTE supply</span><span class="key"><i class="box" style="background:var(--s1);opacity:.2"></i>80% range</span></div>
+        <div class="stats">
+          <div class="stat"><div class="l"><a href="#term-ratio">Supply ÷ demand</a></div><div class="v" id="dRatio">–</div><div class="r" id="dRatioR"></div></div>
+          <div class="stat"><div class="l"><a href="#term-oversupply">P(oversupply)</a></div><div class="v" id="dOver">–</div><div class="meter"><span id="dOverM"></span></div></div>
+          <div class="stat"><div class="l">AI time saved</div><div class="v" id="dSaved">–</div><div class="r" id="dSavedR"></div></div>
+          <div class="stat"><div class="l">FTE demand</div><div class="v" id="dDem">–</div><div class="r" id="dDemR"></div></div>
+          <div class="stat"><div class="l">AI-first share</div><div class="v" id="dAuto">–</div><div class="r" id="dAutoR"></div></div>
+          <div class="stat"><div class="l">P(demand &lt; today)</div><div class="v" id="dBelow">–</div><div class="r">vs 2026</div></div>
+        </div>
+        <div class="career" aria-hidden="true"><div class="track" id="careerTrack"></div></div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="decisions">
+  <div class="wrap">
+    <h2>Decision points and what to watch</h2>
+    <p class="lede">You do not have to decide now. Each step below is a chance to update on new evidence before the next commitment.</p>
+    <div class="two" style="align-items:start">
+      <ol class="margins">
+        <li><b>2027–28 · M2</b><br><span class="ink2">Read the first large real-world studies of AI-drafted reports. Single-digit time savings support the median forecast.</span></li>
+        <li><b>2028–29 · M3, specialty choice</b><span class="lik">biggest update</span><br><span class="ink2">Check the signposts on the right. If several have
+          turned pessimistic, the oversupply odds for 2035 are much higher than <span data-v="X.m1.p_over_2035" data-f="pct"></span>.</span></li>
+        <li><b>Sep 2029 – Mar 2030 · applications and Match</b><br><span class="ink2">Watch the number of DR positions. A jump past ~1,400 adds supply exactly when you graduate.</span></li>
+        <li><b>2033–34 · R3–R4, fellowship choice</b><br><span class="ink2">Tasks that are slower to automate (IR and procedures, breast intervention, consultation-heavy
+          subspecialties, informatics and AI governance) are hedges against the transformative scenario.</span></li>
+        <li><b>2035 · first job</b><br><span class="ink2">Geographic flexibility matters most in surplus futures, which hit new graduates first.</span></li>
+      </ol>
+      <div>
+        <h3 style="margin-top:0">If we observe X, how likely is oversupply?</h3>
+        <div class="tablewrap"><table id="signpostTable"></table></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="block" id="horizonSec">
+  <div class="wrap">
+    <h2>Your career horizon</h2>
+    <div class="horizon" id="horizon"></div>
+    <div class="chart-card">
+      <div class="title">Chance of oversupply or falling demand, by year</div>
+      <div class="subtitle">Share of the 20,000 simulated futures; the dashed line marks your start of practice</div>
+      <div id="probChart" class="chart"></div>
+    </div>
+    <h3>Compared with other career stages</h3>
+    <div class="tablewrap"><table id="stageTable"></table></div>
+    <p class="sans small muted">This table assumes a 1-year fellowship, so your row starts in 2036; the rest of this page uses 2035 (no fellowship).</p>
+  </div>
+</section>
+
+<section class="block" id="explore">
+  <div class="wrap">
+    <h2>Explore with your own assumptions</h2>
+    <p class="lede">Filter the simulated futures or change the regime weights. Your practice start stays marked.</p>
+    <div class="explorer">
+      <div class="filters card" id="filters">
+        <fieldset><legend>AI-progress regime</legend><div class="chips" data-filter="regime"><button data-v="any" aria-pressed="true">Any</button><button data-v="0">Stall</button><button data-v="1">Trend</button><button data-v="2">Fast</button><button data-v="3">Transformative</button></div></fieldset>
+        <fieldset><legend>Regulation, liability &amp; payment</legend><div class="chips" data-filter="reg_lag"><button data-v="any" aria-pressed="true">Any</button><button data-v="lo">Fast-track</button><button data-v="mid">Typical</button><button data-v="hi">Slow</button></div></fieldset>
+        <fieldset><legend>Imaging growth per person</legend><div class="chips" data-filter="util_g0"><button data-v="any" aria-pressed="true">Any</button><button data-v="lo">Low</button><button data-v="mid">Mid</button><button data-v="hi">High</button></div></fieldset>
+        <fieldset><legend>New AI-enabled imaging uses</legend><div class="chips" data-filter="new_max"><button data-v="any" aria-pressed="true">Any</button><button data-v="lo">Few</button><button data-v="mid">Some</button><button data-v="hi">Many</button></div></fieldset>
+        <fieldset><legend>Residency slot growth</legend><div class="chips" data-filter="slot_g"><button data-v="any" aria-pressed="true">Any</button><button data-v="lo">Flat</button><button data-v="mid">Moderate</button><button data-v="hi">Fast</button></div></fieldset>
+        <fieldset><legend>Your regime weights</legend><div id="weights"></div><button class="iconbtn" id="resetW" type="button" style="margin-top:8px">Reset weights</button></fieldset>
+      </div>
+      <div>
+        <div class="matchcount" id="matchCount"></div>
+        <div class="mini-tiles" id="exTiles"></div>
+        <div class="chart-card" style="margin-top:8px"><div class="title">Demand and supply in the matching futures</div><div id="exChart" class="chart"></div></div>
+        <div class="chart-card"><div class="title">Supply ÷ demand in the matching futures</div><div id="exRatio" class="chart"></div></div>
+      </div>
+    </div>
+    <p class="sans small ink2" style="margin-top:20px">Methods, the backtest, every assumption and sensitivity analyses are on the <a href="../#methods">public site</a> and in the
+      <a href="../report.html">full report</a>.</p>
+  </div>
+</section>
+
+<section class="block" id="sources">
+  <div class="wrap narrow">
+    <h2>References</h2>
+    <ol class="refs" id="refList"></ol>
+  </div>
+</section>
+</main>
+
+<footer><div class="wrap"><p>Personal view of the Radiology 2066 forecast · <a href="../">Public site</a> · Not career advice.</p></div></footer>
+<button class="backpill" id="backPill" type="button" hidden>↩ Back to where you were</button>
+<div class="tooltip" id="tooltip" role="tooltip"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
+<script src="../assets/js/charts.js?v=1.2"></script>
+<script src="../assets/js/backnav.js?v=1.2"></script>
+<script src="../assets/js/app.js?v=1.2"></script>
+</body>
+</html>

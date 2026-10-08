@@ -41,6 +41,7 @@ eta = pd.read_csv(OUT / "sensitivity_eta2.csv")
 eta_nt = pd.read_csv(OUT / "sensitivity_eta2_excluding_transformative.csv")
 val = json.loads((OUT / "validation.json").read_text())
 x = json.loads((OUT / "extra_metrics.json").read_text())
+bt = json.loads((OUT / "backtest.json").read_text())
 YEARS5 = (2030, 2035, 2045, 2055, 2066)
 
 
@@ -86,10 +87,10 @@ def headline_table():
     f2 = lambda v: num(v, 2)  # noqa: E731
     fp = lambda v: pct(v, 0)  # noqa: E731
     lines = [
-        ("**FTE demand** (2026 = 1): median (P10–P90)", band("demand", f2)),
+        ("**FTE demand** (2026 demand = 1): median (P10–P90)", band("demand", f2)),
         ("  FTE demand: P25–P75", iqr("demand", f2)),
-        ("**FTE supply** (2026 = 1): median (P10–P90)", band("supply", f2)),
-        ("  FTE supply: P25–P75", iqr("supply", f2)),
+        ("**FTE supply** (2026 demand = 1): median (P10–P90)", band("supplyd", f2)),
+        ("  FTE supply: P25–P75", iqr("supplyd", f2)),
         ("**Supply ÷ demand** (2026 ≈ 0.93): median (P10–P90)", band("ratio", f2)),
         ("  Supply ÷ demand: P25–P75", iqr("ratio", f2)),
         ("**AI productivity** (work per radiologist-hour, 2026 = 1)", band("productivity", f2)),
@@ -183,6 +184,19 @@ def composition_md():
     return "\n".join(rows)
 
 
+def backtest_md():
+    rows = ["| Occupation | Employment 2016 → 2025, actual | This method: median (80% interval) | BLS projection (2016) | Prior trend | "
+            "Inside 80% interval? | Frey & Osborne automation probability |", "|---|---|---|---|---|---|---|"]
+    for r in bt["occupations"]:
+        q = r["q"]
+        rows.append(f"| {r['label']} | {num(r['actual'])} | {num(q['p50'])} ({num(q['p10'])}–{num(q['p90'])}) | {num(r['bls'])} | "
+                    f"{num(r['trend'])} | {'yes' if r['in80'] else 'no'} | {r['fo_prob']:.2f} |")
+    rq = bt["radiology"]["ratio_q"]
+    rows.append(f"| Radiologists (supply ÷ demand in 2025) | shortage (≈0.93) | {num(rq['p50'])} ({num(rq['p10'])}–{num(rq['p90'])}); "
+                f"P(shortage) {pct(bt['radiology']['p_shortage'])} | — | — | yes | 0.0042 |")
+    return "\n".join(rows)
+
+
 def pipeline_md():
     tiers = ["Tier 1 — normal/negative radiographs & screening", "Tier 2 — all radiographs, screening mammography, standardized follow-up",
              "Tier 3 — complex diagnostic CT/MR/US/NM", "Tier 4 — hardest residual work"]
@@ -217,7 +231,8 @@ SECTIONS = {
     "tasks": ("sec-tasks", "§7.6"), "baseres": ("sec-baseres", "§7.7"), "sensitivity": ("sec-sensitivity", "§8"),
     "tornado": ("sec-tornado", "§8.1"), "eta": ("sec-eta", "§8.2"), "evshare": ("sec-evshare", "§8.3"),
     "careers": ("sec-careers", "§9"), "margins": ("sec-margins", "§9.2"), "signposts": ("sec-signposts", "§9.3"),
-    "limits": ("sec-limits", "§10"), "repro": ("sec-repro", "§11"),
+    "limits": ("sec-limits", "§10"), "repro": ("sec-repro", "§11"), "approaches": ("sec-approaches", "§2.1"),
+    "backtest": ("sec-backtest", "§6.2"),
 }
 
 
@@ -232,19 +247,19 @@ def anchor(key):
 
 
 def stage_table():
-    rows = ["| Where you are in autumn 2026 | Typical first attending year* | P(oversupply) when you start | 10 years in | 20 years in | "
-            "30 years in (or 2066) | P(demand below 2026) 10 years in | P(≥1 oversupplied year before 2067) |",
+    rows = ["| Where you are in fall 2026 | Typical first attending year* | P(oversupply) when you start | 10 years in | 20 years in | "
+            "30 years in (or 2066) | P(demand below 2026) 10 years in | P(still a shortage) when you start |",
             "|---|---|---|---|---|---|---|---|"]
     for r in x["stages"]:
         rows.append(f"| {r['label']} | {r['start']} | {pct(r['entry_p_over'])} | {pct(r['y10_p_over'])} | "
                     f"{pct(r['y20_p_over'])} | {pct(r['y30_p_over'])} ({r['y30_year']}) | {pct(r['y10_p_below'])} | "
-                    f"{pct(r['p_any_over_career'])} |")
+                    f"{pct(r['entry_p_short'])} |")
     return "\n".join(rows)
 
 
 CTX = dict(m=m, anchor=anchor, stage_table=stage_table, n_params=len(PARAMS), n_sims=n_sims, sm=sm, pr=pr, jv=jv, rg=rg, tor=tor, val=val, x=x, pct=pct, num=num, chg=chg, yr=yr, ev_shrink=ev_shrink,
            ev_n=ev_n, headline_table=headline_table, jevons_md=jevons_md, regimes_md=regimes_md, tornado_md=tornado_md,
-           signposts_md=signposts_md, eta_md=eta_md, eta_nt=eta_nt, composition_md=composition_md, pipeline_md=pipeline_md,
+           signposts_md=signposts_md, backtest_md=backtest_md, bt=bt, eta_md=eta_md, eta_nt=eta_nt, composition_md=composition_md, pipeline_md=pipeline_md,
            params_md=params_md, float=float, round=round, abs=abs)
 
 
@@ -359,5 +374,46 @@ def build_html(md_text: str):
     print("docs/report.html written")
 
 
+def readme_block() -> str:
+    """Headline numbers for README.md (between the RESULTS markers), regenerated with the report."""
+    ys = YEARS5
+    row = lambda label, vals: f"| {label} | " + " | ".join(vals) + " |"  # noqa: E731
+    band = lambda k, f: [f"{f(sm[y][k + '_p50'])} ({f(sm[y][k + '_p10'])}–{f(sm[y][k + '_p90'])})" for y in ys]  # noqa: E731
+    f2 = lambda v: num(v, 2)  # noqa: E731
+    lines = ["| | " + " | ".join(map(str, ys)) + " |", "|---|" + "---|" * len(ys),
+             row("FTE demand, median (P10–P90), 2026 demand = 1", band("demand", f2)),
+             row("FTE supply, median, 2026 demand = 1", [f2(sm[y]["supplyd_p50"]) for y in ys]),
+             row("Supply ÷ demand, median (2026 ≈ 0.93)", [f2(sm[y]["ratio_p50"]) for y in ys]),
+             row("AI productivity, median", [f"{float(sm[y]['productivity_p50']):.2f}×" for y in ys]),
+             row("AI-first / autonomous share, median", [pct(sm[y]["autonomous_p50"]) for y in ys]),
+             row("P(demand < 2026)", [pct(sm[y]["p_demand_below_today"]) for y in ys]),
+             row("P(demand < 50% of 2026)", [pct(sm[y]["p_demand_below_50"]) for y in ys]),
+             row("**P(meaningful oversupply, S/D > 1.10)**", [f"**{pct(sm[y]['p_oversupply'])}**" for y in ys]),
+             row("P(true Jevons paradox)", [pct(jv[y]["p_jevons"]) for y in ys])]
+    m1 = x["m1"]
+    para = (f"**In one paragraph:** for someone entering practice in the mid-2030s, the market is most likely still short "
+            f"({pct(m1['p_shortage_2035'])} chance in 2035), with a {pct(sm[2035]['p_oversupply'])} chance of meaningful oversupply. "
+            f"Most of that risk sits in a 12%-weighted \"transformative AI\" branch; without it the risk is "
+            f"{pct(x['non_tai']['2035']['p_over'])}. Risk grows over a career ({pct(sm[2045]['p_oversupply'])} by 2045, "
+            f"{pct(sm[2055]['p_oversupply'])} by 2055) as autonomous reading clears regulation and payment. A true Jevons paradox, "
+            f"where AI-induced imaging outweighs the labor AI saves, is unlikely (≈{pct(jv[2045]['p_jevons'])} in 2045): induced "
+            f"demand offsets about {pct(jv[2045]['offset_p50'])} of the savings. A 2016→2025 backtest gave the method a "
+            f"{pct(bt['radiology']['p_shortage'])} chance of today's shortage, and for three other automation-exposed occupations "
+            f"it was slightly more accurate than BLS projections and trend extrapolation (mean log error "
+            f"{num(bt['mae_log']['model'])} vs {num(bt['mae_log']['bls'])} and {num(bt['mae_log']['trend'])}).")
+    return "\n".join(lines) + "\n\n*Numbers from the default run (`python run_model.py`, seed 20261007), regenerated by `tools/build_docs.py`.*\n\n" + para
+
+
+def update_readme():
+    p = ROOT / "README.md"
+    text = p.read_text()
+    a, b = "<!-- RESULTS:START -->", "<!-- RESULTS:END -->"
+    if a in text and b in text:
+        text = text[: text.index(a) + len(a)] + "\n" + readme_block() + "\n" + text[text.index(b):]
+        p.write_text(text)
+        print("README.md results updated")
+
+
 if __name__ == "__main__":
     build()
+    update_readme()
