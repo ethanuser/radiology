@@ -89,7 +89,8 @@ class Param:
         return d
 
     def quantiles(self, qs=(0.1, 0.5, 0.9)) -> list:
-        return [float(self.ppf(np.array([q]))[0]) for q in qs]
+        # sorted so P10 <= P50 <= P90 even for decreasing transforms (e.g. AI-speed quantile -> timeline multiplier)
+        return sorted(float(self.ppf(np.array([q]))[0]) for q in qs)
 
 
 # -------------------------------------------------------------------------------------------------------------
@@ -149,15 +150,18 @@ PARAMS: list[Param] = [
       "uniform", dict(lo=0.4, hi=0.9), "ratio", "A", ["cbo_2026"],
       "CBO projects population growth slowing to zero by 2056; aging continues to add imaging per capita."),
     P("util_g0", "demand", "Per-capita (age/sex-adjusted) utilization growth, 2026",
-      "normal", dict(mu=1.2, sd=0.8, lo=-1.5, hi=3.5), "%/yr", "A",
-      ["smith_bindman_2019", "christensen_util", "rosenkrantz_2025", "smith_bindman_2025"],
-      "Age-specific US CT use grew 3.7-5.2%/yr (2013-16) and MRI 1.3-2.2%/yr (2005-16); nuclear medicine declined. "
-      "Emergency-department CT per 100 Medicare beneficiaries nearly doubled 2013-2023 (18.7→36.5) while ED visits fell. "
-      "Christensen's recent-trend scenario spans -5.6% to +45.2% by 2055 across modalities. Work-weighted centre ≈1.2%/yr; "
-      "the sd spans flat Medicare per-beneficiary use to sustained CT-led growth.",
+      "normal", dict(mu=0.8, sd=0.7, lo=-1.5, hi=3.5), "%/yr", "A",
+      ["christensen_util", "rula_2026", "smith_bindman_2019", "rosenkrantz_2025", "smith_bindman_2025"],
+      "National 2018-22 claims (Christensen et al): projected total utilization in 2055 vs 2023 is +16.9% to +26.9% by modality "
+      "from population growth and aging alone, and -5.6% to +45.2% if each modality's recent per-person trend continues to 2030 "
+      "(radiography and nuclear medicine falling, CT and MRI rising). The Neiman Institute's 2026 update projects +17% (MRI) to "
+      "+25% (CT) by 2055. Older health-system data show faster CT growth (3.7-5.2%/yr, 2013-16) and ED CT per Medicare "
+      "beneficiary nearly doubled 2013-2023. We centre work-weighted per-person growth at 0.8%/yr (CT/MRI-heavy work mix), "
+      "decaying toward ~0.2%/yr; demographics × per-person use then gives a median +33% for 2026-2055, in the upper-middle "
+      "of the published range.",
       {"z_dem": 0.7}),
     P("util_ginf", "demand", "Long-run per-capita utilization growth (asymptote)",
-      "normal", dict(mu=0.3, sd=0.6, lo=-1.5, hi=2.5), "%/yr", "S", ["smith_bindman_2019"],
+      "normal", dict(mu=0.2, sd=0.5, lo=-1.5, hi=2.5), "%/yr", "S", ["smith_bindman_2019", "christensen_util"],
       "Growth in CT/MRI per capita has decelerated each decade since 2000; we assume further deceleration but allow either sign.",
       {"z_dem": 0.7}),
     P("util_half", "demand", "Half-life of convergence from current to long-run utilization growth",
@@ -172,10 +176,11 @@ PARAMS: list[Param] = [
     P("alt_mid", "demand", "Midpoint year of alternative-diagnostic substitution",
       "uniform", dict(lo=2035, hi=2055), "year", "S"),
     P("ratio0", "demand", "Supply ÷ demand for radiologist FTEs in 2026 (current shortage)",
-      "triangular", dict(lo=0.85, mode=0.93, hi=0.99), "ratio", "A",
+      "triangular", dict(lo=0.85, mode=0.93, hi=0.99), "ratio", "S",
       ["rula_2026", "zamani_2026", "parikh_2026", "doximity_2026", "nrmp_2026"],
-      "HRSA (via Neiman HPI) puts radiology at ≈90% adequacy in 2038; compensation rose 6.6% in a year and DR positions "
-      "keep expanding. Average exams read per radiologist-day were flat 2018-2024 (+0.6%) but the busiest quartile read 31% "
+      "No measured national figure exists; this is a judgment from indirect signals. HRSA projects radiology at ≈90% adequacy "
+      "in 2038 (a projection, not today's gap), and the Neiman Institute calls the shortage 'fairly static'. Compensation rose "
+      "6.6% in a year and DR positions keep expanding. Average exams read per radiologist-day were flat 2018-2024 (+0.6%) but the busiest quartile read 31% "
       "more, and practice turnover rose from 5.3% to 8.5% (2013-2022): a real but uneven, moderate shortage."),
 
     # ======================================= 2. AI CAPABILITY & ASSISTIVE PRODUCTIVITY =========================
@@ -203,9 +208,10 @@ PARAMS: list[Param] = [
     P("cap_width", "ai_capability", "Capability S-curve width (logistic scale; 10→90% ≈ 4.4×)",
       "uniform", dict(lo=2.0, hi=4.0), "years", "S"),
     P("m_interp", "ai_tasks", "Max time saved on interpretation by assistive AI (radiologist still reads)",
-      "beta", dict(a=6, b=14), "share", "A", ["langlotz_2025", "lauritzen_2024", "eisemann_2025", "yu_2024"],
-      "Population mammography with AI triage cut reading workload 33.5% (Denmark) and 44% (MASAI) in double-reading "
-      "programmes; in single-reader US practice the assistive saving on interpretation is smaller.", {"z_ai": 0.4}),
+      "beta", dict(a=6, b=14), "share", "A", ["langlotz_2025", "yu_2024", "hong_2025"],
+      "Langlotz's task analysis and reader studies of AI assistance. (European screening workload cuts of 33-44% come from "
+      "replacing the second reader in double reading, a substitution effect that does not transfer to single-read U.S. "
+      "practice, so they are not used here.)", {"z_ai": 0.4}),
     P("m_draft", "ai_tasks", "Max time saved on measurement & report drafting",
       "beta", dict(a=12, b=8), "share", "A", ["huang_2025", "hong_2025", "li_2026", "liu_2026", "langlotz_2025"],
       "Measured savings span 0% to 42% of reading time: +15.5% (live radiographs), −42% (chest-radiograph reader study), "
@@ -243,7 +249,8 @@ PARAMS: list[Param] = [
       "triangular", dict(lo=0.04, mode=0.07, hi=0.12), "share", "A",
       ["plesner_2023", "plesner_2024", "lauritzen_2024", "gommers_2026", "oxipit_2022"],
       "AI could autonomously report 7.8% of all posteroanterior chest radiographs at >99% sensitivity (2023) and ~17.5% at "
-      "99% sensitivity with a tuned threshold (2024); AI triage let about two-thirds of Danish screening mammograms be single-read (33.5% fewer reads). "
+      "99% sensitivity with a tuned threshold (2024); AI triage let about two-thirds of Danish screening mammograms be single-read (33.5% fewer reads), "
+      "though that saving comes from European double reading and U.S. screening is single-read. "
       "Radiographs and screening mammography are ~20-25% of radiologist work, so tier 1 is ≈4-12% of interpretive work."),
     P("w2", "autonomy", "Tier 2 share: all radiographs, screening mammography, standardized follow-ups",
       "triangular", dict(lo=0.10, mode=0.17, hi=0.25), "share", "A", ["langlotz_2025"],
@@ -294,7 +301,7 @@ PARAMS: list[Param] = [
 
     # ======================================= 4. JEVONS / REBOUND ================================================
     P("pc_share", "jevons", "Professional (interpretation) share of the all-in price of an imaging exam",
-      "triangular", dict(lo=0.10, mode=0.20, hi=0.30), "share", "E", ["pc_share"],
+      "triangular", dict(lo=0.10, mode=0.20, hi=0.30), "share", "A", ["pc_share"],
       "≈20% for MRI, ≈25% for radiography of Medicare global fees; lower where hospital facility fees apply."),
     P("pass_through", "jevons", "Share of cost savings passed through to prices paid",
       "beta", dict(a=4, b=6), "share", "S", [],
@@ -302,7 +309,8 @@ PARAMS: list[Param] = [
     P("elasticity", "jevons", "Price elasticity of imaging demand",
       "triangular", dict(lo=-0.6, mode=-0.2, hi=-0.05), "elasticity", "E",
       ["manning_1987", "aron_dine_2013", "brot_goldberg_2017"],
-      "RAND HIE ≈ −0.2 for medical care; deductible shocks cut imaging alongside other services."),
+      "RAND HIE ≈ −0.2 for medical care, with respect to the patient's out-of-pocket price; professional-fee cuts mostly "
+      "fall on payers, so this channel is if anything overstated. Deductible shocks cut imaging alongside other services."),
     P("access", "jevons", "Turnaround/availability rebound: extra work per unit of radiologist time freed",
       "triangular", dict(lo=0.0, mode=0.10, hi=0.30), "ratio", "A", ["larson_2011"],
       "Non-price rationing: when reads become fast and available 24/7, clinicians order more (ED CT visits rose from 2.8% to 13.9%, "

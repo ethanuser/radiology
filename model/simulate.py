@@ -94,7 +94,7 @@ COHORT_2023 = initial_cohorts()
 # ----------------------------------------------------------------------------------------------- main simulation
 STRUCTURES = {
     "base": "Main model",
-    "no_signoff": "Some reads need no radiologist: AI-first tier 1–2 reads take zero radiologist time",
+    "no_signoff": "AI-first reads need no radiologist at all, in every tier (no audit or sign-off time)",
     "unordered": "Tiers automated in any order, with equally hard regulation",
     "open_demand": "Much larger unforeseen new demand (3× new applications, 2× new radiologist tasks)",
     "payer_pushback": "Stronger payer pushback (2× AI utilization management and scope shift)",
@@ -205,8 +205,8 @@ def _simulate_once(s: dict, press_cum: np.ndarray, structure: str = "base") -> d
     out["stages"] = np.stack(stage, axis=1)  # (n, tier, [capability, validated, FDA, paid/liability, 50% adoption])
 
     fsub = lift(col("f_sub"), TAI_FSUB)
-    # radiologist time left on AI-first studies (share of interpretive work); zero for tiers 1-2 under "no_signoff"
-    fsub_t = [np.ones_like(fsub) if (structure == "no_signoff" and j < 2) else fsub for j in range(4)]
+    # radiologist time left on AI-first studies (share of interpretive work); zero in every tier under "no_signoff"
+    fsub_t = [np.ones_like(fsub) if structure == "no_signoff" else fsub for j in range(4)]
     resid = sum(auto_parts[j] * (1 - fsub_t[j]) for j in range(4))
     iI = col("s_interp") * ((1 - auto) * (1 - sig["interp"]) + resid)
     iD = col("s_draft") * ((1 - auto) * (1 - sig["draft"]) + resid)

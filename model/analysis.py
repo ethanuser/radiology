@@ -258,6 +258,7 @@ def validation(s: dict, o: dict) -> dict:
         "attrition_2023": attr_2023,
         "kappa_entrants_per_filled_position": KAPPA,
         "demographic_growth_2026_2055_p50": float(np.median(dem) - 1),
+        "dem_util_growth_2026_2055": [float(np.percentile(o["B_dem"][:, yi(2055)] * o["B_util"][:, yi(2055)], q) - 1) for q in (10, 50, 90)],
         "demographic_growth_2026_2055_p10_p90": [float(np.percentile(dem, 10) - 1), float(np.percentile(dem, 90) - 1)],
         "realized_time_saved_2031_p50": float(np.median(1 - 1 / o["P"][:, i31])),
         "realized_time_saved_2031_p90": float(np.percentile(1 - 1 / o["P"][:, i31], 90)),
@@ -303,8 +304,8 @@ def extra_metrics(s: dict, o: dict) -> dict:
         (">5% of interpretive work is AI-first/autonomous by 2033", A[:, yi(2033)] > 0.05),
         ("Autonomous reads paid for through tier 2 (all radiographs & screening) before 2035", o["ready"][:, 1] < 2035),
         ("Autonomous reads not paid for through tier 2 until after 2045", o["ready"][:, 1] > 2045),
-        ("Per-capita imaging growth in the top third (≥~1.3%/yr)", s["util_g0"] > q_u[1]),
-        ("Per-capita imaging growth in the bottom third (≤~0.7%/yr)", s["util_g0"] < q_u[0]),
+        (f"Per-capita imaging growth in the top third (≥{q_u[1]:.1f}%/yr in 2026)", s["util_g0"] > q_u[1]),
+        (f"Per-capita imaging growth in the bottom third (≤{q_u[0]:.1f}%/yr in 2026)", s["util_g0"] < q_u[0]),
         ("Many new AI-enabled imaging uses (top third)†", s["new_max"] > q_n[1]),
         ("Few new AI-enabled imaging uses (bottom third)†", s["new_max"] < q_n[0]),
         ("Transformative-AI regime", o["regime"] == 3),
@@ -331,6 +332,16 @@ def extra_metrics(s: dict, o: dict) -> dict:
         "p_any_decline_faster_than_attrition_non_tai": (dec[o["regime"] != 3][:, career] > attr).any(1).mean(),
         "p_any_decline_2x_attrition_2035_2066": (dec[:, career] > 2 * attr).any(1).mean(),
     }
+    # Sustained severe surplus: supply ÷ demand above 1.25 for 5+ consecutive years after 2035. New graduates keep
+    # entering, so a surplus can persist even when demand falls slower than attrition; who bears it is not modeled.
+    sev = o["R"][:, YEARS >= 2035] > 1.25
+    run_len = np.zeros(sev.shape[0], int)
+    best = np.zeros(sev.shape[0], int)
+    for j in range(sev.shape[1]):
+        run_len = np.where(sev[:, j], run_len + 1, 0)
+        best = np.maximum(best, run_len)
+    x["displacement"]["p_sustained_severe_surplus"] = (best >= 5).mean()
+    x["displacement"]["p_sustained_severe_surplus_non_tai"] = (best[o["regime"] != 3] >= 5).mean()
     stage_rows = []
     for key, label, start in STAGES:
         row = {"key": key, "label": label, "start": start}

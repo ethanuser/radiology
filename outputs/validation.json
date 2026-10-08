@@ -6,13 +6,18 @@
   "attrition_2023": 0.026989203536254624,
   "kappa_entrants_per_filled_position": 1.2026596928200877,
   "demographic_growth_2026_2055_p50": 0.15679360896381,
+  "dem_util_growth_2026_2055": [
+    0.09319329420061684,
+    0.3302905187716747,
+    0.6210380161421347
+  ],
   "demographic_growth_2026_2055_p10_p90": [
     0.11624628156231243,
     0.19902176768711932
   ],
-  "realized_time_saved_2031_p50": 0.08711047576962233,
-  "realized_time_saved_2031_p90": 0.2533655234695427,
+  "realized_time_saved_2031_p50": 0.08634106377991047,
+  "realized_time_saved_2031_p90": 0.2513576405631443,
   "assistive_potential_interp_draft_2031_p50": 0.13058422941335857,
   "langlotz_5yr_hours_reduction": "33% (range 14%-49%)",
-  "baseline_no_ai_2055_p50": 0.4532867286115958
+  "baseline_no_ai_2055_p50": 0.35535342634014366
 }

@@ -19,11 +19,16 @@ from model.params import PARAMS, evidence_counts
 ROOT = Path(__file__).parent
 
 
+def _fmt_num(v: float) -> str:
+    """Readable parameter values: years as integers, otherwise 3 significant digits."""
+    return f"{v:.0f}" if abs(v) >= 1000 else f"{v:.3g}"
+
+
 def params_markdown() -> str:
     lines = ["| Parameter | Distribution | P10 / P50 / P90 | Unit | Evidence | Sources |", "|---|---|---|---|---|---|"]
     for p in PARAMS:
         q = p.quantiles()
-        lines.append(f"| `{p.name}`: {p.label} | {p.summary()} | {q[0]:.3g} / {q[1]:.3g} / {q[2]:.3g} | {p.unit} | "
+        lines.append(f"| `{p.name}`: {p.label} | {p.summary()} | {_fmt_num(q[0])} / {_fmt_num(q[1])} / {_fmt_num(q[2])} | {p.unit} | "
                      f"{p.evidence} | {', '.join(p.sources)} |")
     return "\n".join(lines)
 

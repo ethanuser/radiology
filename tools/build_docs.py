@@ -27,6 +27,11 @@ OUT = ROOT / "outputs"
 
 
 # ----------------------------------------------------------------------------------------------------- context
+def _fmt_num(v: float) -> str:
+    """Readable parameter values: years as integers, otherwise 3 significant digits."""
+    return f"{v:.0f}" if abs(v) >= 1000 else f"{v:.3g}"
+
+
 def _by(df: pd.DataFrame, key: str) -> dict:
     return {r[key]: r for r in df.to_dict("records")}
 
@@ -186,15 +191,15 @@ def composition_md():
 
 
 def backtest_md():
-    rows = ["| Occupation | Employment 2016 → 2025, actual | This method: median (80% interval) | BLS projection (2016) | Prior trend | "
-            "Inside 80% interval? | Frey & Osborne automation probability |", "|---|---|---|---|---|---|---|"]
+    rows = ["| Occupation | Employment 2016 → 2025, actual | This method: median (80% interval) | BLS + trend combination, no AI layer | "
+            "BLS projection (2016) | Prior trend | Inside 80% interval? | Frey & Osborne automation probability |", "|---|---|---|---|---|---|---|---|"]
     for r in bt["occupations"]:
         q = r["q"]
-        rows.append(f"| {r['label']} | {num(r['actual'])} | {num(q['p50'])} ({num(q['p10'])}–{num(q['p90'])}) | {num(r['bls'])} | "
+        rows.append(f"| {r['label']} | {num(r['actual'])} | {num(q['p50'])} ({num(q['p10'])}–{num(q['p90'])}) | {num(r['combo'])} | {num(r['bls'])} | "
                     f"{num(r['trend'])} | {'yes' if r['in80'] else 'no'} | {r['fo_prob']:.2f} |")
     rq = bt["radiology"]["ratio_q"]
     rows.append(f"| Radiologists (supply ÷ demand in 2025) | shortage (≈0.93) | {num(rq['p50'])} ({num(rq['p10'])}–{num(rq['p90'])}); "
-                f"P(shortage) {pct(bt['radiology']['p_shortage'])} | — | — | yes | 0.0042 |")
+                f"P(shortage) {pct(bt['radiology']['p_shortage'])} | — | — | — | yes | 0.0042 |")
     return "\n".join(rows)
 
 
@@ -232,7 +237,7 @@ def params_md():
         src = ", ".join(f"[@{s}]" for s in p.sources)
         corr = ", ".join(f"{k}: {v:+.1f}" for k, v in p.loadings.items())
         note = (p.note + (f" *Factor loadings: {corr}.*" if corr else "")).replace("|", "/")
-        rows.append(f"| {p.group} | {p.label} (`{p.name}`) | {p.summary()} | {q[0]:.3g} / {q[1]:.3g} / {q[2]:.3g} | {p.unit} | "
+        rows.append(f"| {p.group} | {p.label} (`{p.name}`) | {p.summary()} | {_fmt_num(q[0])} / {_fmt_num(q[1])} / {_fmt_num(q[2])} | {p.unit} | "
                     f"**{p.evidence}** | {src} {note} |")
     return "\n".join(rows)
 
@@ -277,7 +282,7 @@ def stage_table():
 CTX = dict(m=m, anchor=anchor, stage_table=stage_table, n_params=len(PARAMS), n_sims=n_sims, sm=sm, pr=pr, jv=jv, rg=rg, tor=tor, val=val, x=x, pct=pct, num=num, chg=chg, yr=yr, ev_shrink=ev_shrink,
            ev_n=ev_n, headline_table=headline_table, jevons_md=jevons_md, regimes_md=regimes_md, tornado_md=tornado_md,
            signposts_md=signposts_md, backtest_md=backtest_md, bt=bt, robust_md=robust_md, rb=rb, eta_md=eta_md, eta_nt=eta_nt, composition_md=composition_md, pipeline_md=pipeline_md,
-           params_md=params_md, float=float, round=round, abs=abs)
+           params_md=params_md, float=float, round=round, abs=abs, min=min, max=max)
 
 
 def fill(text: str) -> str:

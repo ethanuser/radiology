@@ -15,12 +15,21 @@
   const S = F.series;
   F.ratio0_gap = 1 - S.R.p50[0];
   F.n_params = F.params.length;
+  // aliases so page text can bind tornado swings and derived figures instead of hard-coding them
+  const TOR = Object.fromEntries(F.tornado.map((r) => [r.group, r]));
+  F.tor = { ai: TOR["AI capability speed"], util: TOR["Future imaging utilization"], assist: TOR["Assistive-AI time savings"],
+    reg: TOR["Regulatory delay"], slots: TOR["Residency slot growth"], r0: TOR["Today's shortage (2026 S/D)"] };
+  F.tor_other_max = d3.max(F.tornado.filter((r) => !["AI capability speed", "Future imaging utilization", "Assistive-AI time savings"].includes(r.group)),
+    (r) => Math.abs(r.pOver2045_high - r.pOver2045_low));
+  F.fte2026 = F.extra.supply.head_2026_p50 / F.series.R.p50[0];
+  F.ratio0 = F.params.find((p) => p.name === "ratio0");
   // how much narrower the 2045 demand range gets if the judgment-call inputs were known exactly
   F.subj_shrink = (F.evidence_attribution.find((r) => r.metric === "D" && r.year === 2045 && r.grade === "Subjective") || {}).shrink;
   const BT = F.backtest;
   const ROOT = { F, SUM, JEV, REG, X, VAL: F.validation, BT };
   const FMT = { pct: fmt.pct, pct1: fmt.pct1, x2: fmt.x2, chg: fmt.chg, mult: fmt.mult, int: (v) => d3.format(",.0f")(v),
-    r100: (v) => d3.format(",.0f")(Math.round(v / 100) * 100), gr: (v) => fmt.pct(v - 1), pp: (v) => (v * 100).toFixed(1) + " percentage points",
+    r100: (v) => d3.format(",.0f")(Math.round(v / 100) * 100), gr: (v) => fmt.pct(v - 1), pp: (v) => (v * 100).toFixed(1) + " percentage points", pts: (v) => Math.round(v * 100) + " percentage points",
+    k: (v) => d3.format(",")(Math.round(v / 1000) * 1000),
     yr: (v) => String(Math.round(v)) };
   const $ = (s) => document.querySelector(s);
   const has = (s) => !!document.querySelector(s);
@@ -443,8 +452,8 @@
     const t = $("#backtestTable");
     if (t) {
       const rows = BT.occupations.map((r) => `<tr><td>${r.label}</td><td class="num"><b>${fmt.x2(r.actual)}</b></td><td class="num">${fmt.x2(r.q.p50)} (${fmt.x2(r.q.p10)}–${fmt.x2(r.q.p90)})</td>
-        <td class="num">${fmt.x2(r.bls)}</td><td class="num">${fmt.x2(r.trend)}</td><td class="num">${r.in80 ? "yes" : "no"}</td></tr>`).join("");
-      t.innerHTML = `<thead><tr><th>Occupation (2025 ÷ 2016)</th><th class="num">Actual</th><th class="num">This method: median (80% range)</th><th class="num">BLS</th><th class="num">Trend</th><th class="num">In 80% range?</th></tr></thead><tbody>${rows}</tbody>`;
+        <td class="num">${fmt.x2(r.combo)}</td><td class="num">${fmt.x2(r.bls)}</td><td class="num">${fmt.x2(r.trend)}</td><td class="num">${r.in80 ? "yes" : "no"}</td></tr>`).join("");
+      t.innerHTML = `<thead><tr><th>Occupation (2025 ÷ 2016)</th><th class="num">Actual</th><th class="num">This method: median (80% range)</th><th class="num">BLS + trend, no AI layer</th><th class="num">BLS</th><th class="num">Trend</th><th class="num">In 80% range?</th></tr></thead><tbody>${rows}</tbody>`;
     }
   }
   function forecastCharts() {

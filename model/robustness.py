@@ -33,13 +33,19 @@ PRIOR_SETS = {
     "ai_bullish": dict(label="AI-bullish", weights=np.array([0.05, 0.35, 0.30, 0.30]), util=None,
                        note="Closer to AI-lab leaders and the AI 2027 scenario: fast or transformative AI in 60% of futures.",
                        sources=["ai2027", "metr_2026"]),
-    "imaging_restraint": dict(label="Imaging restraint", weights=BASE_W, util=(0.6, 0.6),
-                              note="Imaging per person grows ~0.6%/yr (payer and Medicare cost pressure, appropriateness rules).",
+    "imaging_restraint": dict(label="Imaging restraint", weights=BASE_W, util=(0.3, 0.6),
+                              note="Imaging per person grows ~0.3%/yr (payer and Medicare cost pressure, appropriateness rules).",
                               sources=["trustees_2026"]),
-    "imaging_growth": dict(label="Imaging growth", weights=BASE_W, util=(1.8, 0.8),
-                           note="Imaging per person grows ~1.8%/yr, nearer recent CT growth.",
+    "imaging_growth": dict(label="Imaging growth", weights=BASE_W, util=(1.3, 0.8),
+                           note="Imaging per person grows ~1.3%/yr, nearer recent CT growth.",
                            sources=["smith_bindman_2025", "rosenkrantz_2025"]),
+    # the two corners: change both of the most consequential priors at once
+    "favorable": dict(label="Both favorable: AI-skeptical + imaging growth", weights=np.array([0.30, 0.55, 0.12, 0.03]),
+                      util=(1.3, 0.8), note="Combines the two single changes that lower oversupply risk most.", sources=[]),
+    "unfavorable": dict(label="Both unfavorable: AI-bullish + imaging restraint", weights=np.array([0.05, 0.35, 0.30, 0.30]),
+                        util=(0.3, 0.6), note="Combines the two single changes that raise oversupply risk most.", sources=[]),
 }
+CORNERS = ("favorable", "unfavorable")
 
 
 def _wquantile(x, w, q):
@@ -87,7 +93,7 @@ def prior_sets(s, o):
     return res
 
 
-STRUCT_SHORT = {"base": "Main model", "no_signoff": "No radiologist on tier 1–2 AI reads", "unordered": "Tiers automated in any order",
+STRUCT_SHORT = {"base": "Main model", "no_signoff": "No radiologist on AI-first reads", "unordered": "Tiers automated in any order",
                 "open_demand": "3× unforeseen new demand", "payer_pushback": "Stronger payer pushback"}
 
 
@@ -106,7 +112,10 @@ def run(s, o, n: int = 20000, seed: int = 20261007) -> dict:
     st = structures(n, seed)
     band = {}
     for y in YRS:
-        vals = [v[str(y)]["p_over"] for v in pri.values()] + [v[str(y)]["p_over"] for v in st.values()]
+        single = [v[str(y)]["p_over"] for k, v in pri.items() if k not in CORNERS] + [v[str(y)]["p_over"] for v in st.values()]
+        vals = single + [pri[k][str(y)]["p_over"] for k in CORNERS]
         jev = [v[str(y)]["p_jevons"] for v in pri.values()] + [v[str(y)]["p_jevons"] for v in st.values()]
-        band[str(y)] = {"lo": min(vals), "hi": max(vals), "jev_lo": min(jev), "jev_hi": max(jev)}
-    return {"priors": pri, "structures": st, "band": band, "n": n}
+        band[str(y)] = {"lo": min(vals), "hi": max(vals), "single_lo": min(single), "single_hi": max(single),
+                        "jev_lo": min(jev), "jev_hi": max(jev)}
+    min_ess = min(v["ess"] for v in pri.values())
+    return {"priors": pri, "structures": st, "band": band, "n": n, "min_ess": min_ess}
