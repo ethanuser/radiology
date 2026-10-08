@@ -34,7 +34,22 @@
     return offset;
   }
   let fixTimer = 0;
+  // Make a target visible inside its containers before scrolling the page: open any collapsed <details>, and scroll
+  // any scrollable box (e.g. the parameter table, wide report tables) so the target is centered within it.
+  function reveal(target) {
+    for (let d = target.closest("details"); d; d = d.parentElement && d.parentElement.closest("details")) d.open = true;
+    for (let el = target.parentElement; el && el !== document.body && el !== document.documentElement; el = el.parentElement) {
+      const cs = getComputedStyle(el);
+      const sy = /(auto|scroll)/.test(cs.overflowY) && el.scrollHeight > el.clientHeight;
+      const sx = /(auto|scroll)/.test(cs.overflowX) && el.scrollWidth > el.clientWidth;
+      if (!sy && !sx) continue;
+      const er = el.getBoundingClientRect(), tr = target.getBoundingClientRect();
+      if (sy) el.scrollTop += tr.top - er.top - (el.clientHeight - tr.height) / 2;
+      if (sx) el.scrollLeft += tr.left - er.left - (el.clientWidth - tr.width) / 2;
+    }
+  }
   function scrollToTarget(target) {
+    reveal(target);
     const top = target.getBoundingClientRect().top + window.scrollY - offsetFor(target);
     window.scrollTo({ top: Math.max(0, top), behavior: reduced() ? "auto" : "smooth" });
     // Charts drawn lazily while scrolling can shift the layout; once the scroll settles, correct any drift.
