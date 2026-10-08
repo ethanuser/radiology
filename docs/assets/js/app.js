@@ -360,11 +360,22 @@
     el.replaceChildren();
     const svg = d3.select(el).append("svg").attr("viewBox", "0 0 860 370").attr("role", "img")
       .attr("aria-label", "Model structure: baseline demand, AI productivity, regulation and Jevons effects determine FTE demand; supply and demand give the supply/demand ratio");
-    const defs = svg.append("defs");
-    [["arr", css("--s1")], ["arrNeg", css("--s2")], ["arrFb", css("--muted")]].forEach(([id, c]) => {
-      defs.append("marker").attr("id", id).attr("viewBox", "0 0 10 10").attr("refX", 9).attr("refY", 5).attr("markerWidth", 7).attr("markerHeight", 7)
-        .attr("orient", "auto-start-reverse").append("path").attr("d", "M0,0 L10,5 L0,10 z").attr("fill", c);
-    });
+    // Arrows are drawn by hand so every line ends exactly at the base of its arrowhead: the (animated, dashed) shaft
+    // stops at the base, a short solid stub guarantees the line visibly reaches it, and the head is a separate triangle.
+    const HEAD = 11, HALF = 5;
+    function arrow(d, cls) {
+      const tmp = svg.append("path").attr("d", d).attr("fill", "none");
+      const node = tmp.node(), L = node.getTotalLength(), end = L - HEAD;
+      const at = (s) => { const q = node.getPointAtLength(Math.max(0, Math.min(L, s))); return [q.x, q.y]; };
+      const pts = d3.range(41).map((i) => at((end * i) / 40));
+      const base = at(end), tip = at(L), stub = at(end - 8);
+      tmp.remove();
+      svg.append("path").attr("d", d3.line()(pts)).attr("class", "flow " + cls);
+      svg.append("path").attr("d", d3.line()([stub, base])).attr("class", "stub " + cls);
+      const dx = tip[0] - base[0], dy = tip[1] - base[1], len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len;
+      svg.append("path").attr("class", "head " + cls)
+        .attr("d", `M${tip[0]},${tip[1]} L${base[0] + nx * HALF},${base[1] + ny * HALF} L${base[0] - nx * HALF},${base[1] - ny * HALF} Z`);
+    }
     const N = NODES;
     const P = (n, fx, fy) => [N[n].x + NW * fx, N[n].y + NH * fy];
     const flows = [
@@ -381,7 +392,7 @@
       p.moveTo(...a);
       if (Math.abs(a[1] - b[1]) < 4 || Math.abs(a[0] - b[0]) < 4) p.lineTo(...b);
       else { const mx = (a[0] + b[0]) / 2; p.bezierCurveTo(mx, a[1], mx, b[1], b[0], b[1]); }
-      svg.append("path").attr("d", p.toString()).attr("class", "flow " + cls).attr("marker-end", `url(#${cls === "neg" ? "arrNeg" : "arr"})`);
+      arrow(p.toString(), cls);
       if (!lab) return;
       const t = svg.append("text").attr("class", "flowlab halo");
       if (pos === "v") t.attr("x", a[0] + 8).attr("y", (a[1] + b[1]) / 2 + 4);
@@ -389,14 +400,13 @@
       else t.attr("x", b[0] - 10).attr("y", b[1] - 10).attr("text-anchor", "end");
       t.text(lab);
     });
-    svg.append("path").attr("d", `M ${N.rat.x + NW} ${N.rat.y + NH / 2} C 852 ${N.rat.y + NH / 2}, 852 ${N.sup.y + NH / 2}, ${N.sup.x + NW} ${N.sup.y + NH / 2}`)
-      .attr("class", "flow fb").attr("marker-end", "url(#arrFb)");
+    arrow(`M ${N.rat.x + NW} ${N.rat.y + NH / 2} C 852 ${N.rat.y + NH / 2}, 852 ${N.sup.y + NH / 2}, ${N.sup.x + NW} ${N.sup.y + NH / 2}`, "fb");
     svg.append("text").attr("class", "flowlab halo").attr("x", 848).attr("y", 140).attr("text-anchor", "end").text("lagged signal");
     Object.entries(N).forEach(([k, n]) => {
       const g = svg.append("g").attr("class", "node" + (n.factor ? " factor" : "")).attr("data-k", k).attr("transform", `translate(${n.x},${n.y})`)
         .attr("tabindex", 0).attr("role", "button").attr("aria-label", n.t)
         .on("click", () => select(k)).on("keydown", (ev) => { if (ev.key === "Enter" || ev.key === " ") { ev.preventDefault(); select(k); } });
-      g.append("rect").attr("width", NW).attr("height", NH);
+      g.append("rect").attr("class", "box").attr("width", NW).attr("height", NH);
       const t1 = g.append("text").attr("x", 14).attr("y", 30).text(n.t);
       const t2 = g.append("text").attr("x", 14).attr("y", 50).attr("class", "sub").text(n.s);
       [[t1, 15], [t2, 12.5]].forEach(([t, size]) => { // shrink text that would overflow the box

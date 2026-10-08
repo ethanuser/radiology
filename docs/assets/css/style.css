@@ -188,17 +188,23 @@ tbody tr:hover td { background: var(--accent-wash); }
 #paramTable td:nth-child(2) { min-width: 220px; }
 .diagram { overflow-x: auto; }
 .diagram svg { width: 100%; height: auto; display: block; min-width: 620px; }
-.diagram .node rect { fill: var(--surface); stroke: var(--axis); stroke-width: 1.2; rx: 12; transition: stroke .2s, fill .2s; }
-.diagram .node:hover rect, .diagram .node.sel rect { stroke: var(--accent); fill: var(--accent-wash); }
+.diagram .node rect.box { fill: var(--surface); stroke: var(--axis); stroke-width: 1.2; rx: 12; transition: stroke .2s, fill .2s; }
+.diagram .node:hover rect.box, .diagram .node.sel rect.box { stroke: var(--accent); fill: var(--accent-wash); }
 .diagram .node { cursor: pointer; }
 .diagram .node text { font-family: var(--sans); fill: var(--ink); font-size: 15px; font-weight: 650; }
 .diagram .node text.sub { font-weight: 400; fill: var(--ink-2); font-size: 12.5px; }
-.diagram .node.factor rect { fill: var(--accent-wash); stroke: var(--s1); stroke-dasharray: 4 3; }
+.diagram .node.factor rect.box { fill: var(--accent-wash); stroke: var(--s1); stroke-dasharray: 4 3; }
 .diagram .badge { font-family: var(--sans); font-size: 10.5px; font-weight: 700; fill: var(--s1); }
 .diagram .flowlab { font-family: var(--sans); font-size: 11px; fill: var(--muted); }
 .diagram .flow { fill: none; stroke: var(--accent); stroke-width: 2; stroke-dasharray: 5 7; animation: flow 1.4s linear infinite; opacity: .75; }
 .diagram .flow.neg { stroke: var(--s2); }
 .diagram .flow.fb { stroke: var(--muted); stroke-dasharray: 3 6; animation-duration: 2.2s; }
+.diagram .stub { fill: none; stroke: var(--accent); stroke-width: 2; opacity: .75; }
+.diagram .stub.neg { stroke: var(--s2); }
+.diagram .stub.fb { stroke: var(--muted); }
+.diagram .head { fill: var(--accent); }
+.diagram .head.neg { fill: var(--s2); }
+.diagram .head.fb { fill: var(--muted); }
 @keyframes flow { to { stroke-dashoffset: -24; } }
 .diagram .num { font-family: var(--sans); font-size: 11px; fill: var(--accent); font-weight: 700; }
 .detail { font-family: var(--sans); font-size: 14.5px; line-height: 1.5; min-height: 170px; }
@@ -260,6 +266,11 @@ footer { padding: 48px 0 64px; border-top: 1px solid var(--grid); font-family: v
 .tooltip .row span { color: var(--ink-2); }
 details.datatable { font-family: var(--sans); font-size: 13px; margin-top: 4px; }
 details.datatable summary { cursor: pointer; color: var(--ink-2); padding: 4px 0; }
+/* disclosure triangles: drawn inside the summary with a gap, not hanging into the card padding */
+summary { list-style: none; display: flex; gap: 8px; align-items: baseline; }
+summary::-webkit-details-marker { display: none; }
+summary::before { content: "▶"; flex: none; width: 12px; font-size: .72em; color: var(--ink-2); transition: transform .15s ease; transform-origin: 35% 50%; }
+details[open] > summary::before { transform: rotate(90deg); }
 
 /* report page */
 .report { max-width: 900px; margin: 0 auto; padding: 32px 24px 80px; font-size: 17.5px; }
@@ -335,8 +346,7 @@ tr.hl td { background: var(--accent-wash); font-weight: 650; }
 /* chart axis titles & haloed labels */
 .axis-title { fill: var(--ink-2); font-size: 12px; font-weight: 600; }
 .halo { paint-order: stroke; stroke: var(--surface); stroke-width: 4px; stroke-linejoin: round; }
-.diagram .badge-bg { fill: var(--surface); stroke: var(--s1); stroke-width: 1.3; }
-.diagram .node.sel .badge-bg, .diagram .node:hover .badge-bg { fill: var(--surface); }
+.diagram .node rect.badge-bg { fill: var(--surface); stroke: var(--s1); stroke-width: 1.3; stroke-dasharray: none; }
 /* explorer filter chips: always fit, never overflow the card */
 .chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(84px, 1fr)); gap: 6px; }
 .chips button { font: inherit; font-size: 13px; background: var(--surface); color: var(--ink-2); border: 1px solid var(--border); border-radius: 8px;
@@ -368,8 +378,9 @@ a.citelink.flash { background: var(--accent); color: var(--page); border-radius:
 .howto { position: sticky; top: 72px; font-family: var(--sans); font-size: 14px; line-height: 1.5; padding: 16px 18px; }
 .howto h4 { font-family: var(--sans); font-size: 15.5px; margin: 0 0 8px; }
 .howto details { border-top: 1px solid var(--grid); padding: 6px 0; }
-.howto summary { cursor: pointer; font-weight: 650; padding: 2px 0; list-style-position: outside; }
+.howto summary { cursor: pointer; font-weight: 650; padding: 2px 0; }
 .howto details[open] summary { color: var(--accent); }
+.howto details p { padding-left: 20px; }
 .howto details p { margin: 4px 0 4px; color: var(--ink-2); }
 #backtestTable td:first-child { white-space: nowrap; }
 @media (max-width: 1000px) {
@@ -381,3 +392,7 @@ a.citelink.flash { background: var(--accent); color: var(--page); border-radius:
   .stagebar .controls { flex-direction: column; align-items: stretch; }
   .citepop { font-size: 12.5px; }
 }
+
+/* reserve space for lazily drawn explorer charts so in-page jumps past them land correctly */
+#exChart { min-height: 340px; }
+#exRatio { min-height: 260px; }
