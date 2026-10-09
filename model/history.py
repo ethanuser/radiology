@@ -98,11 +98,14 @@ EXIT_RATES = [dict(year=2014, rate=0.011, split="train"), dict(year=2019, rate=0
               dict(year=2022, rate=0.025, split="validate")]  # Medicare radiologists' unadjusted exit rate (rula_2026)
 
 # Radiologist pay growth minus other physicians' pay growth, %/yr. One rule for every era: the band runs from 1 point below
-# the smallest to 1 point above the largest yearly difference reported in the cited sources for years in that era.
+# the smallest to 1 point above the largest yearly difference reported in the cited sources for years in that era. This rule
+# was adopted after an earlier, looser coding of 2009-2014 ([-3.0, -0.5]) had failed the 2022-2025 hold-out check, so the check
+# now passing is consistency after recoding, not a clean out-of-sample test. The comparison group also differs by era
+# (specialists, other or medical specialties, all physicians), and single years stand in for whole eras.
 PAY = [dict(years=(2001, 2006), lo=2.0, hi=4.0, split="train", sources=["mgma_2007"],
             note="2006: radiology +4.7% vs specialists +1.7% (+3.0 points); radiology rose about 5%/yr over the five years"),
-       dict(years=(2009, 2014), lo=-7.6, hi=-3.3, split="train", sources=["mgma_2011", "amga_2015"],
-            note="2010: radiology -1.6% vs +4% to +6% for other specialties (about -6.6 points); 2014: +1.6% vs +5.9% for "
+       dict(years=(2009, 2014), lo=-8.6, hi=-3.3, split="train", sources=["mgma_2011", "amga_2015"],
+            note="2010: radiology -1.6% vs +4% to +6% for other specialties (-5.6 to -7.6 points); 2014: +1.6% vs +5.9% for "
                  "medical specialties (-4.3)"),
        dict(years=(2022, 2025), lo=2.8, hi=5.6, split="validate",
             sources=["doximity_2023", "doximity_2025", "doximity_2026"],

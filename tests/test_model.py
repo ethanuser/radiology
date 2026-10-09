@@ -169,6 +169,10 @@ def test_alternative_structures():
     # market-adjustment variants: bounds respected and oversupply ranked as expected
     so, cap, wide = (simulate(s, structure=k) for k in ("shortage_only", "adj_cap15", "adj_wide"))
     assert (so["adj"] <= 1e-12).all() and (np.abs(cap["adj"]) <= 0.15 + 1e-12).all()
+    st = simulate(s, structure="adj_start")
+    for o in (base, so, cap, wide, st):  # demand starts at 1 and the balance has no jump after 2026
+        assert np.allclose(o["D"][:, 0], 1.0) and np.allclose(o["R"][:, 0], s["ratio0"])
+        assert np.abs(np.log(o["R"][:, 1] / o["R"][:, 0])).max() < 0.15
     p = {k: (o["R"][:, 2045 - 2026] > 1.10).mean() for k, o in (("wide", wide), ("base", base), ("cap", cap), ("so", so))}
     assert p["wide"] <= p["base"] <= p["cap"] <= p["so"]
 

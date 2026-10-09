@@ -81,9 +81,9 @@ and that work has not yet returned.*
    unemployment.** In a readout calibrated on radiology's pay history (§9.2), median pay relative to other physicians is
    {{num(lab['by_year']['2045']['pay_p50'])}} times its 2026 level in 2045 (80%: {{num(lab['by_year']['2045']['pay_p10'])}}–{{num(lab['by_year']['2045']['pay_p90'])}}), as
    today's shortage premium erodes, and a job market at least as weak as 2012–13 has probability
-   {{pct(lab['by_year']['2045']['p_weak_hiring'])}} in 2045. Fitted on 2001–2014, the pay readout predicted the held-out 2022–2025 surge
-   ({{f"{hist['pay']['validation'][0]['pred']['p50']:+.1f}"}}%/yr against about +4%/yr), but it rests on few, mild imbalances and is
-   capped beyond them, so treat pay figures as rough. A severe surplus ($R>1.25$) lasting five or more years at some point before
+   {{pct(lab['by_year']['2045']['p_weak_hiring'])}} in 2045. Fitted on 2001–2014, the pay readout is consistent with the held-out
+   2022–2025 surge ({{f"{hist['pay']['validation'][0]['pred']['p50']:+.1f}"}}%/yr against about +4%/yr), but only after the earlier pay data were
+   recoded (under the first coding it fell well short); it rests on few, mild imbalances, so treat pay figures as rough. A severe surplus ($R>1.25$) lasting five or more years at some point before
    2066 occurs in {{pct(x['displacement']['p_sustained_severe_surplus'])}} of futures
    ({{pct(x['displacement']['p_sustained_severe_surplus_non_tai'])}} outside the transformative branch).{{m('margins')}}
 8. **Radiology's own history is the main validation, and it changed the model.** Fitted to the documented job market of
@@ -486,7 +486,8 @@ oversupply" from v1.5, which counted the raw imbalance; the headline table there
 before the adjustment, which is the work that would have to shift to radiologists, or AI uptake that would have to slow, to
 avoid a surplus. The Jevons accounting (§4.4) refers to demand before adjustment
 ($D^{*}=B-L+I$). The adjustment starts at zero in 2026; starting it instead from the reconstruction's 2026 state (median +0.02,
-80% −0.08 to +0.12) leaves the results unchanged (§8.4). The "no market adjustment" structure in §8.4 removes the adjustment
+80% −0.08 to +0.12), which leaves less room to absorb a surplus where work already moved to radiologists, raises the 2045
+oversupply probability from {{pct(sm[2045]['p_oversupply'])}} to {{pct(rb['structures']['adj_start']['2045']['p_over'])}} (§8.4). The "no market adjustment" structure in §8.4 removes the adjustment
 (v1.5's dynamics, with v1.6's other inputs).
 
 ---
@@ -672,8 +673,8 @@ calibration to Christensen et al's age-based projection (§4.5), not on this his
    from below. Refitted with wider priors (λ up to 0.8, b up to 0.5), limits below 0.05 keep only
    {{pct(hist['wide']['b_bins'][0]['weight'])}} of the weight against a prior share of {{pct(hist['wide']['b_bins'][0]['prior'])}}, but every range from
    0.2 to 0.5 keeps about its prior share ({{pct(hist['wide']['b_bins'][3]['weight'])}}, {{pct(hist['wide']['b_bins'][4]['weight'])}} and
-   {{pct(hist['wide']['b_bins'][5]['weight'])}} against {{pct(hist['wide']['b_bins'][3]['prior'])}} each). So the upper end, 0.28 (the fit's 80% point under the
-   original 0–0.3 prior), is a judgment, and a larger limit would lower the oversupply probabilities further.
+   {{pct(hist['wide']['b_bins'][5]['weight'])}} against {{pct(hist['wide']['b_bins'][3]['prior'])}} each). So the cut at 0.30 is a judgment, and a larger limit would lower the
+   oversupply probabilities further.
 2. **Per-person imaging growth now** is centered at 1.2%/yr (σ 1.05) instead of 0.6%/yr (σ 0.7), and its long-run spread is
    also 1.5 times wider (§4.1). The center is a judgment halfway between the claims-based view and the reconstruction's
    ≈1.8%/yr, not a formal combination: the reconstruction's estimate is barely narrower than the range it started from, shares
@@ -684,7 +685,10 @@ calibration to Christensen et al's age-based projection (§4.5), not on this his
 4. **Pay readout** (§9.2), calibrated on the reconstructed market and 2001–2025 pay.
 5. **Unchanged:** the supply model, the AI and regulatory components, and the regime weights.
 
-After validation, items 2–4 use all eight episodes; item 1 uses only the fitting episodes.
+After validation, items 2–4 use all eight episodes; item 1 keeps the fit to the fitting episodes, the version that was
+validated. Refitting λ and b on all eight would move the limit up slightly (median 0.21 rather than 0.19), lowering oversupply
+slightly. The draws also ignore the reconstruction's correlations between the adjustment and today's balance (0.47 for the speed),
+which probably overstates oversupply slightly.
 
 **Limits.** Eight episodes and four start years are few. The bands are coded judgments, and the driver ranges are wide. The
 adjustment's limit was learned from imbalances of about ±10%, so applying it to AI-driven shifts several times larger is an
@@ -986,13 +990,16 @@ feed back into supply or demand.
   For the held-out years 2022–2025 it predicts relative pay growth of
   {{f"{hist['pay']['validation'][0]['pred']['p50']:+.1f}"}}%/yr (80%: {{f"{hist['pay']['validation'][0]['pred']['p10']:+.1f}"}} to
   {{f"{hist['pay']['validation'][0]['pred']['p90']:+.1f}"}}), against about +4%/yr observed in the years with a comparator
-  [@doximity_2023; @doximity_2025; @doximity_2026], inside the observed band. The check is less circular than it was, but not
-  fully independent: the 2022–2025 job-market episode's evidence now excludes pay, but its band was set with pay in view. The
-  forward readout uses β refitted on all years (80%: {{num(lab['beta'][0])}}–{{num(lab['beta'][1])}}). The eras behind it had average
-  imbalances of only about 2–5%, so imbalances beyond ±10% are treated as ±10%; the readout therefore understates how far pay
-  could move in the futures with the largest imbalances. It lets relative pay drift by 5%–20% a year toward a normal level, between today's and about 15%
-  below it (before the 2022–2025 premium); fees, hours and entry respond to pay, and without this drift a long surplus would cut
-  pay without limit. Both are judgments.
+  [@doximity_2023; @doximity_2025; @doximity_2026]; the observed band lies within the 80% prediction interval. This is
+  consistency after recoding, not a clean test: the one-rule coding was adopted after a looser coding of 2009–2014 had failed
+  the check (predicting about +1.2%/yr), and the verdict depends on how that era is coded. Single years stand in for whole eras,
+  the comparison group changes by era, and the 2022–2025 job-market episode's band was set with pay in view even though its
+  evidence now excludes pay. The forward readout uses β refitted on all years (80%: {{num(lab['beta'][0])}}–{{num(lab['beta'][1])}}).
+  The eras behind it had average imbalances of only about 2–5%, so the readout does not extrapolate: imbalances beyond ±5% are
+  treated as ±5% (with ±10%, the 2045 80% range would be {{num(lab['by_year']['2045']['pay_p10_clip10'])}}–{{num(lab['by_year']['2045']['pay_p90_clip10'])}}
+  instead of {{num(lab['by_year']['2045']['pay_p10'])}}–{{num(lab['by_year']['2045']['pay_p90'])}}). Each year relative pay also closes 5%–20% of
+  its gap to a normal level, between today's and about 15% below it (before the 2022–2025 premium); fees, hours and entry
+  respond to pay, and without this drift a long surplus would cut pay without limit. Both are judgments.
 * **The job market for new graduates**, compared with 2012–13. That was the last surplus: hiring was flat at about the number of
   graduates, with deficits for new graduates [@bluth_2014; @pfeifer_2017]. The reconstruction puts it at supply ÷ demand
   ≈{{num(lab['r_2012'])}}, so "meaningful oversupply" (1.10) is about twice that surplus.
@@ -1058,7 +1065,8 @@ the job, the remaining work becomes more expert, which tends to support pay but 
   {{pct(rb['structures']['shortage_only']['2045']['p_over'])}} instead of {{pct(sm[2045]['p_oversupply'])}} (§8.4). Applying limits learned from
   imbalances of about ±10% to AI-driven shifts several times larger is an extrapolation.
 * **Pay rests on few, mild imbalances.** The pay readout is fitted on two eras whose average imbalances were only about 2–5%,
-  is capped beyond ±10%, and depends on two judgments (the drift speed and the normal level).
+  is capped beyond ±5%, depends on two judgments (the drift speed and the normal level), and agrees with the 2022–2025 surge
+  only after the earlier pay data were recoded.
 * **The starting point is reconstructed, not measured.** The 2026 ratio (median 0.94) combines indirect market signals with a
   reconstruction from coded job-market episodes (§6.3). A milder starting shortage (0.97) raises the 2045 oversupply probability
   from about {{pct(sm[2045]['p_oversupply'])}} to {{pct(tor["Today's shortage (2026 S/D)"]['pOver2045_high'])}}.

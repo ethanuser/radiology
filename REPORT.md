@@ -50,6 +50,7 @@ events are kept (§10).<sup>[§4.6](#sec-uncertainty "Method / evidence for this
 | P(supply > demand) | 32% | 66% | 62% | 64% | 56% |
 | **P(meaningful oversupply: S/D > 1.10)** | 3% | 12% | 17% | 22% | 21% |
 |   P(surplus of 10%+ before the market adjustment) | 2% | 18% | 34% | 41% | 43% |
+|   P(meaningful oversupply) if surpluses are not absorbed (§8.4) | 3% | 18% | 34% | 38% | 33% |
 | P(severe oversupply: S/D > 1.25) | <1% | 5% | 11% | 13% | 9% |
 | P(shortage worse than 10%: S/D < 0.90) | 3% | 4% | 9% | 11% | 13% |
 
@@ -98,11 +99,11 @@ and that work has not yet returned.*
    size of assistive-AI time savings. Most of the spread comes from inputs graded subjective.<sup>[§8](#sec-sensitivity "Method / evidence for this claim")</sup>
 7. **A surplus would most likely be felt as lower pay relative to other physicians and a weaker market for new graduates, not
    unemployment.** In a readout calibrated on radiology's pay history (§9.2), median pay relative to other physicians is
-   0.87 times its 2026 level in 2045 (80%: 0.46–1.65), as
+   0.87 times its 2026 level in 2045 (80%: 0.61–1.38), as
    today's shortage premium erodes, and a job market at least as weak as 2012–13 has probability
-   23% in 2045. Fitted on 2001–2014, the pay readout predicted the held-out 2022–2025 surge
-   (+3.3%/yr against about +4%/yr), but it rests on few, mild imbalances and is
-   capped beyond them, so treat pay figures as rough. A severe surplus ($R>1.25$) lasting five or more years at some point before
+   23% in 2045. Fitted on 2001–2014, the pay readout is consistent with the held-out
+   2022–2025 surge (+3.4%/yr against about +4%/yr), but only after the earlier pay data were
+   recoded (under the first coding it fell well short); it rests on few, mild imbalances, so treat pay figures as rough. A severe surplus ($R>1.25$) lasting five or more years at some point before
    2066 occurs in 15% of futures
    (6% outside the transformative branch).<sup>[§9.2](#sec-margins "Method / evidence for this claim")</sup>
 8. **Radiology's own history is the main validation, and it changed the model.** Fitted to the documented job market of
@@ -518,7 +519,8 @@ oversupply" from v1.5, which counted the raw imbalance; the headline table there
 before the adjustment, which is the work that would have to shift to radiologists, or AI uptake that would have to slow, to
 avoid a surplus. The Jevons accounting (§4.4) refers to demand before adjustment
 ($D^{*}=B-L+I$). The adjustment starts at zero in 2026; starting it instead from the reconstruction's 2026 state (median +0.02,
-80% −0.08 to +0.12) leaves the results unchanged (§8.4). The "no market adjustment" structure in §8.4 removes the adjustment
+80% −0.08 to +0.12), which leaves less room to absorb a surplus where work already moved to radiologists, raises the 2045
+oversupply probability from 17% to 19% (§8.4). The "no market adjustment" structure in §8.4 removes the adjustment
 (v1.5's dynamics, with v1.6's other inputs).
 
 ---
@@ -746,8 +748,8 @@ calibration to Christensen et al's age-based projection (§4.5), not on this his
    from below. Refitted with wider priors (λ up to 0.8, b up to 0.5), limits below 0.05 keep only
    2% of the weight against a prior share of 10%, but every range from
    0.2 to 0.5 keeps about its prior share (23%, 24% and
-   24% against 20% each). So the upper end, 0.28 (the fit's 80% point under the
-   original 0–0.3 prior), is a judgment, and a larger limit would lower the oversupply probabilities further.
+   24% against 20% each). So the cut at 0.30 is a judgment, and a larger limit would lower the
+   oversupply probabilities further.
 2. **Per-person imaging growth now** is centered at 1.2%/yr (σ 1.05) instead of 0.6%/yr (σ 0.7), and its long-run spread is
    also 1.5 times wider (§4.1). The center is a judgment halfway between the claims-based view and the reconstruction's
    ≈1.8%/yr, not a formal combination: the reconstruction's estimate is barely narrower than the range it started from, shares
@@ -758,7 +760,10 @@ calibration to Christensen et al's age-based projection (§4.5), not on this his
 4. **Pay readout** (§9.2), calibrated on the reconstructed market and 2001–2025 pay.
 5. **Unchanged:** the supply model, the AI and regulatory components, and the regime weights.
 
-After validation, items 2–4 use all eight episodes; item 1 uses only the fitting episodes.
+After validation, items 2–4 use all eight episodes; item 1 keeps the fit to the fitting episodes, the version that was
+validated. Refitting λ and b on all eight would move the limit up slightly (median 0.21 rather than 0.19), lowering oversupply
+slightly. The draws also ignore the reconstruction's correlations between the adjustment and today's balance (0.47 for the speed),
+which probably overstates oversupply slightly.
 
 **Limits.** Eight episodes and four start years are few. The bands are coded judgments, and the driver ranges are wide. The
 adjustment's limit was learned from imbalances of about ±10%, so applying it to AI-driven shifts several times larger is an
@@ -1040,7 +1045,7 @@ re-simulated from the same draws:
 * *Adjustment limit at most 15%,* the largest gap seen in 1995–2026: 19% in 2045.
 * *Larger adjustment:* speed and limit scaled to the medians of the fit with wider priors (limit up to 50%):
   13% in 2045.
-* *Adjustment starts from its reconstructed 2026 state* rather than zero: 17% in 2045.
+* *Adjustment starts from its reconstructed 2026 state* rather than zero: 19% in 2045.
 * *Transformative boost waits for regulation:* in the main model, the transformative regime raises assistive time-saving
   ceilings (interpretation up to 70%, drafting up to 90%) without passing the validation, FDA and payment pipeline that gates
   AI-first reading. That boost drives much of the transformative branch's near-certain oversupply in 2035. In this variant the
@@ -1082,8 +1087,8 @@ and AI-first reading adds the rest after 2045; without further AI only
 | Structure: No market adjustment (other v1.6 inputs kept) | 19% | 36% | 45% | 4% | 1.12 |
 | Structure: Surpluses not absorbed | 18% | 34% | 38% | 4% | 1.09 |
 | Structure: Adjustment limit at most 15% | 12% | 19% | 25% | 4% | 1.12 |
-| Structure: Larger adjustment (limit up to 50%) | 10% | 13% | 16% | 4% | 1.11 |
-| Structure: Adjustment starts from its reconstructed 2026 state | 12% | 17% | 22% | 4% | 1.11 |
+| Structure: Larger adjustment (limit up to 50%) | 10% | 13% | 17% | 4% | 1.11 |
+| Structure: Adjustment starts from its reconstructed 2026 state | 12% | 19% | 24% | 4% | 1.11 |
 | Structure: Normal-X-ray AI capable since 2022 | 7% | 12% | 16% | 5% | 1.13 |
 | Structure: Little or no shortage today | 13% | 19% | 24% | 4% | 1.16 |
 | **Range across rows** | **3%–31%** | **4%–40%** | **6%–47%** | **2%–29%** | |
@@ -1162,33 +1167,36 @@ feed back into supply or demand.
   reported for it. In the 1990s,
   job ads had tracked radiologists' income relative to all physicians <a name="c112-2"></a><sup>[112](#ref-112)</sup>. A rate model,
   $d\ln(\text{relative pay})/dt=-\beta\ln R$, fitted to 2001–2014 with the reconstructed market (§6.3) puts β at
-  1.11 (80%: 0.75–1.78).
+  1.16 (80%: 0.74–1.92).
   For the held-out years 2022–2025 it predicts relative pay growth of
-  +3.3%/yr (80%: +1.2 to
-  +6.6), against about +4%/yr observed in the years with a comparator
-  <a name="c11-2"></a><a name="c124-1"></a><a name="c125-1"></a><sup>[11](#ref-11),[124](#ref-124),[125](#ref-125)</sup>, inside the observed band. The check is less circular than it was, but not
-  fully independent: the 2022–2025 job-market episode's evidence now excludes pay, but its band was set with pay in view. The
-  forward readout uses β refitted on all years (80%: 0.79–1.65). The eras behind it had average
-  imbalances of only about 2–5%, so imbalances beyond ±10% are treated as ±10%; the readout therefore understates how far pay
-  could move in the futures with the largest imbalances. It lets relative pay drift by 5%–20% a year toward a normal level, between today's and about 15%
-  below it (before the 2022–2025 premium); fees, hours and entry respond to pay, and without this drift a long surplus would cut
-  pay without limit. Both are judgments.
+  +3.4%/yr (80%: +1.1 to
+  +7.1), against about +4%/yr observed in the years with a comparator
+  <a name="c11-2"></a><a name="c124-1"></a><a name="c125-1"></a><sup>[11](#ref-11),[124](#ref-124),[125](#ref-125)</sup>; the observed band lies within the 80% prediction interval. This is
+  consistency after recoding, not a clean test: the one-rule coding was adopted after a looser coding of 2009–2014 had failed
+  the check (predicting about +1.2%/yr), and the verdict depends on how that era is coded. Single years stand in for whole eras,
+  the comparison group changes by era, and the 2022–2025 job-market episode's band was set with pay in view even though its
+  evidence now excludes pay. The forward readout uses β refitted on all years (80%: 0.79–1.74).
+  The eras behind it had average imbalances of only about 2–5%, so the readout does not extrapolate: imbalances beyond ±5% are
+  treated as ±5% (with ±10%, the 2045 80% range would be 0.45–1.69
+  instead of 0.61–1.38). Each year relative pay also closes 5%–20% of
+  its gap to a normal level, between today's and about 15% below it (before the 2022–2025 premium); fees, hours and entry
+  respond to pay, and without this drift a long surplus would cut pay without limit. Both are judgments.
 * **The job market for new graduates**, compared with 2012–13. That was the last surplus: hiring was flat at about the number of
   graduates, with deficits for new graduates <a name="c3-3"></a><a name="c4-3"></a><sup>[3](#ref-3),[4](#ref-4)</sup>. The reconstruction puts it at supply ÷ demand
   ≈1.05, so "meaningful oversupply" (1.10) is about twice that surplus.
 
 | | 2030 | 2035 | 2045 | 2055 |
 |---|---|---|---|---|
-| Radiologist pay ÷ other physicians' pay, 2026 = 1: median (80%) | 1.14 (1.01–1.34) | 1.01 (0.72–1.45) | 0.87 (0.46–1.65) | 0.86 (0.38–1.85) |
-| P(relative pay at least 10% below 2026) | 1% | 29% | 55% | 58% |
-| P(relative pay at least 10% above 2026) | 64% | 36% | 23% | 22% |
+| Radiologist pay ÷ other physicians' pay, 2026 = 1: median (80%) | 1.12 (1.01–1.24) | 1.01 (0.78–1.32) | 0.87 (0.61–1.38) | 0.85 (0.55–1.43) |
+| P(relative pay at least 10% below 2026) | 1% | 30% | 55% | 58% |
+| P(relative pay at least 10% above 2026) | 60% | 34% | 23% | 21% |
 | P(job market at least as weak as 2012–13, supply ÷ demand ≥ 1.05) | 7% | 23% | 23% | 28% |
 | P(meaningful oversupply, > 1.10) | 3% | 12% | 17% | 22% |
 
 ![Figure 17. Radiologist pay relative to other physicians, 2026 = 1 (left; median, 50% and 80% ranges), and the chance of a job market at least as weak as 2012–13 or of meaningful oversupply (right).](figures/fig17_pay_hiring.png)
 
 Median relative pay rises while today's shortage lasts and then eases below its 2026 level as the shortage premium erodes,
-and the range widens: by 2045 the 80% range runs from 0.46 to 1.65 times the
+and the range widens: by 2045 the 80% range runs from 0.61 to 1.38 times the
 2026 level, with the deep falls in the transformative branch. In order of likelihood, AI risk would show up as:
 
 1. **Task composition** (near-certain). See §7.6.
@@ -1257,7 +1265,8 @@ the job, the remaining work becomes more expert, which tends to support pay but 
   34% instead of 17% (§8.4). Applying limits learned from
   imbalances of about ±10% to AI-driven shifts several times larger is an extrapolation.
 * **Pay rests on few, mild imbalances.** The pay readout is fitted on two eras whose average imbalances were only about 2–5%,
-  is capped beyond ±10%, and depends on two judgments (the drift speed and the normal level).
+  is capped beyond ±5%, depends on two judgments (the drift speed and the normal level), and agrees with the 2022–2025 surge
+  only after the earlier pay data were recoded.
 * **The starting point is reconstructed, not measured.** The 2026 ratio (median 0.94) combines indirect market signals with a
   reconstruction from coded job-market episodes (§6.3). A milder starting shortage (0.97) raises the 2045 oversupply probability
   from about 17% to 18%.

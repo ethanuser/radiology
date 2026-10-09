@@ -295,8 +295,9 @@
     <h3 id="pay">How a surplus or shortage would be felt: pay and hiring</h3>
     <p class="sans small ink2">This section translates the supply ÷ demand forecast into pay and hiring, using how radiologists' pay moved in past shortages and
       surpluses. It is not a separate forecast of wages. Radiologists' pay rose faster than other physicians' while they were scarce (2001–2006, 2022–2025) and fell
-      behind while they were plentiful (2007–2014).<sup class="cite" data-ref="mgma_2007,mgma_2011,amga_2015,doximity_2025,doximity_2026"></sup> Fitted to 2001–2014,
-      that pattern predicted the 2022–2025 pay surge, but it rests on a few mild imbalances, so treat these figures as rough.<a class="mlink" href="#m-pay" title="Method: pay">§</a></p>
+      behind while they were plentiful (2009–2014).<sup class="cite" data-ref="mgma_2007,mgma_2011,amga_2015,doximity_2025,doximity_2026"></sup> Fitted to 2001–2014,
+      that pattern is consistent with the 2022–2025 pay surge, but only after we recoded the earlier pay data, and it rests on a few mild imbalances, so treat
+      these figures as rough.<a class="mlink" href="#m-pay" title="Method: pay">§</a></p>
     <div class="two">
       <div class="chart-card"><div class="title">Radiologist pay relative to other physicians</div><div class="subtitle">Ratio of radiologists' pay to other physicians' pay, 2026 = 1. Median with 50% and 80% ranges.
         Shows the effect of shortage or surplus, including today's premium fading; not fee changes.</div><div id="payChart" class="chart"></div></div>
@@ -389,7 +390,8 @@
       <p>We reconstructed radiology's job market from 1995 to 2026 from published growth in imaging, productivity and the workforce, and compared it with eight
         documented episodes, such as the mid-1990s glut, the 2000 shortage, the 2012–13 surplus for new graduates and today's shortage, each recorded at the time
         in job ads and workforce surveys.<sup class="cite" data-ref="forman_2000,sunshine_2007,meghea_2005,bluth_2014,dibble_2025"></sup> To make the test fair, we tuned the model only
-        on 1995–2013, then checked whether it predicted 2015–2025 without having seen those years.<a class="mlink" href="#m-validation" title="Method: validation">§</a></p>
+        on 1995–2013, then checked whether it predicted 2015–2025 without having seen those years (we did set the input ranges in 2026, knowing what
+        happened, so the test is not perfectly blind).<a class="mlink" href="#m-validation" title="Method: validation">§</a></p>
     </div>
     <div class="chart-card">
       <div class="title">Supply ÷ demand, reconstructed, against the documented job market</div>
@@ -413,7 +415,7 @@
           are not, the 2045 oversupply chance is <span data-v="F.robust.structures.shortage_only.2045.p_over" data-f="pct"></span>.</li>
       </ul>
       <p><b>One caution:</b> on the test years, our forecasts did worse than two naive guesses, a balanced market and no change from the last known state
-        (there were only three test episodes). That guess can say nothing about AI, which
+        (there were only three test episodes). Those guesses can say nothing about AI, which
         is why we model it, but treat the long-range numbers as reasoned judgment, not a proven track record (<a href="report.html#sec-history">full test</a>).</p>
       <h3 id="changes">What this changed</h3>
       <p>Version 1.5 put the 2045 oversupply chance at 42%. Three changes driven by this history bring it to <span data-v="SUM.2045.p_oversupply" data-f="pct"></span>:</p>
@@ -576,9 +578,9 @@
       positions respond. <a href="report.html#sec-market">Report §4.7</a></p>
     <h3 id="m-pay">Pay readout</h3>
     <p>Radiologist pay relative to other physicians changes each year in proportion to the imbalance (β ≈ <span data-v="LAB.beta.0" data-f="x2"></span>–<span data-v="LAB.beta.1" data-f="x2"></span>
-      per unit of log supply ÷ demand; fitted to 2001–2014, checked on 2022–2025, then refitted on all years), and drifts by 5–20% a year toward a normal level
-      between today's and about 15% below it, before the recent shortage premium (both judgments). Imbalances beyond ±10% are treated as ±10%, since the fit
-      saw only small ones. It does not feed back
+      per unit of log supply ÷ demand; fitted to 2001–2014 and refitted on all years; it matches 2022–2025 only after we recoded the earlier pay data). Each
+      year it also closes 5–20% of its gap to a normal level between today's and about 15% below it, before the recent shortage premium (both judgments).
+      Imbalances beyond ±5% are treated as ±5%, since the fit saw only small ones. It does not feed back
       into supply or demand. <a href="report.html#sec-margins">Report §9.2</a></p>
     <h3 id="m-uncertainty">Uncertainty and regimes</h3>
     <p><span data-v="F.n_params" data-f="int"></span> uncertain inputs are drawn from explicit distributions and correlated through three shared factors: AI progress,

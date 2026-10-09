@@ -5,10 +5,10 @@ This is a readout of supply ÷ demand (R), not a labour-market model: pay does n
 Pay. In radiology's history (model/history.py), pay relative to other physicians rose while radiologists were scarce and
 fell while they were plentiful, roughly in proportion to the size of the imbalance:
     d ln(relative pay)/dt = -beta * ln R(t-1) - alpha * [ln(relative pay)(t-1) - ln p*].
-beta is drawn from the history fit (80% range), which spans era-average imbalances of only about 2-5%; applying it to the
-larger imbalances of fast-AI futures would be a large extrapolation, so imbalances beyond ±10% are treated as ±10% (the
-readout then understates how far pay could move in those futures). Fitted on 2001-2014, it predicted the 2022-2025 pay surge
-(+3.3%/yr predicted against about +4%/yr observed). alpha, a slow drift toward a normal relative level p* as fees, hours and entry respond, is a judgment
+beta is drawn from the history fit (80% range), which spans era-average imbalances of only about 2-5%, so the readout does
+not extrapolate: imbalances beyond ±5% are treated as ±5%, which keeps yearly pay moves within about the largest rates seen
+in history (a sensitivity with ±10% is reported). Fitted on 2001-2014, it is consistent with the 2022-2025 pay surge, but only
+after the pay eras were recoded (see history.PAY). alpha, a slow drift toward a normal relative level p* as fees, hours and entry respond, is a judgment
 (half-life 3.5-14 years); without it a long surplus would cut pay without limit. p* is the pre-shortage relative level,
 between about 15% below today's (before the 2022-2025 premium of about +4%/yr) and today's.
 
@@ -25,9 +25,9 @@ import numpy as np
 
 from .simulate import YEARS
 
-BETA = (0.79, 1.65)   # history.pay_fit()["beta_all"] p10-p90 (checked in tests)
+BETA = (0.79, 1.74)   # history.pay_fit()["beta_all"] p10-p90 (checked in tests)
 ALPHA = (0.05, 0.20)  # judgment
-CLIP = 0.10           # largest |ln R| fed to the pay response: about twice the largest era-average imbalance in the fit
+CLIP = 0.05           # largest |ln R| fed to the pay response: about the largest era-average imbalance in the fit
 P_STAR = (0.85, 1.0)  # judgment: normal relative pay, as a ratio to 2026
 R_2012 = 1.05         # history reconstruction, 2012-13 episode, median (checked in tests)
 
@@ -47,8 +47,12 @@ def pay_index(R: np.ndarray, seed: int = 41) -> np.ndarray:
 
 
 def summary(o: dict, years=(2030, 2035, 2045, 2055, 2066)) -> dict:
+    global CLIP
     R = o["R"]
     pay = pay_index(R)
+    saved, CLIP = CLIP, 0.10  # sensitivity: let larger imbalances move pay further
+    pay10 = pay_index(R)
+    CLIP = saved
     yi = lambda y: int(y - YEARS[0])  # noqa: E731
     q = np.percentile(pay, [10, 25, 50, 75, 90], axis=0)
     out = {
@@ -62,5 +66,6 @@ def summary(o: dict, years=(2030, 2035, 2045, 2055, 2066)) -> dict:
             "pay_p10": float(q[0, i]), "pay_p50": float(q[2, i]), "pay_p90": float(q[4, i]),
             "p_pay_down10": float((pay[:, i] <= 0.9).mean()), "p_pay_up10": float((pay[:, i] >= 1.1).mean()),
             "p_weak_hiring": float((R[:, i] >= R_2012).mean()),
+            "pay_p10_clip10": float(np.percentile(pay10[:, i], 10)), "pay_p90_clip10": float(np.percentile(pay10[:, i], 90)),
         }
     return out

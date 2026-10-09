@@ -365,12 +365,13 @@ def simulate_supply(s: dict, D: np.ndarray, P: np.ndarray, structure: str = "bas
         adj_up = np.zeros(n)
     elif adjusting and structure == "adj_cap15":
         adj_max = adj_up = np.minimum(adj_max, 0.15)
-    elif adjusting and structure == "adj_wide":  # medians of the wide-prior fit: limit 0.29 vs 0.18, speed 0.47 vs 0.38
-        adj_max = adj_up = np.minimum(adj_max * 1.6, 0.5)
-        adj_speed = np.minimum(adj_speed * 1.24, 0.8)
+    elif adjusting and structure == "adj_wide":  # ratio of medians, wide-prior fit vs main fit: limit 0.29/0.19, speed 0.47/0.39
+        adj_max = adj_up = np.minimum(adj_max * 1.55, 0.5)
+        adj_speed = np.minimum(adj_speed * 1.18, 0.8)
     adj = np.zeros(n)
     if adjusting and structure == "adj_start":  # reconstruction's 2026 state: median +0.02, 80% -0.08 to +0.12
         adj = np.clip(np.random.default_rng(29).normal(0.02, 0.078, n), -adj_max, adj_up)
+    adj0 = adj.copy()  # demand and the balance in 2026 are as observed; only the room left to adjust changes
     adj_t = np.zeros((n, T))
 
     for year in range(SUPPLY_START + 1, 2067):
@@ -393,9 +394,9 @@ def simulate_supply(s: dict, D: np.ndarray, P: np.ndarray, structure: str = "bas
             # market adjustment: each year a share of the remaining imbalance is closed by work moving between radiologists
             # and others and by the pace of labour-saving change, up to a cumulative limit (history test, model/history.py)
             adj = np.clip(adj - adj_speed * lnratio[:, i - 1], -adj_max, adj_up)
-            D_abs[:, i] = D_struct_abs[:, i] * np.exp(adj)
+            D_abs[:, i] = D_struct_abs[:, i] * np.exp(adj - adj0)
         lnratio[:, i] = np.log(D_abs[:, i] / S_fte[:, i])
-        adj_t[:, i] = adj
+        adj_t[:, i] = adj - adj0
         surv_fte = surv.sum(axis=1) * fte
         openings[:, i] = np.maximum(0.0, D_abs[:, i] - surv_fte) / np.maximum(ent * fte, 1.0)
 
