@@ -223,12 +223,12 @@ def supply_refit() -> dict:
 
 
 # ------------------------------------------------------------------------------------------------ 2. reconstruction
-def reconstruct(n: int = 300_000, seed: int = 1995, adjust: bool = True) -> dict:
+def reconstruct(n: int = 300_000, seed: int = 1995, adjust: bool = True, lam_prior=LAM, b_prior=BOUND) -> dict:
     rng = np.random.default_rng(seed)
     r0 = rng.uniform(*R_1995, n)
     rates = _rates(rng, n)
-    lam = rng.uniform(*LAM, n) if adjust else np.zeros(n)
-    b = rng.uniform(*BOUND, n) if adjust else np.zeros(n)
+    lam = rng.uniform(*lam_prior, n) if adjust else np.zeros(n)
+    b = rng.uniform(*b_prior, n) if adjust else np.zeros(n)
     R = _evolve(r0, _growth(rates), lam, b)
     train = [e for e in EPISODES if e["split"] == "train"]
     w_train = _weights(R, train)
@@ -372,6 +372,16 @@ def pay_fit(rec: dict, n_draws: int = 4000, seed: int = 3) -> dict:
     return out
 
 
+def identification(n: int = 300_000) -> dict:
+    """Does history bound the adjustment from above? Refit with wider priors (speed 0-0.8, limit 0-0.5) and compare the weight
+    on each range of the limit with its prior share: a ratio near 1 means the data are silent there."""
+    rec = reconstruct(n=n, lam_prior=(0.0, 0.8), b_prior=(0.0, 0.5))
+    b, w = rec["_b"], rec["_w_train"]
+    bins = [(0.0, 0.05), (0.05, 0.1), (0.1, 0.2), (0.2, 0.3), (0.3, 0.4), (0.4, 0.5)]
+    return dict(lam=rec["lam_train"], b=rec["b_train"], brier=rec["brier_validation"]["train"],
+                b_bins=[dict(lo=lo, hi=hi, weight=float(w[(b >= lo) & (b < hi)].sum()), prior=(hi - lo) / 0.5) for lo, hi in bins])
+
+
 def run() -> dict:
     rec = reconstruct(adjust=True)
     rec0 = reconstruct(adjust=False)
@@ -380,5 +390,5 @@ def run() -> dict:
     strip = lambda d: {k: v for k, v in d.items() if not k.startswith("_")}  # noqa: E731
     sup = supply_check()
     sup["refit"] = supply_refit()
-    return dict(reconstruction=strip(rec), no_adjustment=strip(rec0), past=past, pay=pay, supply=sup,
+    return dict(reconstruction=strip(rec), no_adjustment=strip(rec0), past=past, pay=pay, supply=sup, wide=identification(),
                 drivers_meta={k: dict(label=DRIVER_LABELS[k], sources=DRIVER_SOURCES[k], eras=v) for k, v in DRIVERS.items()})

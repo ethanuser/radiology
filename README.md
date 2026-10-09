@@ -12,7 +12,7 @@ AMA-style citations. It is written for anyone considering, training in, or pract
 
 ## What the model does
 
-Five components are modeled separately, each with explicit probability distributions, and propagated through 20,000
+Six components are modeled separately, each with explicit probability distributions, and propagated through 20,000
 correlated Monte Carlo simulations (futures already contradicted by events, such as an FDA-authorized autonomous read before
 October 2026, are dropped):
 
@@ -28,16 +28,22 @@ October 2026, are dropped):
    authorization → liability/reimbursement acceptance → hospital adoption → labor substitution. A shortage speeds adoption.
 5. **Radiologist supply**: a cohort model calibrated to Christensen et al's supply projection (+25.7% by 2055 with flat
    residency), with residency positions and fill rates that respond to the market with a lag.
+6. **Market adjustment** (new in v1.6): when supply and demand drift apart, work shifts between radiologists and other
+   physicians and labor-saving tools spread faster or slower, closing part of the gap each year up to a limit. Its speed and
+   limit are fitted to radiology's own job market in 1995–2013 and checked on 2015–2025.
 
 The inputs are correlated through three latent factors (AI progress, regulatory friction, appetite for imaging) and four
 AI-progress regimes (stall / trend / fast / transformative, weighted 15/55/18/12). Every parameter is graded **A**nchored
 (data plus judgment) or **S**ubjective; none is purely empirical. See [`model/params.py`](model/params.py) and [`outputs/parameters.md`](outputs/parameters.md).
 
-**Validation.** Besides calibration checks, [`model/backtest.py`](model/backtest.py) runs a simplified version of the method from
-2016 and scores it against 2025 outcomes for radiologists, software developers, interpreters and translators, and medical
-transcriptionists, alongside BLS projections, trend extrapolation and their average (report §6.2). It is a weak sanity check:
-the BLS-plus-trend average beat the full method on average. [`model/robustness.py`](model/robustness.py) re-runs the forecast
-under alternative priors and model structures (report §8.4).
+**Validation.** [`model/history.py`](model/history.py) reconstructs radiology's job market from 1995 to 2026 from published
+growth in imaging, productivity and the workforce, fits it to eight documented episodes up to 2013, and checks it on the
+held-out 2015–2025 episodes; it also forecasts from 2000, 2005, 2010 and 2016 with the method's rules (report §6.3). This test
+added the market adjustment and recalibrated imaging growth. [`model/backtest.py`](model/backtest.py) scores a simplified
+version of the method from 2016 against 2025 outcomes for software developers, interpreters and translators, and medical
+transcriptionists (report §6.2); the BLS-plus-trend average beat it. [`model/labor.py`](model/labor.py) turns supply ÷ demand
+into a pay and hiring readout calibrated on radiology's pay history (report §9.2). [`model/robustness.py`](model/robustness.py)
+re-runs the forecast under alternative priors and model structures (report §8.4).
 
 ## Headline results
 
@@ -79,7 +85,9 @@ model/
   sampling.py      structured Gaussian-copula Monte Carlo sampler
   simulate.py      demand, AI task model, regulatory pipeline, Jevons channels, supply cohorts
   analysis.py      summary tables, Jevons accounting, η² and tornado sensitivity, signposts
-  backtest.py      2016 → 2025 hindcast of the method vs BLS projections and trends
+  history.py       radiology's job market 1995-2026: reconstruction, fit/hold-out test, past-start-year forecasts
+  labor.py         pay and hiring readout calibrated on history
+  backtest.py      2016 → 2025 hindcast of the method for three other occupations vs BLS projections and trends
   plots.py         report figures (matplotlib)
   export_web.py    JSON for the website
   references.py    bibliography (AMA style) and what each source supports

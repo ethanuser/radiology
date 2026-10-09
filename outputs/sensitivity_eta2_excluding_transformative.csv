@@ -35,7 +35,7 @@ access,0.0031,0.0532,0.0022,0.0372,0.0020,0.0366,0.0030,-0.0530,0.0015,-0.0180,0
 adopt_mid,0.0017,-0.0483,0.0019,0.0502,0.0028,0.0527,0.0020,0.0597,0.0008,-0.0289,0.0025,-0.0674,Midpoint year of effective clinical adoption of assistive AI,A,Assistive-AI adoption timing
 m_proc,0.0020,-0.0480,0.0016,-0.0491,0.0032,-0.0658,0.0020,0.0575,0.0004,0.0329,0.0018,0.0628,Max time saved on physical/procedural work,S,Ceiling: procedural savings
 thru_T0,0.0011,0.0107,0.0013,0.0232,0.0012,0.0133,0.0014,-0.0166,0.0019,-0.0635,0.0013,-0.0205,Midpoint year of throughput gains (M=1),A,Throughput timing
-adj_max,0.0154,-0.0856,0.0013,-0.0376,0.0000,-0.0118,0.0163,0.0588,0.0010,0.0267,0.0000,-0.0009,Largest cumulative market adjustment (share of radiologist work that can shift),A,Market adjustment limit
+adj_max,0.0154,-0.0856,0.0013,-0.0376,0.0000,-0.0118,0.0163,0.0588,0.0010,0.0267,0.0000,-0.0009,Largest cumulative market adjustment (share of radiologist work that can shift),S,Market adjustment limit
 tcap2_T0,0.0000,0.0311,0.0009,0.0309,0.0000,0.0151,0.0002,-0.0378,0.0010,-0.0255,0.0002,0.0340,Tier 2 technical capability year (M=1),S,Tier-2 capability year
 cap_admin_T0,0.0008,0.0074,0.0009,-0.0040,0.0010,-0.0002,0.0008,-0.0105,0.0006,0.0201,0.0007,-0.0000,"Midpoint year: protocoling, scheduling, QA and admin automation (M=1)",A,Admin-AI arrival
 w3,0.0003,-0.0300,0.0009,-0.0362,0.0017,-0.0427,0.0001,0.0308,0.0000,0.0149,0.0009,0.0411,Tier 3 share: complex diagnostic CT/MR/US/NM,S,Tier-3 work share

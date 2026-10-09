@@ -44,9 +44,9 @@ PRIOR_SETS = {
     "residency_growth": dict(label="Residency growth continues", weights=BASE_W, util=None, slot=(1.9, 0.8),
                              note="Residency positions keep growing ~1.9%/yr, the 2010-2025 pace.", sources=["malhotra_2026"]),
     # the two corners: change both of the most consequential priors at once
-    "favorable": dict(label="Both favorable: AI-skeptical + imaging growth", weights=np.array([0.30, 0.55, 0.12, 0.03]),
+    "favorable": dict(label="Lowest-risk combination: AI-skeptical + imaging growth", weights=np.array([0.30, 0.55, 0.12, 0.03]),
                       util=(1.8, 0.8), note="Combines the two single changes that lower oversupply risk most.", sources=[]),
-    "unfavorable": dict(label="Both unfavorable: AI-bullish + imaging restraint", weights=np.array([0.05, 0.35, 0.30, 0.30]),
+    "unfavorable": dict(label="Highest-risk combination: AI-bullish + imaging restraint", weights=np.array([0.05, 0.35, 0.30, 0.30]),
                         util=(0.4, 0.7), note="Combines the two single changes that raise oversupply risk most.", sources=[]),
 }
 CORNERS = ("favorable", "unfavorable")
@@ -114,7 +114,7 @@ def prior_sets(s, o):
 STRUCT_SHORT = {"base": "Main model", "no_signoff": "No radiologist on AI-first reads", "unordered": "Tiers automated in any order",
                 "open_demand": "Much more new imaging", "payer_pushback": "Stronger payer pushback",
                 "uncapped_new_uses": "New uses not capped by scanners", "no_shortage_today": "No shortage today",
-                "tai_gated": "Transformative boost waits for regulation", "no_adjustment": "No market adjustment (v1.5)",
+                "tai_gated": "Transformative boost waits for regulation", "no_adjustment": "No market adjustment",
                 "assistive_only": "Assistive AI only", "no_ai": "No further radiology AI"}
 
 
@@ -133,7 +133,7 @@ def structures(n: int = 20000, seed: int = 20261007):
     s3 = dict(s)
     s3["tcap1_T0"] = np.asarray(s["tcap1_T0"]) - 3.0
     res["tier1_2022"] = {"label": "Normal-X-ray AI capable since 2022", "counterfactual": False,
-                         "detail": "Tier-1 capability centred on 2022 (EU approval) instead of 2025; more futures are ruled out by the lack of FDA authorization",
+                         "detail": "Tier-1 capability centred on 2022 (EU approval) instead of 2025. If AI could do this since 2022 and the FDA still has not approved it, regulation must be slow, so fewer fast-AI futures fit the facts",
                          **_metrics(_cond(simulate(s3)), None)}
     res["no_shortage_today"] = {"label": STRUCT_SHORT["no_shortage_today"], "counterfactual": False,
                                 "detail": "Today's supply ÷ demand anywhere from 0.95 to 1.03 (main model: full range 0.88-0.99)",

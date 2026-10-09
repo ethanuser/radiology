@@ -442,11 +442,13 @@ year a share $\lambda$ of the remaining imbalance closes, until the cumulative a
 
 $$A(t)=\operatorname{clip}\bigl(A(t-1)+\lambda\ln R(t-1),\,-b,\,b\bigr),\qquad D(t)=D^{*}(t)\,e^{A(t)},\qquad A(2026)=0$$
 
-where $D^{*}$ is demand from §4.1–4.4. In a shortage, other physicians and teleradiology take more of the work and
-labor-saving tools spread faster, as in 1998–2005 [@levin_2011; @bhargavan_2009]. In a surplus the model assumes the reverse:
-radiologists take back reads, take on new services, and labor-saving tools spread more slowly. $\lambda\sim U(0.2, 0.55)$ per year and
-$b\sim U(0.08, 0.28)$ are the 80% ranges of the fit to 1995–2013 (graded anchored); the history test cannot tell which mechanism
-does the work. Beyond the limit, imbalances persist until residency positions and entry respond, so supply ÷ demand after
+where $D^{*}$ is demand from §4.1–4.4. In a shortage, other physicians take more of the work and labor-saving tools spread
+faster, as in 1998–2005 [@levin_2011; @bhargavan_2009]. In a surplus the model assumes the reverse:
+radiologists take back reads, take on new services, and labor-saving tools spread more slowly. In effect the adjustment pulls
+supply ÷ demand back toward 1, but only so far. $\lambda\sim U(0.2, 0.55)$ per year is the 80% range of the fit to 1995–2013
+(graded anchored). For the limit, the fit rules out weak adjustment (little weight below about 0.08–0.10) but cannot bound it
+from above, because past imbalances never exceeded about 10–15%; $b\sim U(0.08, 0.28)$ keeps the fitted lower end and caps the
+upper end by judgment (graded subjective). The history test cannot tell which mechanism does the work. Beyond the limit, imbalances persist until residency positions and entry respond, so supply ÷ demand after
 adjustment measures imbalance the market could not absorb. The Jevons accounting (§4.4) refers to demand before adjustment
 ($D^{*}=B-L+I$). The "no market adjustment" structure in §8.4 restores the v1.5 dynamics.
 
@@ -616,7 +618,12 @@ calibration to Christensen et al's age-based projection (§4.5), not on this his
 
 **What changed in the model, and what did not** (version 1.6):
 
-1. **Market adjustment** (§4.7), with λ ~ U(0.2, 0.55) and b ~ U(0.08, 0.28), the 80% ranges of the 1995–2013 fit.
+1. **Market adjustment** (§4.7), with λ ~ U(0.2, 0.55), the 80% range of the 1995–2013 fit, and b ~ U(0.08, 0.28). The fit
+   bounds b only from below. Refitted with wider priors (λ up to 0.8, b up to 0.5), limits below 0.05 keep only
+   {{pct(hist['wide']['b_bins'][0]['weight'])}} of the weight against a prior share of {{pct(hist['wide']['b_bins'][0]['prior'])}}, but every range from
+   0.2 to 0.5 keeps about its prior share ({{pct(hist['wide']['b_bins'][3]['weight'])}}, {{pct(hist['wide']['b_bins'][4]['weight'])}} and
+   {{pct(hist['wide']['b_bins'][5]['weight'])}} against {{pct(hist['wide']['b_bins'][3]['prior'])}} each). So the upper end, 0.28 (the fit's 80% point under the
+   original 0–0.3 prior), is a judgment, and a larger limit would lower the oversupply probabilities further.
 2. **Per-person imaging growth now** is centered at 1.2%/yr (σ 1.05) instead of 0.6%/yr (σ 0.7), and its long-run spread is
    also 1.5 times wider (§4.1).
 3. **Today's balance** is Triangular(0.88, 0.945, 0.99) instead of (0.85, 0.93, 0.99) (§4.1).
@@ -775,7 +782,8 @@ Excluding the transformative branch, per-capita utilization dominates:
 Pinning all {{ev_n('Subjective')}} subjective parameters at their medians narrows the 80% interval for 2045 demand by
 {{pct(ev_shrink('Subjective', 2045))}} and for the 2045 supply/demand ratio by {{pct(ev_shrink('Subjective', 2045, 'R'))}}.
 Pinning the anchored parameters {{('narrows it by ' + pct(ev_shrink('Anchored', 2045))) if ev_shrink('Anchored', 2045) >= 0 else ('widens it by ' + pct(-ev_shrink('Anchored', 2045)))}}. No sampled input is graded purely empirical
-(the empirical anchors enter as fixed calibration targets without propagated uncertainty), so most of the spread (about two-thirds to three-quarters) comes from purely subjective inputs and nearly all of it
+(the empirical anchors enter as fixed calibration targets without propagated uncertainty), so most of the spread (pinning the subjective
+inputs narrows the demand interval by {{pct(ev_shrink('Subjective', 2035))}}–{{pct(ev_shrink('Subjective', 2045))}}) comes from purely subjective inputs and nearly all of it
 involves judgment. The attribution is not additive.
 Pinning the anchored inputs barely sharpens the demand range (and widens the 2045 supply ÷ demand interval by
 {{pct(-ev_shrink('Anchored', 2045, 'R'))}}, a sign the attribution is not additive), although two measurable quantities,
@@ -825,7 +833,8 @@ re-simulated from the same draws:
   yet, and because regulatory lags load on the AI-speed factor (−0.3), the non-event also counts as evidence against fast AI.
 * *No shortage today:* supply ÷ demand in 2026 drawn from 0.95–1.03 instead of 0.88–0.99, since the main prior rules out a
   balanced market today.
-* *No market adjustment (v1.5 dynamics):* shortages and surpluses persist until residency positions and entry respond. The
+* *No market adjustment:* shortages and surpluses persist until residency positions and entry respond, as in version 1.5 (with
+  version 1.6's other inputs, so the numbers differ from v1.5's published ones). The
   history test disfavors this structure (§6.3), but it shows how much the adjustment matters: the 2045 oversupply probability is
   {{pct(rb['structures']['no_adjustment']['2045']['p_over'])}} instead of {{pct(sm[2045]['p_oversupply'])}}, and a meaningful shortage
   {{pct(rb['structures']['no_adjustment']['2045']['p_short10'])}} instead of {{pct(sm[2045]['p_shortage_10'])}}.
@@ -975,9 +984,10 @@ the job, the remaining work becomes more expert, which tends to support pay but 
   and uneven [@rula_2026; @zamani_2026].
 * **Pay is a readout, not an equilibrium.** $R$ drives a pay index calibrated on history (§9.2), but pay does not feed back into
   supply or demand, hours are not modeled separately, and fee policy (who keeps AI's time savings) is not modeled.
-* **The market adjustment is partly extrapolated.** Its speed and limit were fitted to imbalances of about ±10% (§6.3); AI could
-  produce shifts several times larger, and the mechanism (turf, adoption pace, induced work) is not identified. Without it the
-  long-run oversupply probability roughly doubles (§8.4).
+* **The market adjustment is partly extrapolated.** Its speed and lower limit were fitted to imbalances of about ±10% (§6.3); its
+  upper limit is a judgment, AI could produce shifts several times larger, and the mechanism (turf, adoption pace, induced work)
+  is not identified. Without it the 2045 oversupply probability is {{pct(rb['structures']['no_adjustment']['2045']['p_over'])}}
+  instead of {{pct(sm[2045]['p_oversupply'])}} (§8.4).
 * **The starting point is reconstructed, not measured.** The 2026 ratio (median 0.94) combines indirect market signals with a
   reconstruction from coded job-market episodes (§6.3). A milder starting shortage (0.97) raises the 2045 oversupply probability
   from about {{pct(sm[2045]['p_oversupply'])}} to {{pct(tor["Today's shortage (2026 S/D)"]['pOver2045_high'])}}.

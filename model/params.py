@@ -161,8 +161,8 @@ PARAMS: list[Param] = [
       "history test (model/history.py) needs radiologist work per person to have grown about 2.2%/yr in 2022-2026 (80%: "
       "1.1-2.9) to explain today's shortage, about 1.8%/yr after removing complexity growth. The centre, 1.2%/yr, weights the "
       "two equally by precision; the spread is 1.5 times v1.5's because that width forecast best from past start years "
-      "(trained on 1995-2013, also better on 2015-2025). Growth decays toward ~0.2%/yr. The 'imaging restraint' (v1.5's "
-      "prior) and 'imaging growth' (the history estimate) prior sets bracket it.",
+      "(trained on 1995-2013, also better on 2015-2025). Growth decays toward ~0.2%/yr. The 'imaging restraint' prior set "
+      "(near claims-based trends) and 'imaging growth' (the history estimate) bracket it.",
       {"z_dem": 0.7}),
     P("util_ginf", "demand", "Long-run per-capita utilization growth (asymptote)",
       "normal", dict(mu=0.2, sd=0.75, lo=-2.0, hi=3.0), "%/yr", "S", ["smith_bindman_2019", "christensen_util"],
@@ -395,10 +395,10 @@ PARAMS: list[Param] = [
       "scarce (their imaging grew twice as fast in 1998-2005), and radiologists' output per FTE rose 70% in 1992-2007 as PACS "
       "and teleradiology spread. The reverse flows during surpluses are assumed, not observed directly."),
     P("adj_max", "market", "Largest cumulative market adjustment (share of radiologist work that can shift)",
-      "uniform", dict(lo=0.08, hi=0.28), "share", "A", ["levin_2011"],
-      "80% range fitted in the history test (1995-2013). Beyond this limit, imbalances are not absorbed: AI-driven changes "
-      "larger than the historical swings still show up as shortage or surplus. Applying the historical limit to much larger "
-      "AI-driven shifts is an extrapolation."),
+      "uniform", dict(lo=0.08, hi=0.28), "share", "S", ["levin_2011"],
+      "The history test (1995-2013) rules out a weak adjustment (limits below about 0.08-0.10 get little weight) but cannot bound "
+      "it from above, because past imbalances never exceeded about 10-15%; the upper end, 0.28, is a judgment. Beyond the limit, imbalances are not absorbed: "
+      "AI-driven changes larger than the historical swings still show up as shortage or surplus."),
 ]
 
 PARAM_INDEX = {p.name: p for p in PARAMS}

@@ -53,7 +53,7 @@ w2,0.0001,0.0087,0.0002,-0.0049,0.0000,-0.0063,0.0001,-0.0003,0.0001,0.0172,0.00
 cap_consult_T0,0.0009,0.0258,0.0002,0.0169,0.0000,0.0170,0.0007,-0.0250,0.0000,0.0069,0.0000,0.0021,Midpoint year: AI support for clinical synthesis/communication (M=1),S,Consultation-AI arrival
 s_interp,0.0000,0.0087,0.0001,-0.0064,0.0004,-0.0119,0.0000,-0.0104,0.0001,0.0264,0.0008,0.0347,Task share: interp,A,Task share: interpretation
 new_width,0.0001,-0.0042,0.0000,0.0008,0.0000,0.0016,0.0001,0.0174,0.0000,0.0070,0.0000,-0.0021,New-application S-curve width,S,New-application ramp
-adj_max,0.0006,-0.0643,0.0000,-0.0245,0.0002,-0.0036,0.0006,0.0433,0.0000,0.0150,0.0002,-0.0083,Largest cumulative market adjustment (share of radiologist work that can shift),A,Market adjustment limit
+adj_max,0.0006,-0.0643,0.0000,-0.0245,0.0002,-0.0036,0.0006,0.0433,0.0000,0.0150,0.0002,-0.0083,Largest cumulative market adjustment (share of radiologist work that can shift),S,Market adjustment limit
 resid_gamma,0.0000,0.0014,0.0000,0.0092,0.0000,-0.0012,0.0000,0.0067,0.0000,-0.0062,0.0000,-0.0105,Residency-position response to market signal (elasticity to ln D/S),A,Residency responsiveness
 adj_speed,0.0010,0.0263,0.0000,0.0211,0.0000,0.0003,0.0006,-0.0176,0.0000,-0.0692,0.0000,-0.0292,Market adjustment speed: share of the remaining shortage or surplus closed each year,A,Market adjustment speed
 tcap4_T0,0.0000,0.0022,0.0000,0.0027,0.0000,0.0064,0.0000,0.0000,0.0000,0.0051,0.0000,-0.0010,Tier 4 (residual hardest work) capability year (M=1),S,Tier-4 capability year

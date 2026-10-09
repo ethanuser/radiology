@@ -100,7 +100,7 @@ STRUCTURES = {
     "payer_pushback": "Payers' AI blocks twice as many scans; twice as many reads shift to other doctors",
     "uncapped_new_uses": "New uses such as screening existing scans are not limited by scanner capacity",
     "tai_gated": "Transformative AI's extra time savings must also wait for regulation and adoption",
-    "no_adjustment": "No market adjustment: shortages and surpluses persist until the training pipeline responds (v1.5)",
+    "no_adjustment": "Shortages and surpluses persist until residency positions and entry respond, as in version 1.5",
     # counterfactuals (not alternatives): how much of the risk comes from AI at all
     "assistive_only": "AI helps radiologists read but never reads first",
     "no_ai": "Radiology AI frozen at its 2026 level (other diagnostics such as AI-ECG still displace some imaging)",

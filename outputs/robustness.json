@@ -381,7 +381,7 @@
       }
     },
     "favorable": {
-      "label": "Both favorable: AI-skeptical + imaging growth",
+      "label": "Lowest-risk combination: AI-skeptical + imaging growth",
       "note": "Combines the two single changes that lower oversupply risk most.",
       "sources": [],
       "ess": 10924.164234877187,
@@ -433,7 +433,7 @@
       }
     },
     "unfavorable": {
-      "label": "Both unfavorable: AI-bullish + imaging restraint",
+      "label": "Highest-risk combination: AI-bullish + imaging restraint",
       "note": "Combines the two single changes that raise oversupply risk most.",
       "sources": [],
       "ess": 7166.64909570055,
@@ -851,8 +851,8 @@
       }
     },
     "no_adjustment": {
-      "label": "No market adjustment (v1.5)",
-      "detail": "No market adjustment: shortages and surpluses persist until the training pipeline responds (v1.5)",
+      "label": "No market adjustment",
+      "detail": "Shortages and surpluses persist until residency positions and entry respond, as in version 1.5",
       "counterfactual": false,
       "ess": 18697.000000000004,
       "kept_share": 0.93485,
@@ -1009,7 +1009,7 @@
     "tier1_2022": {
       "label": "Normal-X-ray AI capable since 2022",
       "counterfactual": false,
-      "detail": "Tier-1 capability centred on 2022 (EU approval) instead of 2025; more futures are ruled out by the lack of FDA authorization",
+      "detail": "Tier-1 capability centred on 2022 (EU approval) instead of 2025. If AI could do this since 2022 and the FDA still has not approved it, regulation must be slow, so fewer fast-AI futures fit the facts",
       "ess": 7538.000000000004,
       "kept_share": 0.3769,
       "2030": {

@@ -359,7 +359,7 @@
       the extra exams${citeHTML("asrt_2025")}. By 2045, the new work offsets a median <b>${fmt.pct(JEV[2045].offset_p50)}</b> of the labor AI saves.
       <a href="#m-jevons">Method →</a></p>`,
     dem: () => `<h4>FTE demand</h4><p>Radiologist full-time equivalents needed = baseline work × (1 + AI-induced work) × radiologist time per unit
-      of work. Median (2026 = 1): 2035 <b>${fmt.x2(SUM[2035].demand_p50)}</b>, 2045 <b>${fmt.x2(SUM[2045].demand_p50)}</b>.
+      of work × the <a href="#term-market">market adjustment</a> (work shifting to or from radiologists as the market tightens or loosens). Median (2026 = 1): 2035 <b>${fmt.x2(SUM[2035].demand_p50)}</b>, 2045 <b>${fmt.x2(SUM[2045].demand_p50)}</b>.
       <a href="#term-demand">Definition →</a></p>`,
     sup: () => `<h4>5 · Radiologist supply</h4><p>A cohort model by years in practice, calibrated to reproduce the Neiman Institute's +25.7% growth
       (2023–2055) with flat residency positions${citeHTML("christensen_supply")}. Residency positions (1,241 in 2026${citeHTML("nrmp_2026")})
@@ -593,8 +593,8 @@
     const cf = Object.entries(R.structures).filter(([, v]) => v.counterfactual).map(([k, v]) => row(v, v.detail, k)).join("");
     const band = `<tr><td><b>Range across all assumptions and designs</b></td>${ys.map((y) => `<td class="num"><b>${fmt.pct(R.band[y].lo)}–${fmt.pct(R.band[y].hi)}</b></td>`).join("")}</tr>`;
     t.innerHTML = `<thead><tr><th>Assumptions or model design</th>${ys.map((y) => `<th class="num">P(meaningful oversupply) ${y}</th>`).join("")}</tr></thead>
-      <tbody><tr><td colspan="4" class="muted small"><b>Different assumptions</b> (same futures, re-weighted)</td></tr>${pri}
-      <tr><td colspan="4" class="muted small"><b>Different model designs</b> (re-simulated)</td></tr>${st}${band}
+      <tbody><tr><td colspan="4" class="muted small"><b>Different assumptions</b> (same simulated futures, counted with different weights)</td></tr>${pri}
+      <tr><td colspan="4" class="muted small"><b>Different model designs</b> (model re-run)</td></tr>${st}${band}
       <tr><td colspan="4" class="muted small"><b>How much of the risk comes from AI?</b> What-if runs, not alternatives; excluded from the range</td></tr>${cf}</tbody>`;
   }
 
