@@ -1,72 +1,72 @@
 param,Demand 2035,rho::Demand 2035,Demand 2045,rho::Demand 2045,Demand 2055,rho::Demand 2055,Supply/demand 2035,rho::Supply/demand 2035,Supply/demand 2045,rho::Supply/demand 2045,Supply/demand 2055,rho::Supply/demand 2055,label,evidence,short
-ai_u,0.5555,0.4369,0.5728,0.4008,0.5313,0.4260,0.5353,-0.4305,0.5366,-0.3858,0.4208,-0.3969,"AI progress speed (timeline multiplier M, incl. regime)",S,AI progress speed / regime
-util_g0,0.1420,0.5626,0.1576,0.5857,0.1983,0.5881,0.1366,-0.5260,0.1628,-0.5570,0.2129,-0.5287,"Per-capita (age/sex-adjusted) utilization growth, 2026",S,Per-capita imaging growth (now)
-util_ginf,0.0711,0.3946,0.1051,0.4793,0.1688,0.5449,0.0690,-0.3728,0.1116,-0.4637,0.2021,-0.5235,Long-run per-capita utilization growth (asymptote),S,Per-capita imaging growth (long run)
-m_interp,0.1064,-0.3319,0.0980,-0.3069,0.0866,-0.2784,0.1027,0.3196,0.0928,0.2924,0.0654,0.2366,Max time saved on interpretation by assistive AI (radiologist still reads),A,Ceiling: interpretation savings
-m_admin,0.0815,-0.2597,0.0773,-0.2376,0.0749,-0.2361,0.0781,0.2493,0.0725,0.2253,0.0601,0.2107,"Max time saved on administrative work (protocoling, QA, scheduling)",A,Ceiling: admin savings
-m_consult,0.0713,-0.2287,0.0708,-0.2193,0.0703,-0.2222,0.0695,0.2240,0.0668,0.2113,0.0568,0.2030,Max time saved on clinical synthesis/consultation/communication,A,Ceiling: consultation savings
-m_draft,0.0753,-0.2655,0.0651,-0.2264,0.0592,-0.2115,0.0705,0.2506,0.0589,0.2095,0.0427,0.1774,Max time saved on measurement & report drafting,A,Ceiling: drafting savings
-cmplx_g0,0.0525,0.3253,0.0605,0.3473,0.0760,0.3519,0.0508,-0.3069,0.0631,-0.3347,0.0830,-0.3259,"Growth in radiologist work per exam (complexity, images/study), 2026",A,Work-per-exam growth
-m_proc,0.0571,-0.1842,0.0575,-0.1762,0.0575,-0.1881,0.0542,0.1792,0.0528,0.1687,0.0456,0.1746,Max time saved on physical/procedural work,S,Ceiling: procedural savings
-lpay,0.0515,0.2054,0.0552,0.2128,0.0508,0.2160,0.0507,-0.2026,0.0532,-0.2070,0.0432,-0.2010,Liability + reimbursement + scope-of-practice acceptance lag; tier-2 median,A,Liability & payment lag
-thru_H,0.0493,-0.1554,0.0525,-0.1413,0.0560,-0.1671,0.0486,0.1589,0.0494,0.1398,0.0458,0.1653,"AI-driven acquisition throughput gain at maturity (faster scans, auto-positioning)",A,Scanner throughput gain
-lfda,0.0423,0.1779,0.0439,0.1823,0.0407,0.1877,0.0417,-0.1750,0.0414,-0.1744,0.0330,-0.1706,FDA authorization lag for autonomous claims; tier-2 median,A,FDA authorization lag
-amax1,0.0412,-0.1713,0.0411,-0.1681,0.0396,-0.1756,0.0405,0.1679,0.0386,0.1628,0.0317,0.1639,Eventual uptake of tier-1 autonomy (share of eligible work),S,Tier-1 eventual uptake
-f_sub,0.0337,-0.1473,0.0398,-0.1674,0.0482,-0.1997,0.0326,0.1452,0.0377,0.1624,0.0438,0.1937,Share of interpretation+drafting time actually removed per AI-first/autonomous study,S,Labor removed per AI-first read
-amax3,0.0376,-0.1634,0.0390,-0.1645,0.0415,-0.1823,0.0364,0.1611,0.0368,0.1590,0.0356,0.1742,Eventual uptake of tier-3 autonomy,S,Tier-3 eventual uptake
-amax2,0.0349,-0.1570,0.0375,-0.1615,0.0375,-0.1729,0.0332,0.1519,0.0345,0.1535,0.0300,0.1589,Eventual uptake of tier-2 autonomy,S,Tier-2 eventual uptake
-amax4,0.0368,-0.1652,0.0366,-0.1600,0.0364,-0.1691,0.0351,0.1575,0.0337,0.1505,0.0293,0.1551,Eventual uptake of tier-4 autonomy,S,Tier-4 eventual uptake
-um_max,0.0371,-0.2747,0.0347,-0.2613,0.0415,-0.2589,0.0359,0.2573,0.0352,0.2483,0.0424,0.2319,"AI-enabled utilization management (order decision support, payer AI prior auth)",A,AI utilization management
-lval,0.0314,0.1520,0.0323,0.1546,0.0297,0.1557,0.0306,-0.1487,0.0303,-0.1486,0.0231,-0.1400,"Clinical-validation lag (prospective, multi-site) after capability; tier-1 median",A,Clinical-validation lag
-adopt_mid,0.0419,0.1579,0.0311,0.1246,0.0332,0.1475,0.0413,-0.1572,0.0258,-0.1139,0.0247,-0.1370,Midpoint year of effective clinical adoption of assistive AI,A,Assistive-AI adoption timing
-ahalf,0.0230,0.1401,0.0237,0.1439,0.0211,0.1428,0.0223,-0.1355,0.0224,-0.1378,0.0165,-0.1275,Hospital adoption: years from 'ready' to half of eventual uptake,A,Hospital adoption half-time
-new_max,0.0192,0.0099,0.0190,0.0468,0.0148,0.0346,0.0181,-0.0022,0.0161,-0.0461,0.0086,-0.0282,"New AI-enabled imaging applications by 2066 (share of baseline work, before capacity limits)",S,New AI-enabled applications
-w3,0.0135,-0.0936,0.0141,-0.0860,0.0143,-0.0951,0.0128,0.0900,0.0130,0.0803,0.0114,0.0863,Tier 3 share: complex diagnostic CT/MR/US/NM,S,Tier-3 work share
-nt_max,0.0175,-0.0783,0.0096,-0.0242,0.0085,-0.0389,0.0171,0.0789,0.0078,0.0205,0.0044,0.0357,"New radiologist tasks created alongside AI (reinstatement), share of 2026 FTE",S,New radiologist tasks
-adopt_max,0.0124,-0.1166,0.0068,-0.0920,0.0040,-0.0634,0.0116,0.1086,0.0061,0.0849,0.0019,0.0413,Saturation share of work done with assistive AI,S,Assistive adoption ceiling
-alt_mid,0.0032,0.0670,0.0057,0.0928,0.0018,0.0316,0.0029,-0.0639,0.0061,-0.0923,0.0015,-0.0151,Midpoint year of alternative-diagnostic substitution,S,Alt. diagnostics timing
-ovh_max,0.0060,0.0861,0.0055,0.0833,0.0053,0.0749,0.0056,-0.0826,0.0052,-0.0788,0.0050,-0.0634,"New oversight work created by AI (governance, auditing, validation), share of time",S,AI oversight burden
-dem_rate,0.0034,0.0782,0.0053,0.0987,0.0075,0.1086,0.0034,-0.0744,0.0059,-0.0969,0.0090,-0.1054,"Demographic (population + aging) growth of radiologist work, 2026-2045",A,Demographic growth
-s_proc,0.0049,0.0738,0.0033,0.0635,0.0031,0.0582,0.0051,-0.0727,0.0032,-0.0611,0.0026,-0.0499,Task share: proc,A,Task share: procedures
-alt_max,0.0004,-0.0259,0.0031,-0.0725,0.0067,-0.0976,0.0005,0.0280,0.0034,0.0732,0.0087,0.1009,"Imaging displaced by alternative diagnostics by 2066 (blood tests, AI-ECG, genomics)",S,Alternative diagnostics
-s_draft,0.0054,-0.0983,0.0028,-0.0692,0.0022,-0.0548,0.0053,0.0931,0.0025,0.0595,0.0012,0.0321,Task share: draft,A,Task share: drafting
-scope_max,0.0008,-0.0335,0.0017,-0.0554,0.0019,-0.0578,0.0009,0.0342,0.0019,0.0568,0.0023,0.0567,Reads shifting to non-radiologists with AI support by 2066,S,Scope shift to non-radiologists
-tcap1_T0,0.0011,-0.0178,0.0013,-0.0228,0.0011,-0.0235,0.0014,0.0235,0.0013,0.0251,0.0010,0.0245,Tier 1 technical capability year (not AI-speed scaled),A,Tier-1 capability year
-util_half,0.0004,0.0213,0.0009,0.0379,0.0018,0.0471,0.0005,-0.0221,0.0013,-0.0408,0.0031,-0.0544,Half-life of convergence from current to long-run utilization growth,S,Utilization convergence speed
-pc_share,0.0012,0.0084,0.0009,0.0065,0.0008,0.0069,0.0011,-0.0086,0.0009,-0.0074,0.0007,-0.0082,Professional (interpretation) share of the all-in price of an imaging exam,A,Professional share of price
-w1,0.0006,-0.0138,0.0008,-0.0193,0.0006,-0.0174,0.0008,0.0140,0.0010,0.0184,0.0007,0.0157,Tier 1 share of interpretive work: normal/negative radiographs & screening exams,A,Tier-1 work share
-thru_T0,0.0011,-0.0379,0.0008,0.0219,0.0008,0.0266,0.0011,0.0360,0.0009,-0.0266,0.0010,-0.0335,Midpoint year of throughput gains (M=1),A,Throughput timing
-lambda_new,0.0008,0.0375,0.0007,0.0422,0.0007,0.0385,0.0009,-0.0340,0.0007,-0.0405,0.0007,-0.0329,Radiologist labour intensity of new-application work vs a typical exam,S,Radiologist intensity of new work
-iota,0.0009,0.0355,0.0007,0.0294,0.0004,0.0198,0.0011,-0.0365,0.0009,-0.0311,0.0002,-0.0191,Extra follow-up work from AI-detected (incidental) findings at full deployment,A,Incidental-finding follow-up
-cap_invest,0.0004,0.0306,0.0007,0.0368,0.0011,0.0402,0.0005,-0.0320,0.0008,-0.0367,0.0012,-0.0383,Long-run extra scanner/technologist capacity built in response to demand (by 2066),S,Capacity investment
-fill_kappa,0.0007,-0.0013,0.0006,0.0007,0.0005,0.0038,0.0009,-0.0010,0.0007,-0.0061,0.0027,-0.0391,Fill-rate response to oversupply (applicant flight),A,Applicant flight if oversupplied
-access,0.0013,0.0563,0.0006,0.0431,0.0005,0.0360,0.0012,-0.0499,0.0005,-0.0381,0.0003,-0.0250,Turnaround/availability rebound: extra work per unit of radiologist time freed,A,Turnaround/availability rebound
-awidth,0.0003,-0.0036,0.0005,0.0084,0.0005,0.0110,0.0005,-0.0012,0.0007,-0.0105,0.0007,-0.0127,Autonomy adoption S-curve width,S,Autonomy adoption width
-cap_admin_T0,0.0002,0.0241,0.0004,-0.0059,0.0007,-0.0104,0.0002,-0.0241,0.0003,0.0080,0.0005,0.0149,"Midpoint year: protocoling, scheduling, QA and admin automation (M=1)",A,Admin-AI arrival
-cap_consult_T0,0.0012,0.0425,0.0004,0.0161,0.0003,0.0100,0.0010,-0.0380,0.0003,-0.0101,0.0004,0.0019,Midpoint year: AI support for clinical synthesis/communication (M=1),S,Consultation-AI arrival
-latent,0.0007,0.0504,0.0002,0.0385,0.0002,0.0288,0.0008,-0.0471,0.0002,-0.0354,0.0001,-0.0216,Latent demand currently rationed by scanner/technologist capacity,A,Latent (rationed) demand
-dem_late,0.0003,0.0038,0.0002,0.0060,0.0002,0.0109,0.0004,-0.0057,0.0002,-0.0072,0.0000,-0.0129,Demographic growth in 2066 relative to 2026-2045 rate,A,Late demographic slowdown
-fear,0.0003,-0.0068,0.0002,-0.0047,0.0002,-0.0075,0.0004,0.0078,0.0002,-0.0141,0.0007,-0.0340,Applicant deterrence from visible AI progress (max fill-rate loss),A,AI deterrence of applicants
-attr_mult,0.0000,0.0114,0.0002,0.0119,0.0003,0.0099,0.0018,-0.0593,0.0016,-0.0451,0.0016,-0.0369,Attrition hazard multiplier (post-COVID ≈ high end),A,Attrition rate
-s_consult,0.0001,0.0315,0.0002,0.0276,0.0006,0.0305,0.0000,-0.0276,0.0003,-0.0238,0.0010,-0.0256,Task share: consult,A,Task share: consultation
-tcap2_T0,0.0000,0.0272,0.0002,0.0398,0.0000,0.0156,0.0000,-0.0251,0.0002,-0.0373,0.0000,-0.0044,Tier 2 technical capability year (M=1),S,Tier-2 capability year
-ratio0,0.0002,0.0243,0.0002,-0.0015,0.0000,-0.0054,0.0295,0.2410,0.0110,0.1383,0.0058,0.0847,Supply ÷ demand for radiologist FTEs in 2026 (current shortage),S,Today's shortage (2026 S/D)
-cap_draft_T0,0.0005,0.0226,0.0001,-0.0028,0.0002,-0.0045,0.0003,-0.0194,0.0000,0.0059,0.0000,0.0070,Midpoint year: reliable draft reports & automated measurements (M=1),A,Drafting-AI arrival
-cap_proc_T0,0.0004,0.0151,0.0001,0.0183,0.0000,0.0123,0.0004,-0.0134,0.0003,-0.0173,0.0000,-0.0064,Midpoint year: meaningful automation of procedural/physical work (M=1),S,Procedural automation arrival
-s_admin,0.0006,-0.0206,0.0001,-0.0081,0.0000,0.0015,0.0006,0.0204,0.0001,0.0081,0.0000,-0.0031,Task share: admin,A,Task share: administration
-fte_drift,0.0002,-0.0102,0.0001,-0.0108,0.0002,-0.0102,0.0080,0.1223,0.0119,0.1477,0.0199,0.1609,"Drift in FTE per radiologist (part-time, generational preferences)",S,FTE-per-radiologist drift
-cap_width,0.0017,0.0493,0.0001,0.0120,0.0000,0.0024,0.0021,-0.0503,0.0003,-0.0120,0.0002,0.0033,Capability S-curve width (logistic scale; 10→90% ≈ 4.4×),S,Capability S-curve width
-cap_interp_T0,0.0023,0.0784,0.0001,0.0062,0.0002,-0.0084,0.0022,-0.0735,0.0002,0.0011,0.0006,0.0223,Midpoint year: AI assistance that materially speeds interpretation (M=1),A,Interpretation-assist arrival
-s_interp,0.0000,0.0249,0.0000,0.0027,0.0001,-0.0147,0.0000,-0.0230,0.0000,0.0012,0.0009,0.0250,Task share: interp,A,Task share: interpretation
-resid_lag,0.0000,-0.0081,0.0000,-0.0090,0.0000,-0.0071,0.0000,0.0100,0.0002,0.0162,0.0005,0.0218,Information/perception lag before the pipeline reacts,A,Pipeline reaction lag
-resid_gamma,0.0000,-0.0007,0.0000,0.0016,0.0000,0.0002,0.0000,0.0061,0.0000,0.0102,0.0001,-0.0122,Residency-position response to market signal (elasticity to ln D/S),A,Residency responsiveness
-w2,0.0000,-0.0021,0.0000,-0.0100,0.0000,-0.0152,0.0000,0.0057,0.0000,0.0132,0.0000,0.0196,"Tier 2 share: all radiographs, screening mammography, standardized follow-ups",A,Tier-2 work share
-slot_g,0.0000,-0.0036,0.0000,-0.0041,0.0000,-0.0005,0.0000,0.0208,0.0077,0.1246,0.0506,0.2689,Trend growth in DR residency positions (before market response),A,Residency slot growth
-new_T0,0.0007,-0.0633,0.0000,-0.0218,0.0000,-0.0058,0.0006,0.0581,0.0000,0.0199,0.0000,-0.0007,Midpoint year of new-application uptake (M=1),S,New-application timing
-elasticity,0.0001,-0.0315,0.0000,-0.0244,0.0000,-0.0188,0.0002,0.0322,0.0000,0.0247,0.0000,0.0142,Price elasticity of imaging demand,A,Price elasticity of imaging
-pass_through,0.0000,0.0215,0.0000,0.0165,0.0000,0.0109,0.0000,-0.0187,0.0000,-0.0156,0.0000,-0.0071,Share of cost savings passed through to prices paid,S,Cost pass-through
-adopt_pressure,0.0004,-0.0365,0.0000,0.0115,0.0000,0.0144,0.0005,0.0348,0.0000,-0.0160,0.0000,-0.0179,Shortage acceleration of AI adoption (extra adoption-clock speed per unit ln(D/S)),S,Shortage-driven AI adoption
-adopt_width,0.0066,0.0949,0.0000,0.0124,0.0000,0.0065,0.0063,-0.0906,0.0000,-0.0036,0.0000,0.0101,Assistive adoption S-curve width,S,Adoption S-curve width
-tcap4_T0,0.0000,0.0035,0.0000,0.0027,0.0000,0.0056,0.0000,-0.0012,0.0000,-0.0011,0.0000,-0.0034,Tier 4 (residual hardest work) capability year (M=1),S,Tier-4 capability year
-tcap3_T0,0.0000,-0.0138,0.0000,0.0079,0.0000,0.0277,0.0000,0.0125,0.0000,-0.0087,0.0000,-0.0334,Tier 3 technical capability year (M=1),S,Tier-3 capability year
-new_width,0.0000,-0.0152,0.0000,-0.0161,0.0000,-0.0095,0.0001,0.0191,0.0000,0.0199,0.0000,0.0114,New-application S-curve width,S,New-application ramp
+ai_u,0.5555,0.4369,0.5728,0.4008,0.5313,0.4260,0.5353,-0.4305,0.5383,-0.3839,0.4403,-0.3906,"AI progress speed (timeline multiplier M, incl. regime)",S,AI progress speed / regime
+util_g0,0.1420,0.5626,0.1576,0.5857,0.1983,0.5881,0.1366,-0.5260,0.1609,-0.5566,0.1964,-0.5191,"Per-capita (age/sex-adjusted) utilization growth, 2026",S,Per-capita imaging growth (now)
+util_ginf,0.0711,0.3946,0.1051,0.4793,0.1688,0.5449,0.0690,-0.3728,0.1110,-0.4653,0.1966,-0.5361,Long-run per-capita utilization growth (asymptote),S,Per-capita imaging growth (long run)
+m_interp,0.1064,-0.3319,0.0980,-0.3069,0.0867,-0.2785,0.1027,0.3196,0.0922,0.2913,0.0616,0.2228,Max time saved on interpretation by assistive AI (radiologist still reads),A,Ceiling: interpretation savings
+m_admin,0.0815,-0.2597,0.0773,-0.2376,0.0749,-0.2361,0.0781,0.2493,0.0723,0.2246,0.0596,0.2055,"Max time saved on administrative work (protocoling, QA, scheduling)",A,Ceiling: admin savings
+m_consult,0.0713,-0.2287,0.0708,-0.2193,0.0703,-0.2222,0.0695,0.2240,0.0667,0.2109,0.0567,0.1994,Max time saved on clinical synthesis/consultation/communication,A,Ceiling: consultation savings
+m_draft,0.0753,-0.2655,0.0651,-0.2264,0.0592,-0.2115,0.0705,0.2506,0.0585,0.2080,0.0411,0.1662,Max time saved on measurement & report drafting,A,Ceiling: drafting savings
+cmplx_g0,0.0525,0.3253,0.0605,0.3473,0.0760,0.3519,0.0508,-0.3069,0.0626,-0.3350,0.0781,-0.3230,"Growth in radiologist work per exam (complexity, images/study), 2026",A,Work-per-exam growth
+m_proc,0.0571,-0.1842,0.0575,-0.1762,0.0575,-0.1881,0.0542,0.1792,0.0529,0.1683,0.0470,0.1745,Max time saved on physical/procedural work,S,Ceiling: procedural savings
+lpay,0.0515,0.2054,0.0552,0.2128,0.0508,0.2160,0.0507,-0.2026,0.0529,-0.2063,0.0420,-0.1977,Liability + reimbursement + scope-of-practice acceptance lag; tier-2 median,A,Liability & payment lag
+thru_H,0.0493,-0.1554,0.0525,-0.1413,0.0560,-0.1671,0.0486,0.1589,0.0494,0.1390,0.0479,0.1654,"AI-driven acquisition throughput gain at maturity (faster scans, auto-positioning)",A,Scanner throughput gain
+lfda,0.0423,0.1779,0.0439,0.1823,0.0407,0.1877,0.0417,-0.1750,0.0412,-0.1739,0.0326,-0.1696,FDA authorization lag for autonomous claims; tier-2 median,A,FDA authorization lag
+amax1,0.0412,-0.1713,0.0411,-0.1681,0.0396,-0.1756,0.0405,0.1679,0.0385,0.1622,0.0318,0.1626,Eventual uptake of tier-1 autonomy (share of eligible work),S,Tier-1 eventual uptake
+f_sub,0.0337,-0.1473,0.0398,-0.1674,0.0482,-0.1997,0.0326,0.1452,0.0379,0.1629,0.0456,0.2004,Share of interpretation+drafting time actually removed per AI-first/autonomous study,S,Labor removed per AI-first read
+amax3,0.0376,-0.1634,0.0390,-0.1645,0.0415,-0.1823,0.0364,0.1611,0.0366,0.1584,0.0357,0.1744,Eventual uptake of tier-3 autonomy,S,Tier-3 eventual uptake
+amax2,0.0349,-0.1570,0.0375,-0.1615,0.0375,-0.1729,0.0332,0.1519,0.0344,0.1529,0.0302,0.1584,Eventual uptake of tier-2 autonomy,S,Tier-2 eventual uptake
+amax4,0.0368,-0.1652,0.0366,-0.1600,0.0364,-0.1691,0.0351,0.1575,0.0336,0.1499,0.0295,0.1539,Eventual uptake of tier-4 autonomy,S,Tier-4 eventual uptake
+um_max,0.0371,-0.2747,0.0347,-0.2613,0.0415,-0.2589,0.0359,0.2573,0.0347,0.2476,0.0386,0.2244,"AI-enabled utilization management (order decision support, payer AI prior auth)",A,AI utilization management
+lval,0.0314,0.1520,0.0323,0.1546,0.0297,0.1557,0.0306,-0.1487,0.0303,-0.1482,0.0229,-0.1377,"Clinical-validation lag (prospective, multi-site) after capability; tier-1 median",A,Clinical-validation lag
+adopt_mid,0.0419,0.1579,0.0311,0.1246,0.0332,0.1475,0.0413,-0.1572,0.0250,-0.1106,0.0237,-0.1316,Midpoint year of effective clinical adoption of assistive AI,A,Assistive-AI adoption timing
+ahalf,0.0230,0.1401,0.0237,0.1439,0.0211,0.1428,0.0223,-0.1355,0.0223,-0.1372,0.0157,-0.1238,Hospital adoption: years from 'ready' to half of eventual uptake,A,Hospital adoption half-time
+new_max,0.0192,0.0099,0.0190,0.0468,0.0148,0.0346,0.0181,-0.0022,0.0163,-0.0473,0.0100,-0.0279,"New AI-enabled imaging applications by 2066 (share of baseline work, before capacity limits)",S,New AI-enabled applications
+w3,0.0135,-0.0936,0.0141,-0.0860,0.0143,-0.0951,0.0128,0.0900,0.0129,0.0799,0.0116,0.0859,Tier 3 share: complex diagnostic CT/MR/US/NM,S,Tier-3 work share
+nt_max,0.0175,-0.0783,0.0096,-0.0242,0.0085,-0.0389,0.0171,0.0789,0.0077,0.0188,0.0047,0.0324,"New radiologist tasks created alongside AI (reinstatement), share of 2026 FTE",S,New radiologist tasks
+adopt_max,0.0124,-0.1166,0.0068,-0.0920,0.0040,-0.0634,0.0116,0.1086,0.0060,0.0842,0.0014,0.0311,Saturation share of work done with assistive AI,S,Assistive adoption ceiling
+alt_mid,0.0032,0.0670,0.0057,0.0928,0.0018,0.0316,0.0029,-0.0639,0.0062,-0.0933,0.0015,-0.0078,Midpoint year of alternative-diagnostic substitution,S,Alt. diagnostics timing
+ovh_max,0.0060,0.0861,0.0055,0.0833,0.0053,0.0749,0.0056,-0.0826,0.0052,-0.0783,0.0046,-0.0585,"New oversight work created by AI (governance, auditing, validation), share of time",S,AI oversight burden
+dem_rate,0.0034,0.0782,0.0053,0.0987,0.0075,0.1086,0.0034,-0.0744,0.0059,-0.0974,0.0088,-0.1073,"Demographic (population + aging) growth of radiologist work, 2026-2045",A,Demographic growth
+s_proc,0.0049,0.0738,0.0033,0.0635,0.0031,0.0582,0.0051,-0.0727,0.0032,-0.0608,0.0023,-0.0459,Task share: proc,A,Task share: procedures
+alt_max,0.0004,-0.0259,0.0031,-0.0725,0.0067,-0.0976,0.0005,0.0280,0.0035,0.0743,0.0093,0.1102,"Imaging displaced by alternative diagnostics by 2066 (blood tests, AI-ECG, genomics)",S,Alternative diagnostics
+s_draft,0.0054,-0.0983,0.0028,-0.0692,0.0022,-0.0549,0.0053,0.0931,0.0024,0.0585,0.0008,0.0240,Task share: draft,A,Task share: drafting
+scope_max,0.0008,-0.0335,0.0017,-0.0554,0.0019,-0.0578,0.0009,0.0342,0.0019,0.0574,0.0024,0.0596,Reads shifting to non-radiologists with AI support by 2066,S,Scope shift to non-radiologists
+tcap1_T0,0.0011,-0.0178,0.0013,-0.0228,0.0011,-0.0235,0.0014,0.0235,0.0013,0.0253,0.0009,0.0257,Tier 1 technical capability year (not AI-speed scaled),A,Tier-1 capability year
+util_half,0.0004,0.0213,0.0009,0.0379,0.0018,0.0471,0.0005,-0.0221,0.0013,-0.0411,0.0031,-0.0567,Half-life of convergence from current to long-run utilization growth,S,Utilization convergence speed
+pc_share,0.0012,0.0084,0.0009,0.0065,0.0008,0.0069,0.0011,-0.0086,0.0009,-0.0074,0.0007,-0.0078,Professional (interpretation) share of the all-in price of an imaging exam,A,Professional share of price
+w1,0.0006,-0.0138,0.0008,-0.0193,0.0006,-0.0174,0.0008,0.0140,0.0010,0.0186,0.0006,0.0170,Tier 1 share of interpretive work: normal/negative radiographs & screening exams,A,Tier-1 work share
+thru_T0,0.0011,-0.0379,0.0008,0.0219,0.0008,0.0266,0.0011,0.0360,0.0010,-0.0288,0.0013,-0.0434,Midpoint year of throughput gains (M=1),A,Throughput timing
+lambda_new,0.0008,0.0375,0.0007,0.0422,0.0007,0.0385,0.0009,-0.0340,0.0007,-0.0407,0.0005,-0.0311,Radiologist labour intensity of new-application work vs a typical exam,S,Radiologist intensity of new work
+iota,0.0009,0.0355,0.0007,0.0294,0.0004,0.0198,0.0011,-0.0365,0.0009,-0.0307,0.0002,-0.0149,Extra follow-up work from AI-detected (incidental) findings at full deployment,A,Incidental-finding follow-up
+cap_invest,0.0004,0.0306,0.0007,0.0368,0.0011,0.0402,0.0005,-0.0320,0.0008,-0.0367,0.0012,-0.0380,Long-run extra scanner/technologist capacity built in response to demand (by 2066),S,Capacity investment
+fill_kappa,0.0007,-0.0013,0.0006,0.0007,0.0005,0.0038,0.0009,-0.0010,0.0007,-0.0060,0.0026,-0.0416,Fill-rate response to oversupply (applicant flight),A,Applicant flight if oversupplied
+access,0.0013,0.0563,0.0006,0.0431,0.0005,0.0360,0.0012,-0.0499,0.0004,-0.0378,0.0002,-0.0214,Turnaround/availability rebound: extra work per unit of radiologist time freed,A,Turnaround/availability rebound
+awidth,0.0003,-0.0036,0.0005,0.0084,0.0005,0.0110,0.0005,-0.0012,0.0007,-0.0109,0.0006,-0.0140,Autonomy adoption S-curve width,S,Autonomy adoption width
+cap_admin_T0,0.0002,0.0241,0.0004,-0.0059,0.0007,-0.0104,0.0002,-0.0241,0.0003,0.0091,0.0007,0.0209,"Midpoint year: protocoling, scheduling, QA and admin automation (M=1)",A,Admin-AI arrival
+cap_consult_T0,0.0012,0.0425,0.0004,0.0161,0.0003,0.0100,0.0010,-0.0380,0.0003,-0.0093,0.0003,0.0057,Midpoint year: AI support for clinical synthesis/communication (M=1),S,Consultation-AI arrival
+latent,0.0007,0.0504,0.0002,0.0385,0.0002,0.0288,0.0008,-0.0471,0.0002,-0.0349,0.0000,-0.0171,Latent demand currently rationed by scanner/technologist capacity,A,Latent (rationed) demand
+dem_late,0.0003,0.0038,0.0002,0.0060,0.0002,0.0109,0.0004,-0.0057,0.0002,-0.0072,0.0000,-0.0130,Demographic growth in 2066 relative to 2026-2045 rate,A,Late demographic slowdown
+fear,0.0003,-0.0068,0.0002,-0.0047,0.0002,-0.0075,0.0004,0.0078,0.0002,-0.0147,0.0009,-0.0389,Applicant deterrence from visible AI progress (max fill-rate loss),A,AI deterrence of applicants
+attr_mult,0.0000,0.0114,0.0002,0.0119,0.0003,0.0099,0.0018,-0.0593,0.0015,-0.0445,0.0015,-0.0336,Attrition hazard multiplier (post-COVID ≈ high end),A,Attrition rate
+s_consult,0.0001,0.0315,0.0002,0.0276,0.0006,0.0305,0.0000,-0.0276,0.0002,-0.0235,0.0009,-0.0248,Task share: consult,A,Task share: consultation
+tcap2_T0,0.0000,0.0272,0.0002,0.0398,0.0000,0.0156,0.0000,-0.0251,0.0002,-0.0374,0.0000,0.0007,Tier 2 technical capability year (M=1),S,Tier-2 capability year
+ratio0,0.0002,0.0243,0.0002,-0.0015,0.0000,-0.0055,0.0295,0.2410,0.0103,0.1341,0.0035,0.0592,Supply ÷ demand for radiologist FTEs in 2026 (current shortage),S,Today's shortage (2026 S/D)
+cap_draft_T0,0.0005,0.0226,0.0001,-0.0028,0.0002,-0.0045,0.0003,-0.0194,0.0000,0.0069,0.0000,0.0106,Midpoint year: reliable draft reports & automated measurements (M=1),A,Drafting-AI arrival
+cap_proc_T0,0.0004,0.0151,0.0001,0.0183,0.0000,0.0123,0.0004,-0.0134,0.0003,-0.0176,0.0000,-0.0072,Midpoint year: meaningful automation of procedural/physical work (M=1),S,Procedural automation arrival
+s_admin,0.0006,-0.0206,0.0001,-0.0081,0.0000,0.0015,0.0006,0.0204,0.0001,0.0079,0.0000,-0.0059,Task share: admin,A,Task share: administration
+fte_drift,0.0002,-0.0102,0.0001,-0.0108,0.0002,-0.0101,0.0080,0.1223,0.0118,0.1480,0.0193,0.1641,"Drift in FTE per radiologist (part-time, generational preferences)",S,FTE-per-radiologist drift
+cap_width,0.0017,0.0493,0.0001,0.0120,0.0000,0.0024,0.0021,-0.0503,0.0003,-0.0108,0.0002,0.0108,Capability S-curve width (logistic scale; 10→90% ≈ 4.4×),S,Capability S-curve width
+cap_interp_T0,0.0023,0.0784,0.0001,0.0062,0.0002,-0.0084,0.0022,-0.0735,0.0002,0.0035,0.0008,0.0363,Midpoint year: AI assistance that materially speeds interpretation (M=1),A,Interpretation-assist arrival
+s_interp,0.0000,0.0249,0.0000,0.0027,0.0001,-0.0147,0.0000,-0.0230,0.0000,0.0019,0.0012,0.0308,Task share: interp,A,Task share: interpretation
+resid_lag,0.0000,-0.0081,0.0000,-0.0090,0.0000,-0.0071,0.0000,0.0100,0.0004,0.0196,0.0010,0.0343,Information/perception lag before the pipeline reacts,A,Pipeline reaction lag
+resid_gamma,0.0000,-0.0007,0.0000,0.0016,0.0000,0.0002,0.0000,0.0061,0.0000,0.0103,0.0000,-0.0126,Residency-position response to market signal (elasticity to ln D/S),A,Residency responsiveness
+w2,0.0000,-0.0021,0.0000,-0.0100,0.0000,-0.0152,0.0000,0.0057,0.0000,0.0133,0.0000,0.0206,"Tier 2 share: all radiographs, screening mammography, standardized follow-ups",A,Tier-2 work share
+slot_g,0.0000,-0.0036,0.0000,-0.0041,0.0000,-0.0005,0.0000,0.0208,0.0066,0.1199,0.0334,0.2333,Trend growth in DR residency positions (before market response),A,Residency slot growth
+new_T0,0.0007,-0.0633,0.0000,-0.0218,0.0000,-0.0058,0.0006,0.0581,0.0000,0.0185,0.0000,-0.0096,Midpoint year of new-application uptake (M=1),S,New-application timing
+elasticity,0.0001,-0.0315,0.0000,-0.0244,0.0000,-0.0188,0.0002,0.0322,0.0000,0.0245,0.0000,0.0118,Price elasticity of imaging demand,A,Price elasticity of imaging
+pass_through,0.0000,0.0215,0.0000,0.0165,0.0000,0.0109,0.0000,-0.0187,0.0000,-0.0154,0.0000,-0.0062,Share of cost savings passed through to prices paid,S,Cost pass-through
+adopt_pressure,0.0004,-0.0365,0.0000,0.0115,0.0000,0.0143,0.0005,0.0348,0.0000,-0.0173,0.0001,-0.0230,Shortage acceleration of AI adoption (extra adoption-clock speed per unit ln(D/S)),S,Shortage-driven AI adoption
+adopt_width,0.0066,0.0949,0.0000,0.0124,0.0000,0.0065,0.0063,-0.0906,0.0000,-0.0009,0.0004,0.0219,Assistive adoption S-curve width,S,Adoption S-curve width
+tcap4_T0,0.0000,0.0035,0.0000,0.0027,0.0000,0.0056,0.0000,-0.0012,0.0000,-0.0007,0.0000,-0.0024,Tier 4 (residual hardest work) capability year (M=1),S,Tier-4 capability year
+tcap3_T0,0.0000,-0.0138,0.0000,0.0079,0.0000,0.0277,0.0000,0.0125,0.0000,-0.0093,0.0000,-0.0398,Tier 3 technical capability year (M=1),S,Tier-3 capability year
+new_width,0.0000,-0.0152,0.0000,-0.0161,0.0000,-0.0095,0.0001,0.0191,0.0000,0.0201,0.0000,0.0095,New-application S-curve width,S,New-application ramp

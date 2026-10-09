@@ -225,15 +225,15 @@ def robust_md():
 
 def predictions_md():
     rows = ["| Check | Event | Resolution | Model's forecast |", "|---|---|---|---|"]
-    for p in x["predictions"]:
-        f = f"{pct(p['p'])} chance" if "p" in p else f"{p['p50']:,.0f} (80%: {p['p10']:,.0f}–{p['p90']:,.0f})"
+    for p in _fj["extra"]["predictions"]:  # the archived record for this release, not a recomputation
+        f = f"{pct(p['p'])} chance" if "p" in p else f"{p['p50']:,.0f} (80% range {p['p10']:,.0f}–{p['p90']:,.0f})"
         rows.append(f"| {p['check']} | {p['event']} | {p['resolution']} | {f} |")
     return "\n".join(rows)
 
 
 def pipeline_md():
-    tiers = ["Tier 1 — normal/negative radiographs & screening", "Tier 2 — all radiographs, screening mammography, standardized follow-up",
-             "Tier 3 — complex diagnostic CT/MR/US/NM", "Tier 4 — hardest residual work"]
+    tiers = ["Tier 1 — normal radiographs & negative screens", "Tier 2 — other radiographs, screening mammography, standardized follow-up",
+             "Tier 3 — most CT, MRI, US & NM", "Tier 4 — hardest remaining work"]
     stages = ["Capable", "Validated", "FDA-authorized", "Paid & liability-accepted", "50% of eventual adoption"]
     rows = ["| Tier | " + " | ".join(stages) + " |", "|---|" + "---|" * len(stages)]
     for j, t in enumerate(tiers):
@@ -292,7 +292,7 @@ def stage_table():
     return "\n".join(rows)
 
 
-CTX = dict(m=m, anchor=anchor, stage_table=stage_table, n_params=len(PARAMS), n_sims=n_sims, n_drawn=n_drawn, len=len, sm=sm, pr=pr, jv=jv, rg=rg, tor=tor, val=val, x=x, pct=pct, num=num, chg=chg, yr=yr, ev_shrink=ev_shrink,
+CTX = dict(_fj=_fj, m=m, anchor=anchor, stage_table=stage_table, n_params=len(PARAMS), n_sims=n_sims, n_drawn=n_drawn, len=len, sm=sm, pr=pr, jv=jv, rg=rg, tor=tor, val=val, x=x, pct=pct, num=num, chg=chg, yr=yr, ev_shrink=ev_shrink,
            ev_n=ev_n, headline_table=headline_table, jevons_md=jevons_md, regimes_md=regimes_md, tornado_md=tornado_md,
            signposts_md=signposts_md, backtest_md=backtest_md, bt=bt, robust_md=robust_md, rb=rb, predictions_md=predictions_md, eta_md=eta_md, eta_nt=eta_nt, composition_md=composition_md, pipeline_md=pipeline_md,
            params_md=params_md, float=float, round=round, abs=abs, min=min, max=max)
@@ -430,9 +430,11 @@ def readme_block() -> str:
             f"and meaningful shortage ({pct(sm[2035]['p_shortage_10'])}) are about equally likely in 2035. "
             f"Most of the oversupply risk sits in the transformative-AI branch; without it the risk is "
             f"{pct(x['non_tai']['2035']['p_over'])}. Risk grows over a career ({pct(sm[2045]['p_oversupply'])} by 2045, "
-            f"{pct(sm[2055]['p_oversupply'])} by 2055). Most of it comes from AI: with no further AI it would be "
+            f"{pct(sm[2055]['p_oversupply'])} by 2055) and eases a little after as residency programs adjust. Most of it comes from AI: "
+            f"with no further radiology AI it would be "
             f"{pct(rb['structures']['no_ai']['2045']['p_over'])} and {pct(rb['structures']['no_ai']['2055']['p_over'])}; assistive AI drives "
-            f"the near-term risk and AI-first reading adds most of the rest after 2045. A true Jevons paradox, "
+            f"the near-term risk (mostly in the transformative regime, where it bypasses regulation) and AI-first reading adds most of the rest "
+            f"after 2045. A true Jevons paradox, "
             f"where AI-induced imaging outweighs the labor AI saves, is unlikely under the main assumptions (≈{pct(jv[2045]['p_jevons'])} in 2045): induced "
             f"demand offsets about {pct(jv[2045]['offset_p50'])} of the savings. A 2016→2025 backtest gave the method a "
             f"{pct(bt['radiology']['p_shortage'])} chance of today's shortage, driven by supply-versus-demand fundamentals rather than AI; for "

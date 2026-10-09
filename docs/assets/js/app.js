@@ -309,7 +309,7 @@
     const [a10, a50, a90] = q("auto");
     $("#dAuto").textContent = fmt.pct(a50);
     $("#dAutoR").textContent = `80% range: ${fmt.pct(a10)}–${fmt.pct(a90)}`;
-    $("#dBelow").textContent = y === 2026 ? "–" : fmt.pct(F.probs.p_demand_below_today[i]);
+    if (has("#dBelow")) $("#dBelow").textContent = y === 2026 ? "–" : fmt.pct(F.probs.p_demand_below_today[i]);
     const now = $("#careerNow");
     if (now) now.style.left = ((y - 2026) / 40) * 100 + "%";
     if (dash) dash.setReveal(Math.max(2026.6, y));
@@ -364,8 +364,8 @@
     rat: () => `<h4>Supply ÷ demand</h4><p>Below 1 means a shortage (today ≈ ${fmt.x2(S.R.p50[0])}). Above 1.10 is <a href="#term-oversupply">meaningful
       oversupply</a>. The ratio feeds back into residency positions and, when short, speeds up AI adoption.</p>`,
     ai: () => `<h4>AI-progress factor</h4><p>One shared factor moves many inputs together: faster AI means earlier capability, higher time-saving
-      ceilings, more new applications and faster scanners. It picks one of four <a href="#term-regimes">regimes</a>: stall 15%, trend 55%,
-      fast 18%, transformative 12%.</p>`,
+      ceilings, more new applications and faster scanners. It picks one of four <a href="#term-regimes">regimes</a>: stall ${fmt.pct(F.regimes.weights[0])}, trend ${fmt.pct(F.regimes.weights[1])},
+      fast ${fmt.pct(F.regimes.weights[2])}, transformative ${fmt.pct(F.regimes.weights[3])} of futures.</p>`,
   };
   function diagram() {
     const el = $("#diagram");
@@ -569,16 +569,20 @@
     if (!t || !F.robust) return;
     const R = F.robust, ys = ["2035", "2045", "2055"];
     const row = (v, kind, key) => `<tr id="robust-${key}"><td>${v.label}${kind ? `<div class="muted small">${kind}</div>` : ""}</td>` +
-      ys.map((y) => `<td class="num">${fmt.pct(v[y].p_over)}</td>`).join("") + `<td class="num">${fmt.pct(v["2045"].p_jevons)}</td></tr>`;
+      ys.map((y) => `<td class="num">${fmt.pct(v[y].p_over)}</td>`).join("") + "</tr>";
     const pri = Object.entries(R.priors).map(([k, v]) => row(v, k === "main" ? "main model" : v.note, k)).join("");
-    const st = Object.entries(R.structures).filter(([k, v]) => k !== "base" && !v.counterfactual).map(([k, v]) => row(v, v.detail, k)).join("");
+    const SHOW = ["no_shortage_today", "tier1_2022"];
+    const designs = Object.entries(R.structures).filter(([k, v]) => k !== "base" && !v.counterfactual);
+    const hidden = designs.filter(([k]) => !SHOW.includes(k));
+    const st = designs.filter(([k]) => SHOW.includes(k)).map(([k, v]) => row(v, v.detail, k)).join("") +
+      `<tr><td colspan="4" class="muted small">${hidden.length} other model-design changes (${hidden.map(([, v]) => v.label).join("; ")})
+      stay inside the range below; see report §8.4.</td></tr>`;
     const cf = Object.entries(R.structures).filter(([, v]) => v.counterfactual).map(([k, v]) => row(v, v.detail, k)).join("");
-    const band = `<tr><td><b>Range across all rows</b></td>${ys.map((y) => `<td class="num"><b>${fmt.pct(R.band[y].lo)}–${fmt.pct(R.band[y].hi)}</b></td>`).join("")}` +
-      `<td class="num"><b>${fmt.pct(R.band["2045"].jev_lo)}–${fmt.pct(R.band["2045"].jev_hi)}</b></td></tr>`;
-    t.innerHTML = `<thead><tr><th>Assumptions or model design</th>${ys.map((y) => `<th class="num">P(oversupply) ${y}</th>`).join("")}<th class="num">P(Jevons) 2045</th></tr></thead>
-      <tbody><tr><td colspan="5" class="muted small"><b>Different assumptions</b> (same futures, re-weighted)</td></tr>${pri}
-      <tr><td colspan="5" class="muted small"><b>Different model designs</b> (re-simulated)</td></tr>${st}${band}
-      <tr><td colspan="5" class="muted small"><b>How much of the risk comes from AI?</b> What-if runs, not alternatives; excluded from the range</td></tr>${cf}</tbody>`;
+    const band = `<tr><td><b>Range across all assumptions and designs</b></td>${ys.map((y) => `<td class="num"><b>${fmt.pct(R.band[y].lo)}–${fmt.pct(R.band[y].hi)}</b></td>`).join("")}</tr>`;
+    t.innerHTML = `<thead><tr><th>Assumptions or model design</th>${ys.map((y) => `<th class="num">P(meaningful oversupply) ${y}</th>`).join("")}</tr></thead>
+      <tbody><tr><td colspan="4" class="muted small"><b>Different assumptions</b> (same futures, re-weighted)</td></tr>${pri}
+      <tr><td colspan="4" class="muted small"><b>Different model designs</b> (re-simulated)</td></tr>${st}${band}
+      <tr><td colspan="4" class="muted small"><b>How much of the risk comes from AI?</b> What-if runs, not alternatives; excluded from the range</td></tr>${cf}</tbody>`;
   }
 
   function predictionTable() {
@@ -586,7 +590,7 @@
     if (!t || !X.predictions) return;
     t.innerHTML = `<thead><tr><th>Check</th><th>Event</th><th class="num">Model's forecast</th></tr></thead><tbody>` +
       X.predictions.map((p) => `<tr><td>${p.check}</td><td>${p.event}<div class="muted small">Checked against: ${p.resolution}</div></td><td class="num">${p.p !== undefined ? fmt.pct(p.p) + " chance"
-        : `${d3.format(",.0f")(p.p50)} (80%: ${d3.format(",.0f")(p.p10)}–${d3.format(",.0f")(p.p90)})`}</td></tr>`).join("") + "</tbody>";
+        : `${d3.format(",.0f")(p.p50)} (80% range ${d3.format(",.0f")(p.p10)}–${d3.format(",.0f")(p.p90)})`}</td></tr>`).join("") + "</tbody>";
   }
 
   // ------------------------------------------------------------------ careers
@@ -594,10 +598,9 @@
     const t = $("#stageTable");
     if (!t) return;
     t.innerHTML = `<thead><tr><th>Where you are in fall 2026</th><th class="num">Typical start of practice*</th><th class="num">P(meaningful oversupply) at start</th>
-      <th class="num">… 10 years in</th><th class="num">… 20 years in</th><th class="num">P(meaningful shortage) at start</th></tr></thead><tbody>` +
-      X.stages.map((r) => `<tr class="${stage && stage.key === r.key ? "hl" : ""}"><td>${r.label}</td><td class="num">${r.start}</td><td class="num">${fmt.pct(r.entry_p_over)}</td>
-      <td class="num">${fmt.pct(r.y10_p_over)}</td><td class="num">${fmt.pct(r.y20_p_over)}</td>
-      <td class="num">${fmt.pct(r.entry_p_short10)}</td></tr>`).join("") + "</tbody>";
+      <th class="num">P(meaningful shortage) at start</th><th class="num">P(meaningful oversupply) 10 years in</th><th class="num">… 20 years in</th></tr></thead><tbody>` +
+      X.stages.map((r) => `<tr class="${stage && stage.key === r.key ? "hl" : ""}"><td>${r.label}</td><td class="num">${r.key === "attending" ? "now" : r.start}</td><td class="num">${fmt.pct(r.entry_p_over)}</td><td class="num">${fmt.pct(r.entry_p_short10)}</td>
+      <td class="num">${fmt.pct(r.y10_p_over)}</td><td class="num">${fmt.pct(r.y20_p_over)}</td></tr>`).join("") + "</tbody>";
   }
   function horizon() {
     const el = $("#horizon");

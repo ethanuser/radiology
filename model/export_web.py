@@ -70,8 +70,8 @@ def forecast_json(s, o, summary, probs, jev, regimes, tor, eta, ev, val) -> dict
     out["pipeline"] = {
         "stages": ["Technically capable", "Clinically validated", "FDA authorized", "Paid & liability-accepted",
                    "50% of eventual adoption"],
-        "tiers": ["Normal screens & simple radiographs", "All radiographs & screening", "Complex CT / MR",
-                  "Hardest residual work"],
+        "tiers": ["Normal radiographs & negative screens", "Other radiographs & screening", "Most CT, MRI, US & NM",
+                  "Hardest remaining work"],
         "p10": _r(np.percentile(st, 10, axis=0), 1), "p50": _r(np.percentile(st, 50, axis=0), 1),
         "p90": _r(np.percentile(st, 90, axis=0), 1),
     }

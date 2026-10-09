@@ -1,0 +1,35 @@
+{
+  "release": "2026-10-v1.5",
+  "predictions": [
+    {
+      "id": "fda_tier1_2029",
+      "check": "By 31 Dec 2029",
+      "event": "FDA authorizes a device that finalizes some normal chest radiographs without radiologist review",
+      "resolution": "FDA device database (510(k)/De Novo/PMA) decision summary states autonomous reporting without radiologist review",
+      "p": 0.6370540728459111
+    },
+    {
+      "id": "paid_tier1_2032",
+      "check": "By 31 Dec 2032",
+      "event": "Medicare pays separately for such autonomous reads",
+      "resolution": "A national Medicare payment rate (physician fee schedule or OPPS) for autonomous AI interpretation, not contractor pricing",
+      "p": 0.5453816120233193
+    },
+    {
+      "id": "positions_2030",
+      "check": "2030 Match",
+      "event": "Diagnostic-radiology first-year residency positions offered (2026: 1,241)",
+      "resolution": "NRMP Main Residency Match results: diagnostic radiology positions offered, the same series that reported 1,241 in 2026",
+      "p50": 1340.786696106135,
+      "p10": 1285.4075232975597,
+      "p90": 1398.0721011089927,
+      "q": {
+        "5": 1270.1358095055732,
+        "25": 1311.6669017809456,
+        "50": 1340.786696106135,
+        "75": 1370.716766585679,
+        "95": 1413.555767390458
+      }
+    }
+  ]
+}

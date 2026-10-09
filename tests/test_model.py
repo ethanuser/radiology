@@ -141,3 +141,23 @@ def test_no_ai_counterfactual_equals_baseline():
     assert np.allclose(o["time_saved"], 0, atol=1e-12)
     a = simulate(s, structure="assistive_only")
     assert np.allclose(a["auto"], 0)
+
+
+def test_archived_predictions_match_current_release():
+    """Predictions are archived once per release; changing the model without bumping RELEASE must fail here."""
+    import json
+    from pathlib import Path
+    import run_model
+    from model import analysis
+    root = Path(__file__).resolve().parents[1]
+    arch = root / "outputs" / "predictions" / f"{run_model.RELEASE}.json"
+    if not arch.exists():
+        pytest.skip("no archive for this release yet; run run_model.py")
+    s, o = analysis.run(20000)
+    now = analysis.extra_metrics(s, o)["predictions"]
+    old = json.loads(arch.read_text())["predictions"]
+    assert [p["id"] for p in now] == [p["id"] for p in old]
+    for a, b in zip(now, old):
+        for k in ("p", "p50"):
+            if k in b:
+                assert abs(a[k] - b[k]) < 1e-6, (b["id"], k)

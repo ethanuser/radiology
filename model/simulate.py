@@ -339,6 +339,7 @@ def simulate_supply(s: dict, D: np.ndarray, P: np.ndarray) -> dict:
     coh = np.tile(COHORT_2023, (n, 1))
     filled = {y: np.full(n, float(v)) for y, v in FILLED_HIST.items()}
     positions = np.full(n, float(POSITIONS_2026))
+    trend_level = np.full(n, float(POSITIONS_2026))  # the trend only accrues growth while the market is not in surplus
 
     S_fte = np.zeros((n, T))
     head = np.zeros((n, T))
@@ -376,10 +377,12 @@ def simulate_supply(s: dict, D: np.ndarray, P: np.ndarray) -> dict:
             idx_lo = np.clip(idx_hi - 2, 0, i)
             xbar = (lnratio[rows, idx_hi] + lnratio[rows, idx_lo] + lnratio[rows, (idx_hi + idx_lo) // 2]) / 3
             xbar = np.clip(xbar, -0.7, 0.4)
-            trend = POSITIONS_2026 * np.minimum((1 + slot_g) ** (m - 2026), GME_CAP)
+            growing = xbar >= 0
+            trend_level = np.minimum(trend_level * (1 + slot_g * growing), GME_CAP * POSITIONS_2026)
+            trend = trend_level
             g_eff = np.where(xbar < 0, gamma, 0.3 * gamma)
             target = np.minimum(trend * np.exp(g_eff * xbar), GME_CAP * POSITIONS_2026)
-            grown = np.minimum(positions * (1 + slot_g), GME_CAP * POSITIONS_2026)
+            grown = np.minimum(positions * (1 + slot_g * growing), GME_CAP * POSITIONS_2026)
             positions = grown + 0.35 * (target - grown)
             vis = np.clip((1 - 1 / P[:, i]) / 0.3, 0, 1)  # visible AI labour-saving deters applicants
             fill = np.clip(FILL_2026 * np.exp(kappa_f * np.minimum(xbar, 0)) - fear * vis, 0.4, 0.99)

@@ -347,7 +347,9 @@ These tiers are this report's own construct, not a standard classification. The 
 autonomous radiology" [@ghuwalewala_2022], grades *how much* of a read AI performs (from assistance to fully autonomous
 reporting); our tiers instead group *which exams* could plausibly become autonomous first, ordered by current evidence (normal
 chest radiographs and screening exams first, §3.2). The ordering is an assumption, tested by the "tiers in any order" structure
-in §8.4. Each tier passes, in sequence:
+in §8.4. AI-first reading of screening mammograms also needs a change to the Mammography Quality Standards Act rules on interpreting
+physicians, not just an FDA device authorization, so the archived FDA prediction (§10.1) refers to chest radiographs only. Each
+tier passes, in sequence:
 
 $$T^{\text{ready}}_j = T^{\text{cap}}_j + L^{\text{validation}}_j + L^{\text{FDA}}_j + L^{\text{liability/payment}}_j,\qquad
 \alpha(t)=\sum_j w_j\,a^{\max}_j\,\text{logistic}\!\left(\tfrac{\tilde t_j(t)-h}{\text{width}}\right)$$
@@ -401,7 +403,8 @@ $$\text{positions}^{*}=\text{trend}\cdot e^{\gamma' x},\quad \gamma'=\gamma \tex
 
 $$\text{fill}=0.976\,e^{\kappa_f\min(x,0)}-\text{fear}\cdot\text{visibility}_{AI}$$
 
-Programs cut positions faster in a surplus than they add them in a shortage (GME caps), and each year grow with trend and then close 35% of the remaining gap to the market-adjusted target.
+Programs cut positions faster in a surplus than they add them in a shortage (GME caps). The trend accrues only while the market
+is not in surplus, so programs stop expanding during a glut; each year positions grow with that trend and then close 35% of the remaining gap to the market-adjusted target.
 
 {{anchor('uncertainty')}}
 ### 4.6 Uncertainty, correlation, regimes and the shortage feedback
@@ -450,7 +453,7 @@ flags.{{m('sensitivity')}}
 | Matched to the Neiman update: demographics-only demand, post-COVID attrition, flat positions, no AI: supply ÷ demand (consistency check) | median {{num(val['neiman_matched_ratio_p50']['2035'])}} (2035), {{num(val['neiman_matched_ratio_p50']['2045'])}} (2045), {{num(val['neiman_matched_ratio_p50']['2055'])}} (2055) | shortage "fairly static" if no action is taken [@rula_2026] |
 | Same, but with this model's per-person and complexity growth and blended attrition | median {{num(val['noai_flat_ratio_p50']['2035'])}} (2035), {{num(val['noai_flat_ratio_p50']['2045'])}} (2045), {{num(val['noai_flat_ratio_p50']['2055'])}} (2055) | shortage "fairly static" if no action is taken [@rula_2026] |
 | Mean career length | {{num(val['mean_career_years'], 1)}} years | 34.2–35.7 years |
-| Aggregate attrition, 2023 | {{pct(val['attrition_2023'], 1)}}/yr | 1.1% (2014) rising to 2.5% (2022) [@rula_2026] |
+| Aggregate attrition, 2023 | {{pct(val['attrition_2023'], 1)}}/yr at multiplier 1.0 (sampled median ≈3.0%; entrants per position, 1.20, inflate entries and exits alike) | 1.1% (2014) rising to 2.5% (2022) [@rula_2026] |
 | Demographic growth of imaging work, 2026→2055 | {{pct(val['demographic_growth_2026_2055_p50'], 1)}} | +16.9% to +26.9% for 2023→2055 with higher Census population [@christensen_util] |
 | Realized AI time savings by 2031 | median {{pct(val['realized_time_saved_2031_p50'], 1)}} (P90 {{pct(val['realized_time_saved_2031_p90'])}}) | Langlotz: 33% (14%–49%), an "upper end" potential if all applications are adopted [@langlotz_2025] |
 | Demographics × per-person imaging use, 2026→2055 | median {{pct(val['dem_util_growth_2026_2055'][1])}} (80%: {{pct(val['dem_util_growth_2026_2055'][0])}} to {{pct(val['dem_util_growth_2026_2055'][2])}}) | 2023→2055 across modalities: +16.9% to +26.9% (demographics only), −5.6% to +45.2% (recent trends to 2030) [@christensen_util]; +17% to +25% [@rula_2026] |
@@ -648,7 +651,7 @@ assumptions.
 * **AI capability speed** is the largest single driver, mostly through whether a world falls in the transformative branch.
 * **AI-first adoption** and **regulatory delay** matter mainly after 2040.
 * **New applications** and **scanner throughput** shift median demand by roughly ±5%–8%.
-* **Residency adjustment** barely matters before 2045. New entrants are about 3% of the workforce a year and training takes
+* **Residency adjustment** barely matters before 2045. New entrants are about {{pct(x['surplus_arith']['entry_rate_2035'], 1)}} of the workforce a year and training takes
   six years, so the pipeline corrects slowly.
 
 {{anchor('eta')}}
@@ -672,7 +675,7 @@ Excluding the transformative branch, per-capita utilization dominates:
 
 Pinning all {{ev_n('Subjective')}} subjective parameters at their medians narrows the 80% interval for 2045 demand by
 {{pct(ev_shrink('Subjective', 2045))}} and for the 2045 supply/demand ratio by {{pct(ev_shrink('Subjective', 2045, 'R'))}}.
-Pinning the anchored parameters narrows it by {{pct(ev_shrink('Anchored', 2045))}}. No sampled input is graded purely empirical
+Pinning the anchored parameters {{('narrows it by ' + pct(ev_shrink('Anchored', 2045))) if ev_shrink('Anchored', 2045) >= 0 else ('widens it by ' + pct(-ev_shrink('Anchored', 2045)))}}. No sampled input is graded purely empirical
 (the empirical anchors enter as fixed calibration targets without propagated uncertainty), so most of the spread (about two-thirds to three-quarters) comes from purely subjective inputs and nearly all of it
 involves judgment. The attribution is not additive.
 Pinning the anchored inputs barely sharpens the demand range (and widens the 2045 supply ÷ demand interval by
@@ -700,7 +703,8 @@ weights 30/55/12/3, in the spirit of forecasting panels that put far lower odds 
 leaders [@leap_2025; @karger_2023]. *AI-bullish:* 5/35/30/30, closer to AI-lab leaders and the AI 2027 scenario [@ai2027;
 @metr_2026]. *Imaging restraint:* per-capita imaging growth centered on 0.3%/yr (Medicare cost pressure, appropriateness
 rules) [@trustees_2026]. *Imaging growth:* centered on 1.3%/yr, nearer recent CT growth [@smith_bindman_2025; @rosenkrantz_2025].
-*Residency growth continues:* positions grow 1.9%/yr, the 2010–2025 pace [@malhotra_2026] (an exact reweight, since that
+*Residency growth slows:* positions grow only about 0.5%/yr as GME caps bind. *Residency growth continues:* positions grow
+1.9%/yr, the 2010–2025 pace [@malhotra_2026] (both exact reweights, since that
 input has no factor loadings). Two *corner* sets change both AI and imaging priors at once (AI-skeptical with imaging growth; AI-bullish with imaging restraint), because
 single changes understate how far the answer can move when assumptions err in the same direction.
 
@@ -716,6 +720,9 @@ re-simulated from the same draws:
 * *Stronger payer pushback:* twice the AI-enabled utilization management and scope shift to other clinicians.
 * *New uses not capped by scanners:* new AI-enabled uses (such as opportunistic screening of existing CTs) bypass the scanner and
   technologist capacity cap.
+* *Normal-X-ray AI capable since 2022:* tier-1 capability centered on 2022, matching the EU approval, instead of 2025. Only
+  {{pct(rb['structures']['tier1_2022']['kept_share'])}} of these futures survive the condition that no autonomous read is FDA-authorized
+  yet, and because regulatory lags load on the AI-speed factor (−0.3), the non-event also counts as evidence against fast AI.
 * *No shortage today:* supply ÷ demand in 2026 drawn from 0.95–1.03 instead of 0.85–0.99, since the main prior rules out a
   balanced market today.
 * *Transformative boost waits for regulation:* in the main model, the transformative regime raises assistive time-saving
@@ -741,7 +748,7 @@ AI-first reading adds most of the rest after 2045.
 
 {{robust_md()}}
 
-The qualitative conclusions survive every variant: oversupply risk is lower in 2035 than later and rises over a career,
+The qualitative conclusions survive every variant: oversupply risk is lower in 2035 than in 2045–2055,
 and regulation and adoption lags matter. The quantitative ones do not: the 2045 oversupply probability spans
 {{pct(rb['band']['2045']['single_lo'])}}–{{pct(rb['band']['2045']['single_hi'])}} across single changes and
 {{pct(rb['band']['2045']['lo'])}}–{{pct(rb['band']['2045']['hi'])}} including the corners, driven mostly by the AI and imaging-growth
@@ -841,7 +848,8 @@ In order of likelihood:
   doing so would strengthen the baseline. A milder starting shortage (0.96) raises the 2045 oversupply probability from about
   {{pct(sm[2045]['p_oversupply'])}} to {{pct(tor["Today's shortage (2026 S/D)"]['pOver2045_high'])}}.
 * **Tier-1 timing and conditioning.** Tier-1 capability is centered on 2025, later than the European evidence (CE marking 2022)
-  implies; with capability in 2022 the model's own lags would make FDA authorization before late 2026 about as likely as not,
+  implies; with capability in 2022, the model's own lags would have produced FDA authorization before late 2026 in most futures
+  (only {{pct(rb['structures']['tier1_2022']['kept_share'])}} survive),
   which has not happened, suggesting the validation and FDA lags may be short and thin-tailed: the model cannot represent an
   authorization pathway that stays closed for many years, so the archived FDA and payment predictions (§10.1) partly test those
   tails. All results drop the {{pct(1 - n_sims / n_drawn, 1)}} of futures already contradicted by events (an FDA-authorized
@@ -867,7 +875,9 @@ outside forecasters with a prespecified procedure; (4) score the archived predic
 <a name="sec-tracking"></a>
 ### 10.1 Prospective tracking
 
-Each release archives near-term, checkable predictions in `outputs/predictions/` so the forecast can be scored later.
+Each release archives near-term, checkable predictions in `outputs/predictions/` so the forecast can be scored later. The
+tables below are rendered from the archive file for release {{_fj['extra']['predictions_release']}}, and a unit test fails if the
+model changes without a new release. Drafts labelled v1.4 were revised before publication and are kept for transparency.
 Like every result in this report, they are conditioned on what is already known
 ({{x['predictions_meta']['conditioned_on']}}), state how they will be resolved, and will be scored by {{x['predictions_meta']['scoring']}}. This release's are:
 

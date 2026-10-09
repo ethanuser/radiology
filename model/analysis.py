@@ -325,11 +325,11 @@ def extra_metrics(s: dict, o: dict) -> dict:
         ("All simulated futures", np.ones(len(D), bool)),
         ("AI saves >15% of radiologist time by 2031", P[:, yi(2031)] > 1 / (1 - 0.15)),
         ("AI saves <5% of radiologist time by 2031", P[:, yi(2031)] < 1 / (1 - 0.05)),
-        (">5% of interpretive work is AI-first/autonomous by 2033", A[:, yi(2033)] > 0.05),
-        ("Autonomous reads paid for through tier 2 (all radiographs & screening) before 2035", o["ready"][:, 1] < 2035),
-        ("Autonomous reads not paid for through tier 2 until after 2045", o["ready"][:, 1] > 2045),
-        (f"Per-capita imaging growth in the top third (≥{q_u[1]:.1f}%/yr in 2026)", s["util_g0"] > q_u[1]),
-        (f"Per-capita imaging growth in the bottom third (≤{q_u[0]:.1f}%/yr in 2026)", s["util_g0"] < q_u[0]),
+        ("AI-first reading exceeds 5% of interpretive work by 2033", A[:, yi(2033)] > 0.05),
+        ("AI-first reads paid for through tier 2 (all radiographs & screening) before 2035", o["ready"][:, 1] < 2035),
+        ("AI-first reads not paid for through tier 2 until after 2045", o["ready"][:, 1] > 2045),
+        (f"Per-person imaging growth in the top third (≥{q_u[1]:.1f}%/yr in 2026)", s["util_g0"] > q_u[1]),
+        (f"Per-person imaging growth in the bottom third (≤{q_u[0]:.1f}%/yr in 2026)", s["util_g0"] < q_u[0]),
         ("Many new AI-enabled imaging uses (top third)†", s["new_max"] > q_n[1]),
         ("Few new AI-enabled imaging uses (bottom third)†", s["new_max"] < q_n[0]),
         ("Transformative-AI regime", o["regime"] == 3),
@@ -402,7 +402,7 @@ def extra_metrics(s: dict, o: dict) -> dict:
     pos30 = posk[:, yi(2030)]
     x["predictions"] = [
         {"id": "fda_tier1_2029", "check": "By 31 Dec 2029",
-         "event": "FDA authorizes a device that finalizes some normal chest radiographs or negative screening exams without radiologist review",
+         "event": "FDA authorizes a device that finalizes some normal chest radiographs without radiologist review",
          "resolution": "FDA device database (510(k)/De Novo/PMA) decision summary states autonomous reporting without radiologist review",
          "p": float((stk[:, 0, 2] < 2030).mean())},
         {"id": "paid_tier1_2032", "check": "By 31 Dec 2032",
@@ -411,12 +411,12 @@ def extra_metrics(s: dict, o: dict) -> dict:
          "p": float((stk[:, 0, 3] < 2033).mean())},
         {"id": "positions_2030", "check": "2030 Match",
          "event": "Diagnostic-radiology first-year residency positions offered (2026: 1,241)",
-         "resolution": "NRMP Main Residency Match results, diagnostic radiology positions offered (same definition as the 1,241 in 2026)",
+         "resolution": "NRMP Main Residency Match results: diagnostic radiology positions offered, the same series that reported 1,241 in 2026",
          "p50": float(np.median(pos30)), "p10": float(np.percentile(pos30, 10)), "p90": float(np.percentile(pos30, 90)),
          "q": {str(q): float(np.percentile(pos30, q)) for q in (5, 25, 50, 75, 95)}},
     ]
     x["predictions_meta"] = {"conditioned_on": "no FDA-authorized autonomous radiology read before October 2026",
-                             "share_of_draws_kept": float(known.mean()),
+                             "share_of_draws_kept": float(len(o["R"]) / o.get("n_drawn", len(o["R"]))),
                              "scoring": "Brier score for yes/no events; for positions, whether the outcome falls in the 80% interval and its percentile rank"}
     x["baseline"] = {str(y): {f"p{q}": np.percentile(o["B"][:, yi(y)], q) for q in (10, 50, 90)}
                      for y in (2030, 2035, 2045, 2055, 2066)}

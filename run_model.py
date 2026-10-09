@@ -17,7 +17,7 @@ from model import analysis, backtest, export_web, plots, robustness
 from model.params import PARAMS, evidence_counts
 
 ROOT = Path(__file__).parent
-RELEASE = "2026-10-v1.4"  # bump when publishing a new forecast; archived predictions are kept for later scoring
+RELEASE = "2026-10-v1.5"  # bump when publishing a new forecast; archived predictions are kept for later scoring
 
 
 def _fmt_num(v: float) -> str:
@@ -91,6 +91,10 @@ def main():
         for r in eta_ntai.sort_values("Demand 2045", ascending=False).head(15).to_dict("records")]
     fj["evidence_counts"] = evidence_counts()
     fj["extra"] = json.loads(json.dumps(extra, default=float))
+    # show the archived predictions (the record that will be scored), not a fresh recomputation
+    archived = json.loads(arch.read_text())
+    fj["extra"]["predictions"] = archived["predictions"]
+    fj["extra"]["predictions_release"] = archived["release"]
     fj["backtest"] = json.loads(json.dumps(bt, default=float))
     fj["robust"] = json.loads(json.dumps(rb, default=lambda v: v.tolist() if hasattr(v, "tolist") else float(v)))
     export_web.write(ROOT / "docs" / "data", fj, export_web.samples_json(s, o))
