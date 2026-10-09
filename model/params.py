@@ -150,20 +150,24 @@ PARAMS: list[Param] = [
       "uniform", dict(lo=0.4, hi=0.9), "ratio", "A", ["cbo_2026"],
       "CBO projects population growth slowing to zero by 2056; aging continues to add imaging per capita."),
     P("util_g0", "demand", "Per-capita (age/sex-adjusted) utilization growth, 2026",
-      "normal", dict(mu=0.6, sd=0.7, lo=-1.5, hi=3.5), "%/yr", "S",
-      ["christensen_util", "rula_2026", "smith_bindman_2019", "rosenkrantz_2025", "smith_bindman_2025"],
+      "normal", dict(mu=1.2, sd=1.05, lo=-2.0, hi=4.5), "%/yr", "S",
+      ["christensen_util", "rula_2026", "smith_bindman_2019", "rosenkrantz_2025", "smith_bindman_2025", "zamani_2026"],
       "National 2018-22 claims (Christensen et al): projected total utilization in 2055 vs 2023 is +16.9% to +26.9% by modality "
       "from population growth and aging alone, and -5.6% to +45.2% if each modality's recent per-person trend continues to 2030 "
       "(radiography and nuclear medicine falling, CT and MRI rising). The Neiman Institute's 2026 update projects +17% (MRI) to "
       "+25% (CT) by 2055. Older health-system data show faster CT growth (3.7-5.2%/yr, 2013-16) and ED CT per Medicare "
       "beneficiary nearly doubled 2013-2023. Each end of the trend range is a single modality (CT up, nuclear medicine down), "
-      "so a work-weighted claims-based figure is lower than CT's. We centre per-person growth at 0.6%/yr, decaying toward "
-      "~0.2%/yr: above the claims-based trends because 2018-22 includes the COVID dip and we let growth continue past 2030, "
-      "and below CT's own trend. This is a judgment; the 'imaging restraint' and 'imaging growth' prior sets bracket it.",
+      "so a work-weighted claims-based figure is lower than CT's. Version 1.5 centred per-person growth at 0.6%/yr (σ 0.7). The "
+      "history test (model/history.py) needs radiologist work per person to have grown about 2.2%/yr in 2022-2026 (80%: "
+      "1.1-2.9) to explain today's shortage, about 1.8%/yr after removing complexity growth. The centre, 1.2%/yr, weights the "
+      "two equally by precision; the spread is 1.5 times v1.5's because that width forecast best from past start years "
+      "(trained on 1995-2013, also better on 2015-2025). Growth decays toward ~0.2%/yr. The 'imaging restraint' (v1.5's "
+      "prior) and 'imaging growth' (the history estimate) prior sets bracket it.",
       {"z_dem": 0.7}),
     P("util_ginf", "demand", "Long-run per-capita utilization growth (asymptote)",
-      "normal", dict(mu=0.2, sd=0.5, lo=-1.5, hi=2.5), "%/yr", "S", ["smith_bindman_2019", "christensen_util"],
-      "Growth in CT/MRI per capita has decelerated each decade since 2000; we assume further deceleration but allow either sign.",
+      "normal", dict(mu=0.2, sd=0.75, lo=-2.0, hi=3.0), "%/yr", "S", ["smith_bindman_2019", "christensen_util"],
+      "Growth in CT/MRI per capita has decelerated each decade since 2000; we assume further deceleration but allow either sign. "
+      "Spread 1.5 times v1.5's, as for the current rate.",
       {"z_dem": 0.7}),
     P("util_half", "demand", "Half-life of convergence from current to long-run utilization growth",
       "uniform", dict(lo=6, hi=20), "years", "S"),
@@ -177,12 +181,14 @@ PARAMS: list[Param] = [
     P("alt_mid", "demand", "Midpoint year of alternative-diagnostic substitution",
       "uniform", dict(lo=2035, hi=2055), "year", "S"),
     P("ratio0", "demand", "Supply ÷ demand for radiologist FTEs in 2026 (current shortage)",
-      "triangular", dict(lo=0.85, mode=0.93, hi=0.99), "ratio", "S",
-      ["rula_2026", "zamani_2026", "parikh_2026", "doximity_2026", "nrmp_2026"],
+      "triangular", dict(lo=0.88, mode=0.945, hi=0.99), "ratio", "S",
+      ["rula_2026", "zamani_2026", "parikh_2026", "doximity_2026", "nrmp_2026", "dibble_2025"],
       "No measured national figure exists; this is a judgment from indirect signals. HRSA projects radiology at ≈90% adequacy "
       "in 2038 (a projection, not today's gap), and the Neiman Institute calls the shortage 'fairly static'. Compensation rose "
       "6.6% in a year and DR positions keep expanding. Average exams read per radiologist-day were flat 2018-2024 (+0.6%) but the busiest quartile read 31% "
-      "more, and practice turnover rose from 5.3% to 8.5% (2013-2022): a real but uneven, moderate shortage."),
+      "more, and practice turnover rose from 5.3% to 8.5% (2013-2022): a real but uneven, moderate shortage. The history "
+      "reconstruction (model/history.py), which fits the documented job market since 1995, puts 2026 at 0.95 (80%: 0.92-0.98); "
+      "v1.5's judgment was Triangular(0.85, 0.93, 0.99). This prior combines the two."),
 
     # ======================================= 2. AI CAPABILITY & ASSISTIVE PRODUCTIVITY =========================
     P("ai_u", "ai_capability", "AI progress speed (quantile → timeline multiplier M)",
@@ -379,6 +385,20 @@ PARAMS: list[Param] = [
       "survey, radiology's first-choice share fell from 21.4% to 17.7% when students considered AI."),
     P("fte_drift", "supply", "Drift in FTE per radiologist (part-time, generational preferences)",
       "normal", dict(mu=-0.10, sd=0.15), "%/yr", "S"),
+
+    # ======================================= 6. MARKET ADJUSTMENT ==============================================
+    P("adj_speed", "market", "Market adjustment speed: share of the remaining shortage or surplus closed each year",
+      "uniform", dict(lo=0.2, hi=0.55), "per year", "A", ["sunshine_2007", "levin_2011", "bhargavan_2009"],
+      "Fitted in the history test on the documented job market of 1995-2013 (80% range 0.19-0.55); with it, the held-out "
+      "2015-2025 episodes are predicted far better than without. The radiology job market has repeatedly self-corrected "
+      "within a few years, faster than the training pipeline allows: work moved to non-radiologists while radiologists were "
+      "scarce (their imaging grew twice as fast in 1998-2005), and radiologists' output per FTE rose 70% in 1992-2007 as PACS "
+      "and teleradiology spread. The reverse flows during surpluses are assumed, not observed directly."),
+    P("adj_max", "market", "Largest cumulative market adjustment (share of radiologist work that can shift)",
+      "uniform", dict(lo=0.08, hi=0.28), "share", "A", ["levin_2011"],
+      "80% range fitted in the history test (1995-2013). Beyond this limit, imbalances are not absorbed: AI-driven changes "
+      "larger than the historical swings still show up as shortage or surplus. Applying the historical limit to much larger "
+      "AI-driven shifts is an extrapolation."),
 ]
 
 PARAM_INDEX = {p.name: p for p in PARAMS}
@@ -438,6 +458,7 @@ SHORT = {
     "nt_max": "New radiologist tasks", "attr_mult": "Attrition rate", "slot_g": "Residency slot growth",
     "resid_gamma": "Residency responsiveness", "fill_kappa": "Applicant flight if oversupplied",
     "resid_lag": "Pipeline reaction lag", "fear": "AI deterrence of applicants", "fte_drift": "FTE-per-radiologist drift",
+    "adj_speed": "Market adjustment speed", "adj_max": "Market adjustment limit",
     "s_interp": "Task share: interpretation", "s_draft": "Task share: drafting", "s_consult": "Task share: consultation",
     "s_admin": "Task share: administration", "s_proc": "Task share: procedures",
 }

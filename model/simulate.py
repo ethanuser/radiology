@@ -100,6 +100,7 @@ STRUCTURES = {
     "payer_pushback": "Payers' AI blocks twice as many scans; twice as many reads shift to other doctors",
     "uncapped_new_uses": "New uses such as screening existing scans are not limited by scanner capacity",
     "tai_gated": "Transformative AI's extra time savings must also wait for regulation and adoption",
+    "no_adjustment": "No market adjustment: shortages and surpluses persist until the training pipeline responds (v1.5)",
     # counterfactuals (not alternatives): how much of the risk comes from AI at all
     "assistive_only": "AI helps radiologists read but never reads first",
     "no_ai": "Radiology AI frozen at its 2026 level (other diagnostics such as AI-ECG still displace some imaging)",
@@ -316,15 +317,17 @@ def _simulate_once(s: dict, press_cum: np.ndarray, structure: str = "base") -> d
     out["composition"]["newtasks"] = 1 - read_share
 
     # ===================================================================== 6. supply with endogenous residency response
-    sup = simulate_supply(s, D, out["P"])
+    sup = simulate_supply(s, D, out["P"], structure)
     out.update(sup)
+    out["D_struct"] = D  # before the market adjustment; the Jevons accounting D_struct = B - L + I refers to this
+    out["D"] = D * np.exp(sup["adj"])  # demand for radiologists after work shifts to or from them with the market
     out["regime"] = regime
     out["M"] = np.asarray(s["ai_u"])
     out["ready"] = np.hstack(ready)
     return out
 
 
-def simulate_supply(s: dict, D: np.ndarray, P: np.ndarray) -> dict:
+def simulate_supply(s: dict, D: np.ndarray, P: np.ndarray, structure: str = "base") -> dict:
     n = D.shape[0]
     ratio0 = np.asarray(s["ratio0"])
     gamma = np.asarray(s["resid_gamma"])
@@ -350,6 +353,11 @@ def simulate_supply(s: dict, D: np.ndarray, P: np.ndarray) -> dict:
     lnratio = np.zeros((n, T))  # ln(D_abs / S_fte), + = shortage
     D_abs = None
     rows = np.arange(n)
+    adjusting = "adj_speed" in s and structure != "no_adjustment"
+    adj_speed = np.asarray(s["adj_speed"]) if adjusting else None
+    adj_max = np.asarray(s["adj_max"]) if adjusting else None
+    adj = np.zeros(n)
+    adj_t = np.zeros((n, T))
 
     for year in range(SUPPLY_START + 1, 2067):
         exits = coh * hz
@@ -366,7 +374,14 @@ def simulate_supply(s: dict, D: np.ndarray, P: np.ndarray) -> dict:
         entrants_t[:, i] = ent
         if i == 0:
             D_abs = D * (S_fte[:, :1] / ratio0[:, None])
+            D_struct_abs = D_abs.copy()
+        elif adj_speed is not None:
+            # market adjustment: each year a share of the remaining imbalance is closed by work moving between radiologists
+            # and others and by the pace of labour-saving change, up to a cumulative limit (history test, model/history.py)
+            adj = np.clip(adj - adj_speed * lnratio[:, i - 1], -adj_max, adj_max)
+            D_abs[:, i] = D_struct_abs[:, i] * np.exp(adj)
         lnratio[:, i] = np.log(D_abs[:, i] / S_fte[:, i])
+        adj_t[:, i] = adj
         surv_fte = surv.sum(axis=1) * fte
         openings[:, i] = np.maximum(0.0, D_abs[:, i] - surv_fte) / np.maximum(ent * fte, 1.0)
 
@@ -395,4 +410,4 @@ def simulate_supply(s: dict, D: np.ndarray, P: np.ndarray) -> dict:
     S_idx = S_fte / S_fte[:, :1]
     R = S_fte / D_abs
     return dict(S=S_idx, R=R, head=head, entrants=entrants_t, openings=openings, positions=pos_t,
-                fill=fill_t, D_abs=D_abs, S_fte=S_fte)
+                fill=fill_t, D_abs=D_abs, S_fte=S_fte, adj=adj_t)

@@ -1,7 +1,6 @@
 """Hindcast: run the method from 2016 and score it against what happened by 2025.
 
-Protocol (fixed before looking at outcomes; one protocol for the three occupations, while radiology has a hand-set
-exposure, its own supply side and an 8-year regulatory lag; capability dates were judged in 2026):
+Protocol (fixed before looking at outcomes, one protocol for the three occupations; capability dates were judged in 2026):
   * Baseline (non-AI) growth = an equal-weight combination of two forecasts available in 2016:
       - the BLS 2016-26 Employment Projection (interpolated geometrically to 2025), and
       - the prior trend (2006/2008 -> 2016 compound growth) extended 9 years.
@@ -11,13 +10,12 @@ exposure, its own supply side and an 8-year regulatory lag; capability dates wer
     a capability S-curve whose timing uses the SAME AI-regime mixture as the main model, an adoption lag
     (longer where regulation applies), and a demand rebound (Jevons) term set by the occupation's demand
     elasticity class.
-  * Radiology additionally gets a supply side (training pipeline is predetermined) and a 2016 starting balance.
+Radiology itself is tested from several start years in model/history.py.
 Nothing below was tuned to the 2025 outcomes; misses are reported as they fall.
 """
 from __future__ import annotations
 
 import numpy as np
-from scipy import stats
 
 from .params import ai_multiplier, ai_regime
 
@@ -88,54 +86,13 @@ def hindcast_occupation(key: str, n: int = 20000, seed: int = 2016) -> dict:
                 regime=ai_regime(u))
 
 
-def hindcast_radiology(n: int = 20000, seed: int = 2017, g_mu: float = 0.020, lag_med: float = 8.0,
-                       r_mode: float = 1.025, ai: bool = True) -> dict:
-    """Radiology as of 2016: will there be a shortage (supply < demand) in 2025?
-    The keyword arguments exist for sensitivity checks; the defaults are the protocol values."""
-    rng = np.random.default_rng(seed)
-    u = rng.uniform(size=n)
-    M = ai_multiplier(u)
-    # demand without AI: demographics + per-capita use + complexity, as known in 2016
-    g = rng.normal(g_mu, 0.010, n)
-    base = np.exp(g * H)
-    # AI: 2016 priors were more aggressive about imaging AI than today's evidence (deep-learning optimism)
-    exposure = rng.beta(*_beta_mean(0.35), size=n)
-    cap_mid = BASE + (2024.0 - BASE) * M
-    cap = _logistic(END, cap_mid, 3.0)
-    reg_lag = rng.lognormal(np.log(lag_med), 0.45, n)  # validation + FDA + payment/liability for labour substitution
-    adopt = _logistic(END - cap_mid, reg_lag, 2.0)
-    rebound = rng.uniform(0.2, 0.6, n)
-    ai_effect = np.maximum(0.05, 1 - exposure * cap * adopt * (1 - rebound)) if ai else np.ones(n)
-    demand = base * ai_effect
-    # supply: training pipeline largely fixed in 2016; starting balance near or above 1 (2015 glut)
-    supply = np.exp(rng.normal(0.010, 0.003, n) * H)
-    lo, hi = r_mode - 0.075, r_mode + 0.075
-    r2016 = stats.triang(0.5, loc=lo, scale=hi - lo).rvs(n, random_state=rng)
-    r2025 = r2016 * supply / demand
-    return dict(p_shortage=float((r2025 < 1).mean()), p_oversupply=float((r2025 > 1.10).mean()),
-                ai_effect_p50=float(np.median(ai_effect)),
-                demand_q={f"p{p}": float(v) for p, v in zip((10, 50, 90), np.percentile(demand, [10, 50, 90]))},
-                ratio_q={f"p{p}": float(v) for p, v in zip((10, 50, 90), np.percentile(r2025, [10, 50, 90]))},
-                observed="shortage", hinton_p_shortage=0.05)
-
-
 def run_backtest() -> dict:
     occ = [hindcast_occupation(k) for k in OCCUPATIONS]
-    rad = hindcast_radiology()
-    # how much the radiology result depends on protocol choices (each changed alone)
-    rad["sensitivity"] = {
-        "no_ai_layer": hindcast_radiology(ai=False)["p_shortage"],
-        "demand_1_5pct": hindcast_radiology(g_mu=0.015)["p_shortage"],
-        "lag_3yr": hindcast_radiology(lag_med=3.0)["p_shortage"],
-        "start_ratio_1_10": hindcast_radiology(r_mode=1.10)["p_shortage"],
-    }
-    brier = {"model": (1 - rad["p_shortage"]) ** 2, "hinton": (1 - rad["hinton_p_shortage"]) ** 2,
-             "coin_flip": 0.25}
     mae = {m: float(np.mean([abs(r[f"err_{m}"]) for r in occ])) for m in ("model", "trend", "bls", "combo")}
     for r in occ:
         r.pop("regime")
     # Frey & Osborne as a ranking: does higher automation probability go with weaker employment growth?
     fo = [r["fo_prob"] for r in occ] + [0.0042]
     growth = [r["actual"] for r in occ] + [None]
-    return dict(base=BASE, end=END, occupations=occ, radiology=rad, brier=brier, mae_log=mae,
+    return dict(base=BASE, end=END, occupations=occ, mae_log=mae,
                 coverage80=float(np.mean([r["in80"] for r in occ])), fo_rank=list(zip(fo, growth)))

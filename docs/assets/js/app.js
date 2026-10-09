@@ -25,12 +25,15 @@
   F.ratio0 = F.params.find((p) => p.name === "ratio0");
   F.util = F.params.find((p) => p.name === "util_g0");
   F.slot = F.params.find((p) => p.name === "slot_g");
-  F.bt_lo = d3.min(Object.values(F.backtest.radiology.sensitivity).concat([F.backtest.radiology.p_shortage]));
-  F.bt_hi = d3.max(Object.values(F.backtest.radiology.sensitivity).concat([F.backtest.radiology.p_shortage]));
+  F.adj_speed = F.params.find((p) => p.name === "adj_speed");
+  F.adj_max = F.params.find((p) => p.name === "adj_max");
+  F.hour_gain_2045 = 1 / (1 - F.extra.time_saved["2045"].p50) - 1; // earnings per hour at fixed fees per exam
+  const H = F.history;
+  H.episode = Object.fromEntries(H.episodes.map((e) => [e.key, e]));
   // how much narrower the 2045 demand range gets if the judgment-call inputs were known exactly
   F.subj_shrink = (F.evidence_attribution.find((r) => r.metric === "D" && r.year === 2045 && r.grade === "Subjective") || {}).shrink;
   const BT = F.backtest;
-  const ROOT = { F, SUM, JEV, REG, X, VAL: F.validation, BT };
+  const ROOT = { F, SUM, JEV, REG, X, VAL: F.validation, BT, H, LAB: X.labor };
   const FMT = { pct: fmt.pct, pct1: fmt.pct1, x2: fmt.x2, chg: fmt.chg, mult: fmt.mult, int: (v) => d3.format(",.0f")(v),
     x1: (v) => v.toFixed(1), x0: (v) => v.toFixed(0), r100: (v) => d3.format(",.0f")(Math.round(v / 100) * 100), gr: (v) => fmt.pct(v - 1), pp: (v) => (v * 100).toFixed(1) + " percentage points", pts: (v) => Math.round(v * 100) + " percentage points",
     k: (v) => d3.format(",")(Math.round(v / 1000) * 1000),
@@ -362,7 +365,8 @@
       (2023–2055) with flat residency positions${citeHTML("christensen_supply")}. Residency positions (1,241 in 2026${citeHTML("nrmp_2026")})
       react to the market with a lag. New residents become attendings about six years after matching. <a href="#m-supply">Method →</a></p>`,
     rat: () => `<h4>Supply ÷ demand</h4><p>Below 1 means a shortage (today ≈ ${fmt.x2(S.R.p50[0])}). Above 1.10 is <a href="#term-oversupply">meaningful
-      oversupply</a>. The ratio feeds back into residency positions and, when short, speeds up AI adoption.</p>`,
+      oversupply</a>. The ratio feeds back into residency positions, into the work that flows to radiologists (the <a href="#term-market">market adjustment</a>,
+      fitted to 1995–2013) and, when short, speeds up AI adoption.</p>`,
     ai: () => `<h4>AI-progress factor</h4><p>One shared factor moves many inputs together: faster AI means earlier capability, higher time-saving
       ceilings, more new applications and faster scanners. It picks one of four <a href="#term-regimes">regimes</a>: stall ${fmt.pct(F.regimes.weights[0])}, trend ${fmt.pct(F.regimes.weights[1])},
       fast ${fmt.pct(F.regimes.weights[2])}, transformative ${fmt.pct(F.regimes.weights[3])} of futures.</p>`,
@@ -459,6 +463,15 @@
         <td class="num">${fmt.x2(r.combo)}</td><td class="num">${fmt.x2(r.bls)}</td><td class="num">${fmt.x2(r.trend)}</td><td class="num">${r.in80 ? "yes" : "no"}</td></tr>`).join("");
       t.innerHTML = `<thead><tr><th>Occupation (2025 ÷ 2016)</th><th class="num">Actual</th><th class="num">This method: median (80% range)</th><th class="num">BLS + trend, no AI layer</th><th class="num">BLS</th><th class="num">Trend</th><th class="num">In 80% range?</th></tr></thead><tbody>${rows}</tbody>`;
     }
+  }
+  function historyChart() {
+    if (has("#historyChart")) Charts.history("#historyChart", H);
+  }
+  function payChart() {
+    if (!has("#payChart")) return;
+    Charts.fan("#payChart", { years, height: 300, yDomain: [0, 2], mark: youMark(), endLabels: false, yLabel: "Pay ÷ other physicians' pay (2026 = 1)",
+      series: [{ label: "Radiologist pay relative to other physicians", color: col().d, q: X.labor.pay_q }], refs: [{ y: 1, color: css("--ink-2") }],
+      showLegend: true });
   }
   function forecastCharts() {
     const c = col();
@@ -571,7 +584,7 @@
     const row = (v, kind, key) => `<tr id="robust-${key}"><td>${v.label}${kind ? `<div class="muted small">${kind}</div>` : ""}</td>` +
       ys.map((y) => `<td class="num">${fmt.pct(v[y].p_over)}</td>`).join("") + "</tr>";
     const pri = Object.entries(R.priors).map(([k, v]) => row(v, k === "main" ? "main model" : v.note, k)).join("");
-    const SHOW = ["no_shortage_today", "tier1_2022"];
+    const SHOW = ["no_adjustment", "no_shortage_today", "tier1_2022"];
     const designs = Object.entries(R.structures).filter(([k, v]) => k !== "base" && !v.counterfactual);
     const hidden = designs.filter(([k]) => !SHOW.includes(k));
     const st = designs.filter(([k]) => SHOW.includes(k)).map(([k, v]) => row(v, v.detail, k)).join("") +
@@ -625,7 +638,7 @@
 
   // ------------------------------------------------------------------ parameter table
   const GROUPS = { demand: "Baseline demand", ai_capability: "AI capability", ai_tasks: "AI productivity", autonomy: "Autonomy tiers",
-    regulation: "Regulation & adoption", jevons: "Jevons / rebound", supply: "Supply" };
+    regulation: "Regulation & adoption", jevons: "Jevons / rebound", supply: "Supply", market: "Market adjustment" };
   function paramTable() {
     const sel = $("#groupFilter");
     if (!sel) return;
@@ -757,7 +770,7 @@
   function renderAll() {
     stageUI();
     heroChart(); dashChart(); careerTrack(); setYear(curYear, curTag);
-    diagram(); regimeChart(); backtestChart(); forecastCharts(); headlineTable(); aiCharts(); jevonsCharts();
+    diagram(); regimeChart(); backtestChart(); historyChart(); payChart(); forecastCharts(); headlineTable(); aiCharts(); jevonsCharts();
     tornadoChart(); etaChart(); evidenceChart(); compChart(); careerTable(); horizon(); explorerRender(); robustTable(); predictionTable();
   }
   signposts(); paramTable();

@@ -374,5 +374,43 @@ const Charts = (() => {
       ...Object.values(sym).map(([, c, l]) => ({ label: l, color: c, box: true }))]);
   }
 
-  return { fan, lines, stacked, tornado, hbars, pipeline, backtest, fmt, css, tipShow, tipHide };
+  // ---------------------------------------------------------------- history test: reconstruction vs documented episodes
+  function history(el, H, { xLabel = "Year", yLabel = "Supply ÷ demand (below 1 = shortage)" } = {}) {
+    const years = H.years;
+    const F = frame(el, { height: 340, margin: { t: 16, r: 16, b: 28, l: 44 }, xLabel, yLabel });
+    if (!F) return;
+    const x = d3.scaleLinear().domain([years[0] - 0.5, years[years.length - 1] + 0.5]).range([0, F.w]);
+    const y = d3.scaleLinear().domain([0.84, 1.22]).range([F.h, 0]);
+    axes(F, x, y, { yFmt: d3.format(".2f") });
+    F.g.append("line").attr("x1", 0).attr("x2", F.w).attr("y1", y(1)).attr("y2", y(1)).attr("stroke", css("--ink-2")).attr("stroke-width", 1);
+    const cut = x(2014);
+    F.g.append("line").attr("x1", cut).attr("x2", cut).attr("y1", 0).attr("y2", F.h).attr("stroke", css("--muted")).attr("stroke-dasharray", "2 3");
+    F.g.append("text").attr("x", cut - 4).attr("y", 10).attr("text-anchor", "end").attr("class", "lbl-ink2 halo").text("fitted ←");
+    F.g.append("text").attr("x", cut + 4).attr("y", 10).attr("class", "lbl-ink2 halo").text("→ held out");
+    const band = (b, color, op) => {
+      const area = d3.area().x((d, i) => x(years[i])).y0((d, i) => y(b.p10[i])).y1((d, i) => y(b.p90[i])).curve(d3.curveMonotoneX);
+      F.g.append("path").attr("d", area(years)).attr("fill", color).attr("opacity", op);
+      const line = d3.line().x((d, i) => x(years[i])).y((d) => y(d)).curve(d3.curveMonotoneX);
+      F.g.append("path").attr("d", line(b.p50)).attr("fill", "none").attr("stroke", color).attr("stroke-width", 2.2);
+    };
+    band(H.bands_train_noadj, css("--muted"), 0.16);
+    band(H.bands_train, css("--s1"), 0.2);
+    H.episodes.forEach((e) => {
+      const [a, b] = e.years, [lo, hi] = e.band, held = e.split !== "train";
+      const c = held ? css("--s2") : css("--ink");
+      F.g.append("rect").attr("x", x(a - 0.45)).attr("width", x(b + 0.45) - x(a - 0.45)).attr("y", y(Math.min(hi, 1.22))).attr("height", y(lo) - y(Math.min(hi, 1.22)))
+        .attr("fill", "transparent").attr("stroke", c).attr("stroke-width", 1.8).attr("stroke-dasharray", held ? "5 3" : null)
+        .on("pointermove", (ev) => tipShow(ev, `${a === b ? a : a + "–" + b}: ${e.state}`, [
+          { label: held ? "held out (not used to fit)" : "used to fit", value: `${d3.format(".2f")(lo)}–${d3.format(".2f")(hi)}` },
+          { color: css("--muted"), label: "probability, accounting only", value: fmt.pct(e.p_train_noadj) },
+          { color: css("--s1"), label: "probability, with market adjustment", value: fmt.pct(e.p_train) }]))
+        .on("pointerleave", tipHide);
+    });
+    legend(F, [{ label: "With market adjustment (median, 80% range)", color: css("--s1"), box: true, opacity: 0.6 },
+      { label: "Accounting only", color: css("--muted"), box: true, opacity: 0.6 },
+      { label: "Documented episode used to fit", color: css("--ink"), box: true },
+      { label: "Held-out episode", color: css("--s2"), box: true }]);
+  }
+
+  return { fan, lines, stacked, tornado, hbars, pipeline, backtest, history, fmt, css, tipShow, tipHide };
 })();

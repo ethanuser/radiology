@@ -33,6 +33,10 @@ NEEDLES = {
     "rosenkrantz_2016": "3080", "allen_2021": "33.5", "yu_2024": "heterogeneous", "reeder_2022": "radiology",
     "liu_2026": "1 of the 2", "liu_burnout_2024": "burnout", "smith_bindman_2025": "93 million",
     "lang_2023": "44·", "abramoff_2018": "autonomous", "adler_milstein_2017": "adoption",
+    "forman_2000": "one eighth", "covey_2000": "75%", "meghea_2005": "0.1%", "sunshine_2007": "0.72",
+    "bhargavan_2009": "70.3%", "levin_2011": "3.4%", "levin_2017": "2008 and 2009", "hong_2020": "declining trends",
+    "bluth_2012": "1,241", "bluth_2014": "1,069", "bluth_2015": "1,131", "bluth_2016": "16.2%", "bender_2019": "1,434",
+    "pfeifer_2017": "2012 through 2015",
 }
 MANUAL = {  # sources outside PubMed: page + a short anchor phrase verified on the page
     "langlotz_2025": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12755265/#:~:text=The%20model%20projects%20a%2033%25,of%2014%25%20to%2049%25",

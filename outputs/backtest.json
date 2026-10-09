@@ -96,34 +96,6 @@
       "note": "BLS projected +14% for 2006-16 (actual -41%) and -3% for 2016-26."
     }
   ],
-  "radiology": {
-    "p_shortage": 0.67385,
-    "p_oversupply": 0.09065,
-    "ai_effect_p50": 0.9967664332903092,
-    "demand_q": {
-      "p10": 1.0354430340738878,
-      "p50": 1.1769498286161202,
-      "p90": 1.3278223585297504
-    },
-    "ratio_q": {
-      "p10": 0.836060483269691,
-      "p50": 0.9532378819521408,
-      "p90": 1.0920094309021011
-    },
-    "observed": "shortage",
-    "hinton_p_shortage": 0.05,
-    "sensitivity": {
-      "no_ai_layer": 0.7454,
-      "demand_1_5pct": 0.51195,
-      "lag_3yr": 0.53065,
-      "start_ratio_1_10": 0.41515
-    }
-  },
-  "brier": {
-    "model": 0.10637382250000003,
-    "hinton": 0.9025,
-    "coin_flip": 0.25
-  },
   "mae_log": {
     "model": 0.14942418456371612,
     "trend": 0.1990056259047859,

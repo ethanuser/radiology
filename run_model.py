@@ -13,11 +13,11 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from model import analysis, backtest, export_web, plots, robustness
+from model import analysis, backtest, export_web, history, labor, plots, robustness
 from model.params import PARAMS, evidence_counts
 
 ROOT = Path(__file__).parent
-RELEASE = "2026-10-v1.5"  # bump when publishing a new forecast; archived predictions are kept for later scoring
+RELEASE = "2026-10-v1.6"  # bump when publishing a new forecast; archived predictions are kept for later scoring
 
 
 def _fmt_num(v: float) -> str:
@@ -54,6 +54,8 @@ def main():
     val = analysis.validation(s, o)
     extra = analysis.extra_metrics(s, o)
     bt = backtest.run_backtest()
+    hist = history.run()
+    extra["labor"] = labor.summary(o)
     rb = robustness.run(s, o, args.n, args.seed)
 
     out = ROOT / "outputs"
@@ -69,6 +71,7 @@ def main():
     (out / "validation.json").write_text(json.dumps(val, indent=2, default=float))
     (out / "extra_metrics.json").write_text(json.dumps(extra, indent=2, default=float))
     (out / "backtest.json").write_text(json.dumps(bt, indent=2, default=float))
+    (out / "history.json").write_text(json.dumps(hist, indent=1, default=float))
     (out / "robustness.json").write_text(json.dumps(rb, indent=2, default=float))
     # prospective tracking: archive this release's checkable predictions once; never overwrite an archived file
     arch = out / "predictions" / f"{RELEASE}.json"
@@ -83,6 +86,8 @@ def main():
 
     plots.make_all(s, o, probs, tor, eta, ev, ROOT / "figures", eta_ntai=eta_ntai)
     plots.fig_backtest(bt, ROOT / "figures")
+    plots.fig_history(hist, ROOT / "figures")
+    plots.fig_pay(extra["labor"], o, ROOT / "figures")
     plots.fig_robustness(rb, ROOT / "figures")
     fj = export_web.forecast_json(s, o, summary, probs, jev, regimes, tor, eta, ev, val)
     fj["eta2_excluding_transformative"] = [
@@ -96,6 +101,7 @@ def main():
     fj["extra"]["predictions"] = archived["predictions"]
     fj["extra"]["predictions_release"] = archived["release"]
     fj["backtest"] = json.loads(json.dumps(bt, default=float))
+    fj["history"] = json.loads(json.dumps(export_web.history_json(hist), default=float))
     fj["robust"] = json.loads(json.dumps(rb, default=lambda v: v.tolist() if hasattr(v, "tolist") else float(v)))
     export_web.write(ROOT / "docs" / "data", fj, export_web.samples_json(s, o))
     print(f"done in {time.time() - t0:.1f}s  ->  outputs/, figures/, docs/data/")

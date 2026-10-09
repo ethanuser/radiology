@@ -6,6 +6,7 @@ from pathlib import Path
 import matplotlib
 
 matplotlib.use("Agg")
+import matplotlib.patches  # noqa: E402,F401
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
@@ -339,10 +340,9 @@ def make_all(s, o, probs, tor, eta, ev, out: Path, eta_ntai=None):
 
 
 def fig_backtest(bt, out: Path):
-    """Hindcast from 2016: forecast intervals for 2025 versus what happened."""
+    """Hindcast from 2016: forecast intervals for 2025 versus what happened (three automation-exposed occupations)."""
     occ = bt["occupations"]
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4.4), gridspec_kw={"width_ratios": [1.6, 1]})
-    ax = axes[0]
+    fig, ax = plt.subplots(figsize=(9, 3.8))
     for k, r in enumerate(occ):
         q = r["q"]
         ax.plot([q["p10"], q["p90"]], [k, k], color=BLUE, lw=6, alpha=0.25, solid_capstyle="butt")
@@ -356,26 +356,92 @@ def fig_backtest(bt, out: Path):
     ax.set_yticks(range(len(occ)), [r["label"] for r in occ])
     ax.set_ylabel("Occupation")
     ax.set_xlabel("Employment in 2025 relative to 2016 (1.0 = unchanged)")
-    ax.set_title("Forecasts made with 2016 information vs outcomes")
+    ax.set_title("Other occupations: forecasts made with 2016 information vs outcomes")
     ax.legend(fontsize=8, loc="lower right")
     ax.invert_yaxis()
-    ax = axes[1]
-    rad = bt["radiology"]
-    sens = rad["sensitivity"]
-    names = ["Protocol as specified", "Without the AI layer", "Demand growth 1.5%/yr", "3-year adoption lag", "2016 began in a 10% surplus"]
-    vals = [rad["p_shortage"], sens["no_ai_layer"], sens["demand_1_5pct"], sens["lag_3yr"], sens["start_ratio_1_10"]]
-    ax.barh(range(len(vals)), [v * 100 for v in vals], color=[BLUE] + [AXIS] * (len(vals) - 1), height=0.55)
-    for i, v in enumerate(vals):
-        ax.text(v * 100 + 2, i, f"{v * 100:.0f}%", va="center", fontsize=9)
-    ax.axvline(50, color=INK2, lw=1, ls="--")
-    ax.text(51, -0.45, "coin flip", fontsize=8, color=INK2, va="bottom")
-    ax.set_yticks(range(len(vals)), names)
-    ax.set_xlim(0, 100)
-    ax.set_xlabel("P(shortage in 2025), forecast with 2016 information (%)")
-    ax.set_ylabel("Radiology hindcast variant")
-    ax.set_title("Radiology hindcast variants")
-    ax.invert_yaxis()
     _save(fig, out, "fig13_backtest")
+
+
+def fig_history(h, out: Path):
+    """Radiology 1995-2026: reconstructed supply ÷ demand against the documented job market, and forecasts from past years."""
+    rec, rec0, past = h["reconstruction"], h["no_adjustment"], h["past"]
+    yrs = np.array(rec["years"])
+    fig, axes = plt.subplots(1, 2, figsize=(13, 4.6), sharey=True)
+    for ax, (title, r) in zip(axes, (("Accounting only, fitted to 1995-2013", rec0), ("With market adjustment, fitted to 1995-2013", rec))):
+        b = r["bands"]["train"]
+        ax.fill_between(yrs, b["p10"], b["p90"], color=BLUE, alpha=0.18, lw=0, label="Reconstruction, 80% range")
+        ax.plot(yrs, b["p50"], color=BLUE, label="Median")
+        for e in r["episodes"]:
+            a, z = e["years"]
+            lo, hi = e["band"]
+            col = INK if e["split"] == "train" else ORANGE
+            ax.add_patch(matplotlib.patches.Rectangle((a - 0.4, lo), z - a + 0.8, hi - lo, fill=False, ec=col, lw=1.6,
+                                                      ls="-" if e["split"] == "train" else "--"))
+            ax.text((a + z) / 2, hi + 0.006, f"{e['p_train'] * 100:.0f}%", ha="center", fontsize=8, color=col)
+        ax.axhline(1, color=AXIS, lw=1)
+        ax.axvline(2014, color=MUTED, lw=1, ls=":")
+        ax.set_title(title)
+        ax.set_xlabel("Year")
+        ax.set_ylim(0.82, 1.24)
+    axes[0].set_ylabel("Supply ÷ demand (below 1 = shortage)")
+    from matplotlib.lines import Line2D
+    axes[1].legend(handles=[Line2D([], [], color=BLUE, lw=6, alpha=0.3, label="Reconstruction (80% range, median)"),
+                            Line2D([], [], color=INK, lw=1.6, label="Documented episode, used to fit"),
+                            Line2D([], [], color=ORANGE, lw=1.6, ls="--", label="Documented episode, held out"),
+                            Line2D([], [], color=MUTED, lw=1, ls=":", label="End of fitting period")],
+                   fontsize=8, loc="upper right")
+    fig.text(0.5, -0.02, "Numbers above boxes: probability the fitted reconstruction gives to each documented episode.", ha="center",
+             fontsize=8.5, color=INK2)
+    _save(fig, out, "fig15_history")
+    # forecasts from past start years
+    fig, axes = plt.subplots(1, 4, figsize=(14, 3.8), sharey=True)
+    for ax, t0 in zip(axes, (2000, 2005, 2010, 2016)):
+        for name, col, lab in (("v15", MUTED, "v1.5 rules"), (past["trained"], BLUE, "History-trained rules")):
+            f = past["fans"][f"{name}_{t0}"]
+            ax.fill_between(f["years"], f["p10"], f["p90"], color=col, alpha=0.18, lw=0)
+            ax.plot(f["years"], f["p50"], color=col, label=lab)
+        for e in rec["episodes"]:
+            a, z = e["years"]
+            if a <= t0:
+                continue
+            lo, hi = e["band"]
+            col = INK if e["split"] == "train" else ORANGE
+            ax.add_patch(matplotlib.patches.Rectangle((a - 0.4, lo), z - a + 0.8, hi - lo, fill=False, ec=col, lw=1.4,
+                                                      ls="-" if e["split"] == "train" else "--"))
+        ax.axhline(1, color=AXIS, lw=1)
+        ax.set_title(f"Forecast made in {t0}")
+        ax.set_xlabel("Year")
+        ax.set_xlim(t0 - 0.5, 2026.5)
+        ax.set_ylim(0.75, 1.35)
+    axes[0].set_ylabel("Supply ÷ demand")
+    axes[0].legend(fontsize=8, loc="upper left")
+    _save(fig, out, "fig16_past_forecasts")
+
+
+def fig_pay(lab, o, out: Path):
+    """Pay relative to other physicians (history-calibrated readout) and the chance of a 2012-13-like job market."""
+    fig, axes = plt.subplots(1, 2, figsize=(12, 4.2))
+    ax = axes[0]
+    q = lab["pay_q"]
+    ax.fill_between(YEARS, q["p10"], q["p90"], color=BLUE, alpha=0.15, lw=0, label="80% range")
+    ax.fill_between(YEARS, q["p25"], q["p75"], color=BLUE, alpha=0.25, lw=0, label="50% range")
+    ax.plot(YEARS, q["p50"], color=BLUE, label="Median")
+    ax.axhline(1, color=AXIS, lw=1)
+    ax.set_ylim(0, 2)
+    ax.set_xlabel("Year")
+    ax.set_ylabel("Radiologist pay ÷ other physicians' pay (2026 = 1)")
+    ax.set_title("Pay relative to other physicians")
+    ax.legend(fontsize=8, loc="upper left")
+    ax = axes[1]
+    R = o["R"]
+    ax.plot(YEARS, (R >= lab["r_2012"]).mean(0) * 100, color=ORANGE, label="At least as weak as 2012-13 (supply ÷ demand ≥ 1.05)")
+    ax.plot(YEARS, (R > OVERSUPPLY).mean(0) * 100, color=VIOLET, label="Meaningful oversupply (> 1.10)")
+    ax.set_ylim(0, 60)
+    ax.set_xlabel("Year")
+    ax.set_ylabel("% of simulated futures")
+    ax.set_title("Job market for new graduates")
+    ax.legend(fontsize=8, loc="upper left")
+    _save(fig, out, "fig17_pay_hiring")
 
 
 def fig_robustness(rb, out):

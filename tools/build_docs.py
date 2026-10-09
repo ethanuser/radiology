@@ -48,6 +48,8 @@ val = json.loads((OUT / "validation.json").read_text())
 x = json.loads((OUT / "extra_metrics.json").read_text())
 bt = json.loads((OUT / "backtest.json").read_text())
 rb = json.loads((OUT / "robustness.json").read_text())
+hist = json.loads((OUT / "history.json").read_text())
+lab = x["labor"]
 YEARS5 = (2030, 2035, 2045, 2055, 2066)
 
 
@@ -97,7 +99,7 @@ def headline_table():
         ("  FTE demand: P25–P75", iqr("demand", f2)),
         ("**FTE supply** (2026 demand = 1): median (P10–P90)", band("supplyd", f2)),
         ("  FTE supply: P25–P75", iqr("supplyd", f2)),
-        ("**Supply ÷ demand** (2026 ≈ 0.93): median (P10–P90)", band("ratio", f2)),
+        ("**Supply ÷ demand** (2026 ≈ 0.94): median (P10–P90)", band("ratio", f2)),
         ("  Supply ÷ demand: P25–P75", iqr("ratio", f2)),
         ("**AI productivity** (work per radiologist-hour, 2026 = 1)", band("productivity", f2)),
         ("  AI productivity: P25–P75", iqr("productivity", f2)),
@@ -197,9 +199,86 @@ def backtest_md():
         q = r["q"]
         rows.append(f"| {r['label']} | {num(r['actual'])} | {num(q['p50'])} ({num(q['p10'])}–{num(q['p90'])}) | {num(r['combo'])} | {num(r['bls'])} | "
                     f"{num(r['trend'])} | {'yes' if r['in80'] else 'no'} | {r['fo_prob']:.2f} |")
-    rq = bt["radiology"]["ratio_q"]
-    rows.append(f"| Radiologists (supply ÷ demand in 2025) | shortage (≈0.93) | {num(rq['p50'])} ({num(rq['p10'])}–{num(rq['p90'])}); "
-                f"P(shortage) {pct(bt['radiology']['p_shortage'])}; {pct(min(bt['radiology']['sensitivity'].values()))}–{pct(max(bt['radiology']['sensitivity'].values()))} under protocol variants | — | — | — | yes | 0.0042 (physicians and surgeons; not used) |")
+    return "\n".join(rows)
+
+
+def _cites(keys):
+    return "[" + "; ".join(f"@{k}" for k in keys) + "]"
+
+
+def history_episodes_md():
+    rec, rec0 = hist["reconstruction"], hist["no_adjustment"]
+    rows = ["| Years | Documented state | Evidence | Band for supply ÷ demand | Used to | Accounting only | With market adjustment |",
+            "|---|---|---|---|---|---|---|"]
+    for e, e0 in zip(rec["episodes"], rec0["episodes"]):
+        a, b = e["years"]
+        yrs = f"{a}" if a == b else f"{a}–{b}"
+        rows.append(f"| {yrs} | {e['state']} | {e['evidence']} {_cites(e['sources'])} | {num(e['band'][0])}–{num(e['band'][1])} | "
+                    f"{'fit' if e['split'] == 'train' else '**check (held out)**'} | {pct(e0['p_train'])} | {pct(e['p_train'])} |")
+    return "\n".join(rows)
+
+
+def history_drivers_md():
+    lab = {"demo": "Population and aging", "work": "Radiologist work per person", "prod": "Work capacity per radiologist",
+           "supply": "Practicing radiologists (FTE)"}
+    rows = ["| Driver | Years | Range used (%/yr) | Reconstructed, all episodes: median (80%) | Sources |", "|---|---|---|---|---|"]
+    for k, d in hist["reconstruction"]["drivers"].items():
+        a, b = d["years"]
+        q = d["all"]
+        src = _cites(hist["drivers_meta"][d["driver"]]["sources"])
+        rows.append(f"| {lab[d['driver']]} | {a}–{b} | {d['lo']:g} to {d['hi']:g} | {q['p50']:.1f} ({q['p10']:.1f} to {q['p90']:.1f}) | {src} |")
+    return "\n".join(rows)
+
+
+def history_scores_md():
+    names = {"v15": "Version 1.5 rules (no market adjustment, v1.5 spreads)",
+             hist["past"]["trained"]: f"History-trained rules (market adjustment fitted to 1995–2013; spreads × {hist['past']['best_width']:g})",
+             "persistence": "Persistence: today's balance drifts at random (2%/yr)", "balanced": "Always balanced (supply ÷ demand ≈ 1 ± 6%)"}
+    rows = ["| Forecasting rule | Training episodes (≤2013) | Held-out episodes (2015–2025) |", "|---|---|---|"]
+    for k, lab_ in names.items():
+        s = hist["past"]["scores"][k]
+        rows.append(f"| {lab_} | {num(s['train'])} | {num(s['validate'])} |")
+    return "\n".join(rows)
+
+
+def history_pairs_md():
+    rows = ["| Forecast made in | Episode | Used to | v1.5 rules | History-trained rules | Persistence | Always balanced |",
+            "|---|---|---|---|---|---|---|"]
+    for r in hist["past"]["pairs"]:
+        a, b = r["years"]
+        yrs = f"{a}" if a == b else f"{a}–{b}"
+        rows.append(f"| {r['origin']} | {yrs} ({r['state'].lower()}) | {'fit' if r['split'] == 'train' else 'check'} | {pct(r['p_v15'])} | "
+                    f"{pct(r['p_trained'])} | {pct(r['p_persistence'])} | {pct(r['p_balanced'])} |")
+    return "\n".join(rows)
+
+
+def history_supply_md():
+    s = hist["supply"]
+    rf = s["refit"]
+    refit = {(1995, 2011): rf["growth_1995_2011"], (2010, 2022): rf["growth_2010_2022"], 2014: rf["exit_2014"],
+             2019: rf["exit_2019"], 2022: rf["exit_2022"]}
+    rows = ["| Check | Measured | Model's cohort machinery | Refitted to the fitting rows | Used to |", "|---|---|---|---|---|"]
+    for h in s["headcount"]:
+        a, b = h["years"]
+        rows.append(f"| Practicing radiologists, {a}→{b} | {chg(1 + h['growth'])} [@{h['source']}] | {chg(1 + h['model'])} | "
+                    f"{chg(1 + refit[(a, b)])} | {'fit' if h['split'] == 'train' else 'check'} |")
+    for e in s["exits"]:
+        rows.append(f"| Share of radiologists leaving practice, {e['year']} | {pct(e['rate'], 1)} [@rula_2026] | {pct(e['model'], 1)} | "
+                    f"{pct(refit[e['year']], 1)} | {'fit' if e['split'] == 'train' else 'check'} |")
+    return "\n".join(rows)
+
+
+def pay_md():
+    ys = ("2030", "2035", "2045", "2055")
+    by = lab["by_year"]
+    rows = ["| | " + " | ".join(ys) + " |", "|---|" + "---|" * len(ys)]
+    rows.append("| Radiologist pay ÷ other physicians' pay, 2026 = 1: median (80%) | " +
+                " | ".join(f"{num(by[y]['pay_p50'])} ({num(by[y]['pay_p10'])}–{num(by[y]['pay_p90'])})" for y in ys) + " |")
+    rows.append("| P(relative pay at least 10% below 2026) | " + " | ".join(pct(by[y]["p_pay_down10"]) for y in ys) + " |")
+    rows.append("| P(relative pay at least 10% above 2026) | " + " | ".join(pct(by[y]["p_pay_up10"]) for y in ys) + " |")
+    rows.append(f"| P(job market at least as weak as 2012–13, supply ÷ demand ≥ {lab['r_2012']:.2f}) | " +
+                " | ".join(pct(by[y]["p_weak_hiring"]) for y in ys) + " |")
+    rows.append("| P(meaningful oversupply, > 1.10) | " + " | ".join(pct(sm[int(y)]["p_oversupply"]) for y in ys) + " |")
     return "\n".join(rows)
 
 
@@ -267,7 +346,8 @@ SECTIONS = {
     "tornado": ("sec-tornado", "§8.1"), "eta": ("sec-eta", "§8.2"), "evshare": ("sec-evshare", "§8.3"),
     "careers": ("sec-careers", "§9"), "margins": ("sec-margins", "§9.2"), "signposts": ("sec-signposts", "§9.3"),
     "limits": ("sec-limits", "§10"), "repro": ("sec-repro", "§11"), "approaches": ("sec-approaches", "§2.1"),
-    "backtest": ("sec-backtest", "§6.2"), "robust": ("sec-robust", "§8.4"),
+    "backtest": ("sec-backtest", "§6.2"), "robust": ("sec-robust", "§8.4"), "history": ("sec-history", "§6.3"),
+    "market": ("sec-market", "§4.7"),
 }
 
 
@@ -295,7 +375,9 @@ def stage_table():
 CTX = dict(_fj=_fj, m=m, anchor=anchor, stage_table=stage_table, n_params=len(PARAMS), n_sims=n_sims, n_drawn=n_drawn, len=len, sm=sm, pr=pr, jv=jv, rg=rg, tor=tor, val=val, x=x, pct=pct, num=num, chg=chg, yr=yr, ev_shrink=ev_shrink,
            ev_n=ev_n, headline_table=headline_table, jevons_md=jevons_md, regimes_md=regimes_md, tornado_md=tornado_md,
            signposts_md=signposts_md, backtest_md=backtest_md, bt=bt, robust_md=robust_md, rb=rb, predictions_md=predictions_md, eta_md=eta_md, eta_nt=eta_nt, composition_md=composition_md, pipeline_md=pipeline_md,
-           params_md=params_md, float=float, round=round, abs=abs, min=min, max=max)
+           params_md=params_md, float=float, round=round, abs=abs, min=min, max=max, hist=hist, lab=lab,
+           history_episodes_md=history_episodes_md, history_drivers_md=history_drivers_md, history_scores_md=history_scores_md,
+           history_pairs_md=history_pairs_md, history_supply_md=history_supply_md, pay_md=pay_md)
 
 
 def fill(text: str) -> str:
@@ -418,32 +500,28 @@ def readme_block() -> str:
     lines = ["| | " + " | ".join(map(str, ys)) + " |", "|---|" + "---|" * len(ys),
              row("FTE demand, median (P10–P90), 2026 demand = 1", band("demand", f2)),
              row("FTE supply, median, 2026 demand = 1", [f2(sm[y]["supplyd_p50"]) for y in ys]),
-             row("Supply ÷ demand, median (2026 ≈ 0.93)", [f2(sm[y]["ratio_p50"]) for y in ys]),
+             row("Supply ÷ demand, median (2026 ≈ 0.94)", [f2(sm[y]["ratio_p50"]) for y in ys]),
              row("AI productivity, median", [f"{float(sm[y]['productivity_p50']):.2f}×" for y in ys]),
              row("AI-first / autonomous share, median", [pct(sm[y]["autonomous_p50"]) for y in ys]),
              row("P(demand < 2026)", [pct(sm[y]["p_demand_below_today"]) for y in ys]),
              row("P(demand < 50% of 2026)", [pct(sm[y]["p_demand_below_50"]) for y in ys]),
              row("**P(meaningful oversupply, S/D > 1.10)**", [f"**{pct(sm[y]['p_oversupply'])}**" for y in ys]),
              row("P(true Jevons paradox)", [pct(jv[y]["p_jevons"]) for y in ys])]
-    m1 = x["m1"]
-    para = (f"**In one paragraph:** for someone entering practice in the mid-2030s, meaningful oversupply ({pct(sm[2035]['p_oversupply'])}) "
-            f"and meaningful shortage ({pct(sm[2035]['p_shortage_10'])}) are about equally likely in 2035. "
-            f"Most of the oversupply risk sits in the transformative-AI branch; without it the risk is "
-            f"{pct(x['non_tai']['2035']['p_over'])}. Risk grows over a career ({pct(sm[2045]['p_oversupply'])} by 2045, "
-            f"{pct(sm[2055]['p_oversupply'])} by 2055) and eases a little after as residency programs adjust. Most of it comes from AI: "
-            f"with no further radiology AI it would be "
-            f"{pct(rb['structures']['no_ai']['2045']['p_over'])} and {pct(rb['structures']['no_ai']['2055']['p_over'])}; assistive AI drives "
-            f"the near-term risk (mostly in the transformative regime, where it bypasses regulation) and AI-first reading adds most of the rest "
-            f"after 2045. A true Jevons paradox, "
-            f"where AI-induced imaging outweighs the labor AI saves, is unlikely under the main assumptions (≈{pct(jv[2045]['p_jevons'])} in 2045): induced "
-            f"demand offsets about {pct(jv[2045]['offset_p50'])} of the savings. A 2016→2025 backtest gave the method a "
-            f"{pct(bt['radiology']['p_shortage'])} chance of today's shortage, driven by supply-versus-demand fundamentals rather than AI; for "
-            f"three other automation-exposed occupations, the simple average of BLS projections and trend extrapolation (mean log "
-            f"error {num(bt['mae_log']['combo'])}) beat the full method ({num(bt['mae_log']['model'])}), so the backtest is a weak "
-            f"sanity check. The direction is robust, the "
-            f"digits are not: under alternative priors and model structures the 2045 oversupply probability ranges from "
-            f"{pct(rb['band']['2045']['lo'])} to {pct(rb['band']['2045']['hi'])}, so read the numbers as model-conditioned judgment, "
-            f"not a calibrated forecast (report §8.4).")
+    h, rec = hist, hist["reconstruction"]
+    para = (f"**In one paragraph:** today's shortage most likely eases into rough balance by the mid-2030s. Meaningful oversupply is "
+            f"{pct(sm[2035]['p_oversupply'])} likely in 2035, {pct(sm[2045]['p_oversupply'])} in 2045 and {pct(sm[2055]['p_oversupply'])} in 2055, "
+            f"concentrated in futures where AI progresses very fast; outside the transformative-AI branch it is {pct(x['non_tai']['2045']['p_over'])} "
+            f"in 2045. A meaningful shortage is {pct(sm[2045]['p_shortage_10'])} likely in 2045. The main validation is radiology's own history: "
+            f"fitted to the documented job market of 1995–2013, the model's accounting alone gave the held-out 2015–2025 episodes little "
+            f"probability (Brier score {num(h['no_adjustment']['brier_validation']['train'])}); adding a market adjustment, in which work shifts "
+            f"between radiologists and other physicians and labor-saving change speeds up or slows down, so that about "
+            f"{pct(rec['lam_train']['p50'])} of an imbalance closes each year up to a limit of about {pct(rec['b_train']['p50'])}, predicted them "
+            f"far better ({num(rec['brier_validation']['train'])}). Version 1.6 adds that adjustment, which roughly halves the long-run "
+            f"oversupply risk (without it: {pct(rb['structures']['no_adjustment']['2045']['p_over'])} in 2045). Even the history-trained rules did "
+            f"not beat a naive \"always balanced\" forecast on the held-out years, and for three other occupations a simple average of BLS "
+            f"projections and trends beat the full method. The direction is robust, the digits are not: under alternative priors and "
+            f"model structures the 2045 oversupply probability ranges from {pct(rb['band']['2045']['lo'])} to {pct(rb['band']['2045']['hi'])} "
+            f"(report §6.3, §8.4).")
     return "\n".join(lines) + "\n\n*Numbers from the default run (`python run_model.py`, seed 20261007), regenerated by `tools/build_docs.py`.*\n\n" + para
 
 

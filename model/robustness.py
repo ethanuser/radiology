@@ -26,18 +26,18 @@ BASE_W = np.array([0.15, 0.55, 0.18, 0.12])
 
 PRIOR_SETS = {
     "main": dict(label="This site's assumptions", weights=BASE_W, util=None,
-                 note="Imaging growth per person starts near 0.6%/yr.", sources=[]),
+                 note="Imaging growth per person starts near 1.2%/yr.", sources=[]),
     "ai_skeptic": dict(label="AI-skeptical", weights=np.array([0.30, 0.55, 0.12, 0.03]), util=None,
                        note="Regime weights 30/55/12/3, nearer forecasting panels, which put far lower odds on transformative AI than AI-lab leaders.",
                        sources=["leap_2025", "karger_2023"]),
     "ai_bullish": dict(label="AI-bullish", weights=np.array([0.05, 0.35, 0.30, 0.30]), util=None,
                        note="Regime weights 5/35/30/30, nearer AI-lab leaders and AI 2027 (a widely read scenario of very fast AI progress).",
                        sources=["ai2027", "metr_2026"]),
-    "imaging_restraint": dict(label="Imaging restraint", weights=BASE_W, util=(0.3, 0.6),
-                              note="Imaging per person grows ~0.3%/yr: close to claims-based 2018-22 trends, plus payer and Medicare cost pressure.",
+    "imaging_restraint": dict(label="Imaging restraint", weights=BASE_W, util=(0.4, 0.7),
+                              note="Imaging per person grows ~0.4%/yr: close to claims-based 2018-22 trends, plus payer and Medicare cost pressure (v1.5 assumed 0.6%/yr).",
                               sources=["christensen_util", "trustees_2026"]),
-    "imaging_growth": dict(label="Imaging growth", weights=BASE_W, util=(1.3, 0.8),
-                           note="Imaging per person grows ~1.3%/yr, nearer recent CT growth.",
+    "imaging_growth": dict(label="Imaging growth", weights=BASE_W, util=(1.8, 0.8),
+                           note="Imaging per person grows ~1.8%/yr: what the history reconstruction implies for 2022-2026, near recent CT growth.",
                            sources=["smith_bindman_2025", "rosenkrantz_2025"]),
     "residency_slows": dict(label="Residency growth slows", weights=BASE_W, util=None, slot=(0.5, 0.6),
                             note="Positions grow only ~0.5%/yr as Medicare GME caps bind.", sources=["malhotra_2026"]),
@@ -45,9 +45,9 @@ PRIOR_SETS = {
                              note="Residency positions keep growing ~1.9%/yr, the 2010-2025 pace.", sources=["malhotra_2026"]),
     # the two corners: change both of the most consequential priors at once
     "favorable": dict(label="Both favorable: AI-skeptical + imaging growth", weights=np.array([0.30, 0.55, 0.12, 0.03]),
-                      util=(1.3, 0.8), note="Combines the two single changes that lower oversupply risk most.", sources=[]),
+                      util=(1.8, 0.8), note="Combines the two single changes that lower oversupply risk most.", sources=[]),
     "unfavorable": dict(label="Both unfavorable: AI-bullish + imaging restraint", weights=np.array([0.05, 0.35, 0.30, 0.30]),
-                        util=(0.3, 0.6), note="Combines the two single changes that raise oversupply risk most.", sources=[]),
+                        util=(0.4, 0.7), note="Combines the two single changes that raise oversupply risk most.", sources=[]),
 }
 CORNERS = ("favorable", "unfavorable")
 
@@ -114,7 +114,7 @@ def prior_sets(s, o):
 STRUCT_SHORT = {"base": "Main model", "no_signoff": "No radiologist on AI-first reads", "unordered": "Tiers automated in any order",
                 "open_demand": "Much more new imaging", "payer_pushback": "Stronger payer pushback",
                 "uncapped_new_uses": "New uses not capped by scanners", "no_shortage_today": "No shortage today",
-                "tai_gated": "Transformative boost waits for regulation",
+                "tai_gated": "Transformative boost waits for regulation", "no_adjustment": "No market adjustment (v1.5)",
                 "assistive_only": "Assistive AI only", "no_ai": "No further radiology AI"}
 
 
@@ -126,7 +126,7 @@ def structures(n: int = 20000, seed: int = 20261007):
         o = _cond(simulate(s, structure=key))
         res[key] = {"label": STRUCT_SHORT[key], "detail": label, "counterfactual": key in COUNTERFACTUALS,
                     **_metrics(o, np.ones(len(o["R"])))}
-    # the main prior rules out a balanced market today (0.85-0.99); re-simulate with no shortage in 2026
+    # the main prior rules out a balanced market today (0.88-0.99); re-simulate with no shortage in 2026
     s2 = dict(s)
     s2["ratio0"] = np.random.default_rng(seed + 1).uniform(0.95, 1.03, n)
     # tier-1 capability centred on 2022 (EU CE marking) instead of 2025
@@ -136,7 +136,7 @@ def structures(n: int = 20000, seed: int = 20261007):
                          "detail": "Tier-1 capability centred on 2022 (EU approval) instead of 2025; more futures are ruled out by the lack of FDA authorization",
                          **_metrics(_cond(simulate(s3)), None)}
     res["no_shortage_today"] = {"label": STRUCT_SHORT["no_shortage_today"], "counterfactual": False,
-                                "detail": "Today's supply ÷ demand anywhere from 0.95 to 1.03 (main model: full range 0.85-0.99)",
+                                "detail": "Today's supply ÷ demand anywhere from 0.95 to 1.03 (main model: full range 0.88-0.99)",
                                 **_metrics(_cond(simulate(s2)), None)}
     return res
 

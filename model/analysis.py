@@ -186,6 +186,7 @@ GROUPS = {
     "Attrition": [("attr_mult", +1)],
     "Today's shortage (2026 S/D)": [("ratio0", +1)],
     "Shortage-driven AI adoption": [("adopt_pressure", +1)],
+    "Market adjustment": [("adj_speed", +1), ("adj_max", +1)],
 }
 FOCUS_GROUPS = ["Future imaging utilization", "AI-first / autonomous adoption", "Regulatory delay",
                 "New imaging applications", "Scanner throughput & capacity", "Residency adjustment"]
@@ -429,4 +430,7 @@ def extra_metrics(s: dict, o: dict) -> dict:
     x["stages_p10"] = np.percentile(st, 10, axis=0).tolist()
     x["stages_p90"] = np.percentile(st, 90, axis=0).tolist()
     x["capacity_bind_2045_mean"] = float(o["capacity_bind"][:, yi(2045)].mean())
+    # market adjustment: share of demand that has shifted to (+) or from (-) radiologists
+    x["adj"] = {str(y): {f"p{q}": float(np.percentile(o["adj"][:, yi(y)], q)) for q in (10, 50, 90)}
+                for y in (2030, 2035, 2045, 2055)}
     return x

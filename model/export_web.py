@@ -117,3 +117,20 @@ def write(out_dir: Path, forecast: dict, samples: dict):
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "forecast.json").write_text(json.dumps(forecast, separators=(",", ":"), ensure_ascii=False))
     (out_dir / "samples.json").write_text(json.dumps(samples, separators=(",", ":")))
+
+
+def history_json(h: dict) -> dict:
+    """The parts of the history test the website shows."""
+    rec, rec0, past = h["reconstruction"], h["no_adjustment"], h["past"]
+    ep = [{k: e[k] for k in ("key", "years", "band", "state", "split", "evidence", "sources", "p_train")} |
+          {"p_train_noadj": e0["p_train"]} for e, e0 in zip(rec["episodes"], rec0["episodes"])]
+    return {
+        "years": rec["years"], "bands_train": rec["bands"]["train"], "bands_train_noadj": rec0["bands"]["train"],
+        "bands_all": rec["bands"]["all"], "episodes": ep,
+        "lam_train": rec["lam_train"], "b_train": rec["b_train"], "ratio2026_all": rec["ratio2026_all"],
+        "brier": {"adjust": rec["brier_validation"]["train"], "noadj": rec0["brier_validation"]["train"]},
+        "scores": past["scores"], "best_width": past["best_width"], "trained": past["trained"],
+        "work_2022_2026": rec["drivers"]["work_2022_2026"]["all"],
+        "supply": h["supply"],
+        "pay": {"beta_train": h["pay"]["beta_train"], "beta_all": h["pay"]["beta_all"], "validation": h["pay"]["validation"]},
+    }

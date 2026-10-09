@@ -2,13 +2,13 @@
 |---|---|---|---|---|---|
 | `dem_rate`: Demographic (population + aging) growth of radiologist work, 2026-2045 | Normal(μ=0.52, σ=0.1), truncated [0.15, 0.9] | 0.392 / 0.52 / 0.648 | %/yr | A | christensen_util, cbo_2026 |
 | `dem_late`: Demographic growth in 2066 relative to 2026-2045 rate | Uniform(0.4, 0.9) | 0.45 / 0.65 / 0.85 | ratio | A | cbo_2026 |
-| `util_g0`: Per-capita (age/sex-adjusted) utilization growth, 2026 | Normal(μ=0.6, σ=0.7), truncated [-1.5, 3.5] | -0.292 / 0.601 / 1.5 | %/yr | S | christensen_util, rula_2026, smith_bindman_2019, rosenkrantz_2025, smith_bindman_2025 |
-| `util_ginf`: Long-run per-capita utilization growth (asymptote) | Normal(μ=0.2, σ=0.5), truncated [-1.5, 2.5] | -0.44 / 0.2 / 0.841 | %/yr | S | smith_bindman_2019, christensen_util |
+| `util_g0`: Per-capita (age/sex-adjusted) utilization growth, 2026 | Normal(μ=1.2, σ=1.05), truncated [-2.0, 4.5] | -0.14 / 1.2 / 2.54 | %/yr | S | christensen_util, rula_2026, smith_bindman_2019, rosenkrantz_2025, smith_bindman_2025, zamani_2026 |
+| `util_ginf`: Long-run per-capita utilization growth (asymptote) | Normal(μ=0.2, σ=0.75), truncated [-2.0, 3.0] | -0.755 / 0.201 / 1.16 | %/yr | S | smith_bindman_2019, christensen_util |
 | `util_half`: Half-life of convergence from current to long-run utilization growth | Uniform(6, 20) | 7.4 / 13 / 18.6 | years | S |  |
 | `cmplx_g0`: Growth in radiologist work per exam (complexity, images/study), 2026 | Normal(μ=0.4, σ=0.3), truncated [-0.2, 1.2] | 0.0476 / 0.407 / 0.782 | %/yr | A | mcdonald_2015 |
 | `alt_max`: Imaging displaced by alternative diagnostics by 2066 (blood tests, AI-ECG, genomics) | Triangular(0, mode 0.04, 0.15) | 0.0245 / 0.0592 / 0.109 | share | S |  |
 | `alt_mid`: Midpoint year of alternative-diagnostic substitution | Uniform(2035, 2055) | 2037 / 2045 / 2053 | year | S |  |
-| `ratio0`: Supply ÷ demand for radiologist FTEs in 2026 (current shortage) | Triangular(0.85, mode 0.93, 0.99) | 0.883 / 0.925 / 0.961 | ratio | S | rula_2026, zamani_2026, parikh_2026, doximity_2026, nrmp_2026 |
+| `ratio0`: Supply ÷ demand for radiologist FTEs in 2026 (current shortage) | Triangular(0.88, mode 0.945, 0.99) | 0.907 / 0.94 / 0.968 | ratio | S | rula_2026, zamani_2026, parikh_2026, doximity_2026, nrmp_2026, dibble_2025 |
 | `ai_u`: AI progress speed (quantile → timeline multiplier M) | Regime mixture: 15% stall (M 1.6-3.0), 55% trend (lognormal, median 1, σ_log 0.25), 18% fast (M 0.40-0.65), 12% transformative (M 0.25-0.45, task ceilings lifted) | 0.417 / 0.917 / 2.07 | multiplier | S | metr_2025, metr_2026, ai2027, grace_2025, leap_2025, karger_2023 |
 | `cap_draft_T0`: Midpoint year: reliable draft reports & automated measurements (M=1) | Normal(μ=2028, σ=1.5) | 2026 / 2028 / 2030 | year | A | huang_2025, hong_2025, tanno_2025, aidoc_2026, langlotz_2025 |
 | `cap_admin_T0`: Midpoint year: protocoling, scheduling, QA and admin automation (M=1) | Normal(μ=2030.5, σ=2) | 2028 / 2030 / 2033 | year | A | langlotz_2025 |
@@ -66,3 +66,5 @@
 | `resid_lag`: Information/perception lag before the pipeline reacts | Uniform(1, 3) | 1.2 / 2 / 2.8 | years | A | sharafinski_2016 |
 | `fear`: Applicant deterrence from visible AI progress (max fill-rate loss) | Uniform(0, 0.08) | 0.008 / 0.04 / 0.072 | share | A | nrmp_2026, reeder_2022 |
 | `fte_drift`: Drift in FTE per radiologist (part-time, generational preferences) | Normal(μ=-0.1, σ=0.15) | -0.292 / -0.1 / 0.0922 | %/yr | S |  |
+| `adj_speed`: Market adjustment speed: share of the remaining shortage or surplus closed each year | Uniform(0.2, 0.55) | 0.235 / 0.375 / 0.515 | per year | A | sunshine_2007, levin_2011, bhargavan_2009 |
+| `adj_max`: Largest cumulative market adjustment (share of radiologist work that can shift) | Uniform(0.08, 0.28) | 0.1 / 0.18 / 0.26 | share | A | levin_2011 |

@@ -39,8 +39,8 @@ def test_demographics_consistent_with_christensen(sim):
 
 def test_jevons_accounting_identity(sim):
     _, o = sim
-    # D = B - L + I  (labour saved and induced demand reconcile exactly)
-    assert np.allclose(o["D"], o["B"] - o["L"] + o["I"], atol=1e-9)
+    # D_struct = B - L + I  (labour saved and induced demand reconcile exactly, before the market adjustment)
+    assert np.allclose(o["D_struct"], o["B"] - o["L"] + o["I"], atol=1e-9)
     assert np.allclose(sum(o["channels"].values()), o["I"], atol=1e-9)
     assert np.array_equal(o["jevons"], o["I"] > o["L"])
 
@@ -98,6 +98,45 @@ def test_adoption_feedback_off_matches_single_pass():
     assert np.allclose(o1["D"], o2["D"], atol=1e-6)
 
 
+def test_market_adjustment():
+    """The adjustment closes part of each gap, never exceeds its limit, and switching it off restores the v1.5 dynamics."""
+    s = sample(3000, seed=17)
+    on, off = simulate(s), simulate(s, structure="no_adjustment")
+    lim = np.asarray(s["adj_max"])[:, None]
+    assert (np.abs(on["adj"]) <= lim + 1e-12).all()
+    assert np.allclose(off["adj"], 0) and np.allclose(off["D"], off["D_struct"])
+    assert np.allclose(on["D"], on["D_struct"] * np.exp(on["adj"]))
+    # surpluses raise and shortages lower the work that flows to radiologists
+    i = 2045 - 2026
+    assert np.corrcoef(np.log(off["R"][:, i]), on["adj"][:, i])[0, 1] > 0.5
+    # it narrows the spread of supply ÷ demand
+    assert np.std(np.log(on["R"][:, i])) < np.std(np.log(off["R"][:, i]))
+
+
+def test_history_calibration_matches_model():
+    """Numbers transferred by hand from the history test into params.py and labor.py must match the history fit."""
+    from model import history, labor
+    rec = history.reconstruct(n=120_000)
+    lo, hi = PARAM_INDEX["adj_speed"].args["lo"], PARAM_INDEX["adj_speed"].args["hi"]
+    assert abs(rec["lam_train"]["p10"] - lo) < 0.04 and abs(rec["lam_train"]["p90"] - hi) < 0.04
+    lo, hi = PARAM_INDEX["adj_max"].args["lo"], PARAM_INDEX["adj_max"].args["hi"]
+    assert abs(rec["b_train"]["p10"] - lo) < 0.03 and abs(rec["b_train"]["p90"] - hi) < 0.03
+    q = rec["ratio2026_all"]
+    assert 0.88 <= q["p10"] and q["p90"] <= 0.99  # the 2026 prior's range covers the reconstruction
+    y12 = next(e for e in rec["episodes"] if e["key"] == "y2012")
+    assert abs(y12["all_q"]["p50"] - labor.R_2012) < 0.015
+    beta = history.pay_fit(rec)["beta_all"]
+    assert abs(beta["p10"] - labor.BETA[0]) < 0.06 and abs(beta["p90"] - labor.BETA[1]) < 0.08
+
+
+def test_history_adjustment_validates():
+    """Fitted on 1995-2013 only, the market adjustment predicts the held-out 2015-2025 episodes better than accounting alone."""
+    from model import history
+    with_adj = history.reconstruct(n=120_000)
+    without = history.reconstruct(n=120_000, adjust=False)
+    assert with_adj["brier_validation"]["train"] < without["brier_validation"]["train"] - 0.2
+
+
 def test_every_reference_has_link_and_formats():
     from model.references import REFERENCES, format_ama, href
     for k in REFERENCES:
@@ -137,7 +176,7 @@ def test_no_ai_counterfactual_equals_baseline():
     from model.simulate import simulate
     s = sample(2000, seed=13)
     o = simulate(s, structure="no_ai")
-    assert np.allclose(o["D"], o["B"], atol=1e-9)
+    assert np.allclose(o["D_struct"], o["B"], atol=1e-9)
     assert np.allclose(o["time_saved"], 0, atol=1e-12)
     a = simulate(s, structure="assistive_only")
     assert np.allclose(a["auto"], 0)

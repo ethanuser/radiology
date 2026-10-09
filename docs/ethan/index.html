@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../assets/css/style.css?v=1.5">
+<link rel="stylesheet" href="../assets/css/style.css?v=1.6">
 <script>try { const t = localStorage.getItem("theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}</script>
 </head>
 <!-- Personal view: same data (../data/forecast.json) and script (../assets/js/app.js) as the public page.
@@ -55,7 +55,7 @@
     <div class="tiles">
       <div class="tile"><div class="label">Chance of <a href="#term-oversupply">meaningful oversupply</a> when you finish residency (2035)</div>
         <div class="value" data-v="X.m1.p_over_2035" data-f="pct" data-count>–</div>
-        <div class="sub">still a shortage: <span data-v="X.m1.p_shortage_2035" data-f="pct"></span> · after a fellowship (2036): <span data-v="X.m1.p_over_2036" data-f="pct"></span></div></div>
+        <div class="sub">any shortage: <span data-v="X.m1.p_shortage_2035" data-f="pct"></span> · after a fellowship (2036): <span data-v="X.m1.p_over_2036" data-f="pct"></span></div></div>
       <div class="tile"><div class="label">10 years into practice (2045)</div>
         <div class="value" data-v="SUM.2045.p_oversupply" data-f="pct" data-count>–</div>
         <div class="sub">chance of meaningful oversupply</div></div>
@@ -73,8 +73,8 @@
       <div class="gcard" id="term-ratio"><h4>Supply ÷ demand</h4><p>Radiologist capacity divided by the work that needs doing. Below 1 is a shortage (today ≈
         <b data-v="F.series.R.p50.0" data-f="x2"></b>); above 1 is a surplus. Charts measure both against <b>2026 demand = 1</b>.</p></div>
       <div class="gcard" id="term-oversupply"><h4>Meaningful oversupply</h4><p>Supply ÷ demand above <b>1.10</b>: at least 10% more radiologists than the
-        work needs. The threshold is a convention for a clearly noticeable surplus; past gluts, when new graduates struggled to find jobs, were never
-        measured on this scale.<sup class="cite" data-ref="rosenkrantz_2016,shi_2015"></sup></p></div>
+        work needs, after the market has <a href="../#term-market">adjusted</a>. For scale, the 2012–13 market, when new graduates struggled to find jobs, was about
+        <span data-v="LAB.r_2012" data-f="x2"></span> on this scale.<sup class="cite" data-ref="bluth_2014,pfeifer_2017"></sup></p></div>
       <div class="gcard" id="term-regimes"><h4>AI-progress regimes</h4><p>Each future is <b>Stall</b> (15%), <b>Trend</b> (55%), <b>Fast</b> (18%) or
         <b>Transformative</b> (12%: AI eventually does nearly all a radiologist's cognitive work). Most of the downside sits in the last one.
         <a href="../#term-regimes">More →</a></p></div>
@@ -85,16 +85,17 @@
 <section class="block" id="short">
   <div class="wrap narrow">
     <h2>The short version for you</h2>
-    <p><b>Your first job market (2035) is probably not oversupplied.</b> The chance of a meaningful shortage then (<b data-v="SUM.2035.p_shortage_10" data-f="pct"></b>) is about the same as the chance of meaningful
-      oversupply (<b data-v="X.m1.p_over_2035" data-f="pct"></b>). Most of the radiologists you will compete with are
-      already in training, and imaging demand keeps rising with an older population.</p>
-    <p><b>About half of the 2035 risk is one scenario.</b> If AI becomes <a href="#term-regimes">transformative</a> (about <span data-v="F.regimes.weights.3" data-f="pct"></span> of futures), oversupply by 2035 is
-      close to certain. In the other futures it is <b data-v="X.non_tai.2035.p_over" data-f="pct"></b>. So the most useful thing you can do is
+    <p><b>Your first job market (2035) is probably roughly balanced.</b> Meaningful oversupply then has a <b data-v="X.m1.p_over_2035" data-f="pct"></b> chance and a
+      meaningful shortage <b data-v="SUM.2035.p_shortage_10" data-f="pct"></b>. Most of the radiologists you will compete with are already in training, imaging demand keeps
+      rising with an older population, and the job market has historically closed gaps within a few years (<a href="../#history">how we know</a>).</p>
+    <p><b>Most of the 2035 risk is one scenario.</b> If AI becomes <a href="#term-regimes">transformative</a> (about <span data-v="F.regimes.weights.3" data-f="pct"></span> of futures), oversupply by 2035 is
+      likely. In the other futures it is <b data-v="X.non_tai.2035.p_over" data-f="pct"></b>. So the most useful thing you can do is
       watch for the early signs of that scenario (<a href="#decisions">below</a>) before you commit.</p>
-    <p><b>The risk grows during your career.</b> By 2045 the chance of oversupply is <b data-v="SUM.2045.p_oversupply" data-f="pct"></b>, and by 2055
-      <b data-v="SUM.2055.p_oversupply" data-f="pct"></b>. In surplus futures, the usual pattern is fewer openings for new graduates and flatter pay rather than
-      layoffs, which favors people who are already established by then.<sup class="cite" data-ref="canaries_2025,christensen_supply"></sup> Still, a severe
-      surplus that lasts five or more years occurs in <span data-v="X.displacement.p_sustained_severe_surplus" data-f="pct"></span> of futures.</p>
+    <p><b>The risk grows modestly during your career.</b> By 2045 the chance of oversupply is <b data-v="SUM.2045.p_oversupply" data-f="pct"></b>, and by 2055
+      <b data-v="SUM.2055.p_oversupply" data-f="pct"></b>. In surplus futures, the usual pattern is slower pay growth and fewer openings for new graduates rather than
+      layoffs, which favors people who are already established by then.<sup class="cite" data-ref="canaries_2025,pfeifer_2017"></sup> In 2045, median pay relative to other
+      physicians is <span data-v="LAB.by_year.2045.pay_p50" data-f="x2"></span> times today's, but it is at least 10% lower in <span data-v="LAB.by_year.2045.p_pay_down10" data-f="pct"></span> of futures
+      (<a href="../#pay">pay and hiring</a>). A severe surplus that lasts five or more years occurs in <span data-v="X.displacement.p_sustained_severe_surplus" data-f="pct"></span> of futures.</p>
     <p><b>Read the exact numbers loosely.</b> They are conditional on the model's assumptions. Under other defensible assumptions and model structures,
       the 2035 oversupply chance ranges from <span data-v="F.robust.band.2035.lo" data-f="pct"></span> to <span data-v="F.robust.band.2035.hi" data-f="pct"></span>
       and the 2045 chance from <span data-v="F.robust.band.2045.lo" data-f="pct"></span> to <span data-v="F.robust.band.2045.hi" data-f="pct"></span>
@@ -133,7 +134,7 @@
         </article>
         <article class="chapter" data-year="2035" data-tag="You enter practice">
           <div class="yearlabel">2035 · First job</div>
-          <h3>Probably balanced or still short</h3>
+          <h3>Probably roughly balanced</h3>
           <p>Median supply ÷ demand is <b data-v="SUM.2035.ratio_p50" data-f="x2"></b>. AI saves about <b data-v="X.time_saved.2035.p50" data-f="pct"></b> of
             radiologist time and reads <b data-v="SUM.2035.autonomous_p50" data-f="pct"></b> of studies AI-first. Chance of meaningful oversupply:
             <b data-v="SUM.2035.p_oversupply" data-f="pct"></b>.</p>
@@ -141,9 +142,9 @@
         </article>
         <article class="chapter" data-year="2045" data-tag="10 years in">
           <div class="yearlabel">2045 · Mid-career</div>
-          <h3>Tilting toward surplus</h3>
+          <h3>Mostly balanced; surplus if AI moved very fast</h3>
           <p>Autonomous reading of radiographs and screening exams is authorized and paid for in most futures. The chance of oversupply is
-            <b data-v="SUM.2045.p_oversupply" data-f="pct"></b>. If it happens, it shows up first as fewer openings and slower pay growth.</p>
+            <b data-v="SUM.2045.p_oversupply" data-f="pct"></b>, mostly in fast-AI futures. If it happens, it shows up first as fewer openings and slower pay growth.</p>
           <p class="stage-note sans small" data-year="2045" hidden></p>
         </article>
         <article class="chapter" data-year="2055" data-tag="20 years in">
@@ -235,7 +236,7 @@
         <div class="chart-card"><div class="title">Supply ÷ demand in the matching futures</div><div id="exRatio" class="chart"></div></div>
       </div>
     </div>
-    <p class="sans small ink2" style="margin-top:20px">Methods, the backtest, every assumption and sensitivity analyses are on the <a href="../#methods">public site</a> and in the
+    <p class="sans small ink2" style="margin-top:20px">Methods, the test against radiology's history, every assumption and sensitivity analyses are on the <a href="../#methods">public site</a> and in the
       <a href="../report.html">full report</a>.</p>
   </div>
 </section>
@@ -252,8 +253,8 @@
 <button class="backpill" id="backPill" type="button" hidden>↩ Back to where you were</button>
 <div class="tooltip" id="tooltip" role="tooltip"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.9.0/d3.min.js"></script>
-<script src="../assets/js/charts.js?v=1.5"></script>
-<script src="../assets/js/backnav.js?v=1.5"></script>
-<script src="../assets/js/app.js?v=1.5"></script>
+<script src="../assets/js/charts.js?v=1.6"></script>
+<script src="../assets/js/backnav.js?v=1.6"></script>
+<script src="../assets/js/app.js?v=1.6"></script>
 </body>
 </html>
