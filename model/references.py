@@ -527,7 +527,7 @@ USES = {
     "rosenkrantz_2025": "Emergency-department CT per 100 Medicare beneficiaries nearly doubled 2013–2023 while ED visits fell.",
     "mcdonald_2015": "Images per CT/MR study rose about tenfold 1999–2010; a radiologist must read an image every 3–4 seconds. Anchors work-per-exam growth.",
     "dhanoa_2013": "Time-motion study: 36.4% of radiologist time on image interpretation; anchors the task shares.",
-    "rosenkrantz_2016": "Radiology trainee numbers bottomed at 3,080 in 1997 and rose 84% by 2011: the pipeline reacts to the job market.",
+    "rosenkrantz_2016": "Radiologists rose 39.2% from 1995 (27,906) to 2011 (38,875); trainee numbers bottomed at 3,080 in 1997 and rose 84% by 2011: the pipeline reacts to the job market.",
     "sharafinski_2016": "The radiology job market was oversupplied in the mid-2010s as positions kept expanding; domestic interest fell.",
     "shi_2015": "2015 Match: 86% of advanced DR positions filled; 55 of 166 programs unfilled; U.S. graduates took 67% of positions.",
     "nrmp_2026": "2026 Match: a record 1,241 DR positions, 97.6% filled; PGY-1 applicants down 14% over three years.",

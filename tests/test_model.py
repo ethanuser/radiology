@@ -127,6 +127,14 @@ def test_history_calibration_matches_model():
     assert abs(y12["all_q"]["p50"] - labor.R_2012) < 0.015
     beta = history.pay_fit(rec)["beta_all"]
     assert abs(beta["p10"] - labor.BETA[0]) < 0.06 and abs(beta["p90"] - labor.BETA[1]) < 0.08
+    # imaging growth: spread = v1.5 spread x the width chosen on the fitting episodes; centre between v1.5 and history
+    past = history.past_forecasts(rec)
+    u = PARAM_INDEX["util_g0"].args
+    assert abs(u["sd"] - 0.7 * past["best_width"]) < 1e-9 and abs(PARAM_INDEX["util_ginf"].args["sd"] - 0.5 * past["best_width"]) < 1e-9
+    hist_util = rec["drivers"]["work_2022_2026"]["all"]["p50"] - PARAM_INDEX["cmplx_g0"].args["mu"]
+    assert 0.6 < u["mu"] < hist_util and abs(u["mu"] - (0.6 + hist_util) / 2) < 0.15
+    # today's balance: the prior's mode is near the midpoint of v1.5's mode (0.93) and the reconstruction's median
+    assert abs(PARAM_INDEX["ratio0"].args["mode"] - (0.93 + q["p50"]) / 2) < 0.01
 
 
 def test_history_adjustment_validates():

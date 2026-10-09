@@ -28,10 +28,10 @@ PRIOR_SETS = {
     "main": dict(label="This site's assumptions", weights=BASE_W, util=None,
                  note="Imaging growth per person starts near 1.2%/yr.", sources=[]),
     "ai_skeptic": dict(label="AI-skeptical", weights=np.array([0.30, 0.55, 0.12, 0.03]), util=None,
-                       note="Regime weights 30/55/12/3, nearer forecasting panels, which put far lower odds on transformative AI than AI-lab leaders.",
+                       note="Stall/Trend/Fast/Transformative weights 30/55/12/3%, nearer forecasting panels, which put far lower odds on transformative AI than AI-lab leaders.",
                        sources=["leap_2025", "karger_2023"]),
     "ai_bullish": dict(label="AI-bullish", weights=np.array([0.05, 0.35, 0.30, 0.30]), util=None,
-                       note="Regime weights 5/35/30/30, nearer AI-lab leaders and AI 2027 (a widely read scenario of very fast AI progress).",
+                       note="Stall/Trend/Fast/Transformative weights 5/35/30/30%, nearer AI-lab leaders and AI 2027 (a widely read scenario of very fast AI progress).",
                        sources=["ai2027", "metr_2026"]),
     "imaging_restraint": dict(label="Imaging restraint", weights=BASE_W, util=(0.4, 0.7),
                               note="Imaging per person grows ~0.4%/yr: close to claims-based 2018-22 trends, plus payer and Medicare cost pressure (v1.5 assumed 0.6%/yr).",
@@ -79,6 +79,7 @@ def _metrics(o, w):
             "p_over": p,
             "se": float(np.sqrt(p * (1 - p) / ess)),
             "p_short10": float(np.sum(w * (o["R"][:, i] < 0.9))),
+            "p_over_pre": float(np.sum(w * (o["R"][:, i] * np.exp(o["adj"][:, i]) > OVERSUPPLY))),
             "p_below_today": float(np.sum(w * (o["D"][:, i] < 1.0))),
             "p_below_50": float(np.sum(w * (o["D"][:, i] < 0.5))),
             "p_jevons": float(np.sum(w * o["jevons"][:, i])),
@@ -113,8 +114,9 @@ def prior_sets(s, o):
 
 STRUCT_SHORT = {"base": "Main model", "no_signoff": "No radiologist on AI-first reads", "unordered": "Tiers automated in any order",
                 "open_demand": "Much more new imaging", "payer_pushback": "Stronger payer pushback",
-                "uncapped_new_uses": "New uses not capped by scanners", "no_shortage_today": "No shortage today",
-                "tai_gated": "Transformative boost waits for regulation", "no_adjustment": "No market adjustment",
+                "uncapped_new_uses": "New uses not capped by scanners", "no_shortage_today": "Little or no shortage today",
+                "tai_gated": "Transformative boost waits for regulation", "no_adjustment": "No market adjustment (other v1.6 inputs kept)", "shortage_only": "Surpluses not absorbed",
+                "adj_cap15": "Adjustment limit at most 15%", "adj_wide": "Larger adjustment (limit up to 50%)",
                 "assistive_only": "Assistive AI only", "no_ai": "No further radiology AI"}
 
 

@@ -47,7 +47,10 @@ events are kept (§10).{{m('uncertainty')}} Version 1.6 adds a market adjustment
    and {{chg(sm[2055]['demand_p50'])}} by 2055, because AI productivity absorbs much of the growth in imaging. Meaningful oversupply has
    probability {{pct(sm[2045]['p_oversupply'])}} in 2045 and {{pct(sm[2055]['p_oversupply'])}} in 2055; a slight surplus is common
    ($R>1$ in {{pct(sm[2045]['p_supply_exceeds_demand'])}} of futures in 2045) because the market adjustment absorbs moderate
-   imbalances. Outside the transformative branch, meaningful oversupply is {{pct(x['non_tai']['2045']['p_over'])}} likely in 2045 and
+   imbalances. Those figures assume surpluses are absorbed the way the history fit suggests; if the market absorbed shortages
+   but not surpluses, meaningful oversupply would be {{pct(rb['structures']['shortage_only']['2045']['p_over'])}} in 2045 and
+   {{pct(rb['structures']['shortage_only']['2055']['p_over'])}} in 2055. Before the market adjusts, a gap of 10% or more arises in
+   {{pct(sm[2045]['p_oversupply_pre'])}} of futures in 2045. Outside the transformative branch, meaningful oversupply is {{pct(x['non_tai']['2045']['p_over'])}} likely in 2045 and
    {{pct(x['non_tai']['2055']['p_over'])}} in 2055. With no further AI it would be {{pct(rb['structures']['no_ai']['2045']['p_over'])}} and
    {{pct(rb['structures']['no_ai']['2055']['p_over'])}}; with assistive AI but no AI-first reading,
    {{pct(rb['structures']['assistive_only']['2045']['p_over'])}} and {{pct(rb['structures']['assistive_only']['2055']['p_over'])}}.{{m('ds')}}
@@ -68,27 +71,30 @@ events are kept (§10).{{m('uncertainty')}} Version 1.6 adds a market adjustment
    {{pct(rb['structures']['open_demand']['2045']['p_jevons'])}}.{{m('jevres')}}{{m('robust')}}
 6. **What drives the forecast:** the AI-progress regime, then per-person imaging growth, then the market adjustment and the
    size of assistive-AI time savings. Most of the spread comes from inputs graded subjective.{{m('sensitivity')}}
-7. **A surplus would most likely be felt as slower pay growth and a weaker market for new graduates, not unemployment.** In a
-   readout calibrated on radiology's pay history (§9.2), median pay relative to other physicians is
-   {{num(lab['by_year']['2045']['pay_p50'])}} times its 2026 level in 2045 (80%: {{num(lab['by_year']['2045']['pay_p10'])}}–{{num(lab['by_year']['2045']['pay_p90'])}}),
-   and a job market at least as weak as 2012–13 has probability {{pct(lab['by_year']['2045']['p_weak_hiring'])}} in 2045. A severe
+7. **A surplus would most likely be felt as lower pay relative to other physicians and a weaker market for new graduates, not
+   unemployment.** In a readout calibrated on radiology's pay history (§9.2), median pay relative to other physicians is
+   {{num(lab['by_year']['2045']['pay_p50'])}} times its 2026 level in 2045 (80%: {{num(lab['by_year']['2045']['pay_p10'])}}–{{num(lab['by_year']['2045']['pay_p90'])}}), as
+   today's shortage premium erodes, and a job market at least as weak as 2012–13 has probability
+   {{pct(lab['by_year']['2045']['p_weak_hiring'])}} in 2045. On held-out years the pay readout got the direction of the 2022–2025 surge
+   right but predicted only about a third of its size. A severe
    surplus ($R>1.25$) lasting five or more years occurs in {{pct(x['displacement']['p_sustained_severe_surplus'])}} of futures
    ({{pct(x['displacement']['p_sustained_severe_surplus_non_tai'])}} outside the transformative branch).{{m('margins')}}
 8. **Radiology's own history is the main validation, and it changed the model.** Fitted to the documented job market of
-   1995–2013, the model's accounting alone gave the held-out 2015–2025 recovery and shortage little probability; adding a
-   market adjustment, in which work shifts between radiologists and others and labor-saving change speeds up or slows down
-   so that about {{pct(hist['reconstruction']['lam_train']['p50'])}} of an imbalance closes each year (up to a limit), predicted them far
-   better. Version 1.6 adopts that adjustment, which lowers the 2045 oversupply probability from
-   {{pct(rb['structures']['no_adjustment']['2045']['p_over'])}} to {{pct(sm[2045]['p_oversupply'])}}. Forecasts made from past start
-   years improved too, but still did not beat a naive "always balanced" forecast on the held-out years, and for three other
-   occupations a simple average of official projections and trends beat the full method.{{m('history')}}{{m('backtest')}}
+   1995–2013, the model's accounting alone gave the held-out 2015–2025 recovery and shortage little probability. Adding a
+   market adjustment, in which work shifts between radiologists and others and labor-saving change speeds up or slows down,
+   predicted them much better, mainly by pulling the market back toward balance; the history shows the adjustment is at least
+   moderately fast and large but cannot bound it from above. Its surplus side rests mostly on the 2013–2018 recovery, and the
+   mechanism in that direction is assumed rather than observed. Removing the adjustment while keeping v1.6's other inputs
+   raises the 2045 oversupply probability to {{pct(rb['structures']['no_adjustment']['2045']['p_over'])}}. Forecasts made from past
+   start years improved too, but still did not beat a naive "always balanced" forecast on the held-out years, and for three
+   other occupations a simple average of official projections and trends beat the full method.{{m('history')}}{{m('backtest')}}
 9. **The direction is robust; the exact numbers are not.** Under {{len(rb['priors']) - 1}} alternative prior sets (two of them
    combinations) and {{len([k for k, v in rb['structures'].items() if k != 'base' and not v['counterfactual']])}} alternative model
-   structures (including no market adjustment, reads with no radiologist, automation that does not follow a difficulty ladder,
-   and no shortage today), the 2045 oversupply probability ranges from {{pct(rb['band']['2045']['single_lo'])}} to
+   structures (including weaker or no market adjustment, reads with no radiologist, automation that does not follow a difficulty
+   ladder, and little or no shortage today), the 2045 oversupply probability ranges from {{pct(rb['band']['2045']['single_lo'])}} to
    {{pct(rb['band']['2045']['single_hi'])}} (main model {{pct(sm[2045]['p_oversupply'])}}); changing the AI and imaging priors together
    widens this to {{pct(rb['band']['2045']['lo'])}}–{{pct(rb['band']['2045']['hi'])}}. Every variant agrees that oversupply risk is
-   lower in 2035 than later and concentrated in fast-AI futures.{{m('robust')}}
+   lower in 2035 than later. The largest single movers are the AI-progress priors and whether surpluses are absorbed.{{m('robust')}}
 
 **By career stage** (details in §9{{m('careers')}}):
 
@@ -445,11 +451,28 @@ $$A(t)=\operatorname{clip}\bigl(A(t-1)+\lambda\ln R(t-1),\,-b,\,b\bigr),\qquad D
 where $D^{*}$ is demand from §4.1–4.4. In a shortage, other physicians take more of the work and labor-saving tools spread
 faster, as in 1998–2005 [@levin_2011; @bhargavan_2009]. In a surplus the model assumes the reverse:
 radiologists take back reads, take on new services, and labor-saving tools spread more slowly. In effect the adjustment pulls
-supply ÷ demand back toward 1, but only so far. $\lambda\sim U(0.2, 0.55)$ per year is the 80% range of the fit to 1995–2013
-(graded anchored). For the limit, the fit rules out weak adjustment (little weight below about 0.08–0.10) but cannot bound it
-from above, because past imbalances never exceeded about 10–15%; $b\sim U(0.08, 0.28)$ keeps the fitted lower end and caps the
-upper end by judgment (graded subjective). The history test cannot tell which mechanism does the work. Beyond the limit, imbalances persist until residency positions and entry respond, so supply ÷ demand after
-adjustment measures imbalance the market could not absorb. The Jevons accounting (§4.4) refers to demand before adjustment
+supply ÷ demand back toward 1, but only so far. Both parameters are bounded by history only from below: the fit to 1995–2013
+rules out slow adjustment (speed below about 0.2 per year) and weak adjustment (limits below about 0.08–0.10), but with wider
+priors it allows speeds up to about 0.7 and limits up to 0.5, because past imbalances never exceeded about 10–15%. We use
+$\lambda\sim U(0.2, 0.55)$ and $b\sim U(0.08, 0.28)$, the fit's 80% ranges under the original priors; their upper ends are
+judgments (both graded subjective). Fitted separately, the surplus side and the shortage side get similar, weakly pinned
+limits (80%: {{num(hist['asymmetry']['b_up']['p10'])}}–{{num(hist['asymmetry']['b_up']['p90'])}} and
+{{num(hist['asymmetry']['b_down']['p10'])}}–{{num(hist['asymmetry']['b_down']['p90'])}}); on the held-out years, surplus-side adjustment alone
+predicts better (Brier {{num(hist['asymmetry']['brier_surplus_only'])}}) than shortage-side alone
+({{num(hist['asymmetry']['brier_shortage_only'])}}; both {{num(hist['asymmetry']['brier_both'])}}), mostly through the 2013–2018 recovery. The history test
+cannot tell which mechanism does the work, and the reverse flows during surpluses are assumed. Because the headline depends
+on them, §8.4 reports the model with shortage-side adjustment only.
+
+**Overlaps.** The shortage side overlaps the shortage-driven adoption feedback (§4.6), whose separate effect is small
+(§8.1); "taking on new services" overlaps the new-task and Jevons channels (§4.4); and "taking back reads" runs against the
+AI-driven scope shift (§4.4) without being limited to the reads non-radiologists actually do. The limit $b$ caps the combined
+effect but does not remove the double counting.
+
+**What the headline now measures.** Beyond the limit, imbalances persist until residency positions and entry respond, so
+supply ÷ demand after adjustment measures imbalance the market could not absorb. That changes the meaning of "meaningful
+oversupply" from v1.5, which counted the raw imbalance; the headline table therefore also reports the chance of a 10%+ gap
+before the adjustment, which is the work that would have to shift to radiologists, or AI uptake that would have to slow, to
+avoid a surplus. The Jevons accounting (§4.4) refers to demand before adjustment
 ($D^{*}=B-L+I$). The "no market adjustment" structure in §8.4 restores the v1.5 dynamics.
 
 ---
@@ -546,7 +569,8 @@ The occupation backtest asks whether the *method* forecasts employment; it canno
 machinery. Radiology's own record can. Its job market went from surplus in the mid-1990s to a deep shortage around 2000, back to
 balance by 2003–2005, to a surplus for new graduates in 2012–2013, and to today's shortage. Version 1.6 reconstructs that
 history, uses the first half to fit what the model was missing, and checks the fit on the second half. Code:
-`model/history.py`; every choice below was fixed before scoring.
+`model/history.py`. The driver ranges and episode bands were set in 2026, after the outcomes were known; only the time split
+guards against fitting to the held-out years.
 
 **Design.**
 
@@ -562,7 +586,9 @@ history, uses the first half to fit what the model was missing, and checks the f
   each episode is well documented; the bands are judgments about size. Episodes through 2013 are used to fit; the 2015–2025
   episodes are held out.
 * *Fit.* {{f"{hist['reconstruction']['n']:,}"}} simulated histories, starting from an unknown 1995 balance (0.95–1.20), are
-  weighted by agreement with the fitting episodes. There are two versions: accounting only, and accounting plus the **market
+  weighted by agreement with the fitting episodes (effective sample size {{f"{hist['reconstruction']['ess_train']:,.0f}"}} with the
+  market adjustment and {{f"{hist['no_adjustment']['ess_train']:,.0f}"}} without; with all eight episodes,
+  {{f"{hist['reconstruction']['ess_all']:,.0f}"}} and only {{f"{hist['no_adjustment']['ess_all']:,.0f}"}}). There are two versions: accounting only, and accounting plus the **market
   adjustment** of §4.7, whose speed λ (0–0.6 per year) and limit b (0–0.3) are unknown and fitted.
 
 **Results.** The last two columns give the probability the fitted reconstruction assigns to each episode's band.
@@ -575,8 +601,11 @@ history, uses the first half to fit what the model was missing, and checks the f
   lasts through the late 2010s and gives the held-out recovery and shortage little probability (Brier score
   {{num(hist['no_adjustment']['brier_validation']['train'])}} on the held-out episodes, where 0 is perfect and 1 is certain and wrong).
   The market turned faster than the published growth rates allow.
-* **A market adjustment fitted to 1995–2013 predicts the held-out years far better** (Brier
-  {{num(hist['reconstruction']['brier_validation']['train'])}}). The fit puts the speed at λ ≈ {{num(hist['reconstruction']['lam_train']['p50'])}}
+* **A market adjustment fitted to 1995–2013 predicts the held-out years much better** (Brier
+  {{num(hist['reconstruction']['brier_validation']['train'])}}), mostly for the near-balance episodes of 2015–2019; for the 2022–2025
+  shortage the gain is small ({{pct(hist['no_adjustment']['episodes'][7]['p_train'])}} to {{pct(hist['reconstruction']['episodes'][7]['p_train'])}}).
+  The gain survives wider driver ranges: with every range 1.5 times wider, the held-out Brier scores are
+  {{num(hist['driver_sensitivity']['adjust'])}} with the adjustment and {{num(hist['driver_sensitivity']['noadj'])}} without. The fit puts the speed at λ ≈ {{num(hist['reconstruction']['lam_train']['p50'])}}
   per year (80%: {{num(hist['reconstruction']['lam_train']['p10'])}}–{{num(hist['reconstruction']['lam_train']['p90'])}}) and the limit at
   b ≈ {{num(hist['reconstruction']['b_train']['p50'])}} ({{num(hist['reconstruction']['b_train']['p10'])}}–{{num(hist['reconstruction']['b_train']['p90'])}}).
   Histories with almost no adjustment (b < 0.05) get only {{pct(hist['reconstruction']['p_weak_adjustment_train'])}} of the weight.
@@ -584,8 +613,9 @@ history, uses the first half to fit what the model was missing, and checks the f
   mechanisms: non-radiologists' imaging grew about twice as fast as radiologists' in 1998–2005, the shortage years [@levin_2011],
   and radiologists' output per FTE rose 70% from 1991–92 to 2006–07 as PACS, voice recognition and teleradiology spread
   [@bhargavan_2009]. The data cannot separate these mechanisms, or show the reverse flows during surpluses directly.
-* **It still misses the depth of the 2000 shortage** ({{pct(hist['reconstruction']['episodes'][1]['p_train'])}}), because fast adjustment
-  pulls toward balance. Deep shortages may therefore be underweighted in the main forecast.
+* **It fits the depth of the 2000 shortage worse** ({{pct(hist['reconstruction']['episodes'][1]['p_train'])}}, against
+  {{pct(hist['no_adjustment']['episodes'][1]['p_train'])}} without it), because fast adjustment pulls toward balance. The same compression
+  applies to deep surpluses, which is what the headline measures, so both tails may be underweighted in the main forecast.
 * **Today's balance.** With all eight episodes, the reconstruction puts 2026 at {{num(hist['reconstruction']['ratio2026_all']['p50'])}}
   (80%: {{num(hist['reconstruction']['ratio2026_all']['p10'])}}–{{num(hist['reconstruction']['ratio2026_all']['p90'])}}) and needs radiologist
   work per person to have grown about {{f"{hist['reconstruction']['drivers']['work_2022_2026']['all']['p50']:.1f}"}}%/yr in 2022–2026.
@@ -601,9 +631,15 @@ count as 2%):
 ![Figure 16. Forecasts made in 2000, 2005, 2010 and 2016 (median and 80% range) with version 1.5 rules (grey) and history-trained rules (blue), against the documented episodes.](figures/fig16_past_forecasts.png)
 
 Extrapolating recent per-person trends was the main failure: from 2010 and 2016 the rule projected the post-2008 decline in
-imaging forward and missed the recovery. Adding the market adjustment and making the spreads 1.5 times wider (the width that
-scored best on the fitting episodes) improved both the fitting and the held-out scores. On the held-out episodes, however, the
-trained rules still lost to simply assuming a balanced market. Probabilities for each start year and episode are in
+imaging forward and missed the recovery. Adding the market adjustment and making the spreads 1.5 times wider improved both the
+fitting and the held-out scores. Three caveats. The fitting-episode scores are in-sample for the trained rules, whose
+adjustment was fitted on those episodes. The 1.5 width barely beat 1.0 on the fitting episodes
+({{num(hist['past']['scores']['trained_w1.5']['train'])}} vs {{num(hist['past']['scores']['trained_w1.0']['train'])}}), while the held-out episodes
+favored even wider spreads ({{num(hist['past']['scores']['trained_w2.0']['validate'])}} at 2.0), which we did not adopt because that would
+choose on held-out years. And the rules had some foresight: they used realized ranges for headcount and demographics, and the
+"recent trend" at a start year averages era ranges that were set with later data. Even so, on the held-out episodes the trained
+rules lost to simply assuming a balanced market; for the 2022–2025 shortage they gave
+{{pct(hist['past']['pairs'][11]['p_trained'])}} (from 2010) and {{pct(hist['past']['pairs'][13]['p_trained'])}} (from 2016). Probabilities for each start year and episode are in
 `outputs/history.json`.
 
 **Supply check.** The model's cohort machinery, run backward, does not reproduce history:
@@ -625,8 +661,12 @@ calibration to Christensen et al's age-based projection (§4.5), not on this his
    {{pct(hist['wide']['b_bins'][5]['weight'])}} against {{pct(hist['wide']['b_bins'][3]['prior'])}} each). So the upper end, 0.28 (the fit's 80% point under the
    original 0–0.3 prior), is a judgment, and a larger limit would lower the oversupply probabilities further.
 2. **Per-person imaging growth now** is centered at 1.2%/yr (σ 1.05) instead of 0.6%/yr (σ 0.7), and its long-run spread is
-   also 1.5 times wider (§4.1).
-3. **Today's balance** is Triangular(0.88, 0.945, 0.99) instead of (0.85, 0.93, 0.99) (§4.1).
+   also 1.5 times wider (§4.1). The center is a judgment halfway between the claims-based view and the reconstruction's
+   ≈1.8%/yr, not a formal combination: the reconstruction's estimate is barely narrower than the range it started from, shares
+   sources with the claims-based view, and is about half a point lower without the market adjustment.
+3. **Today's balance** is Triangular(0.88, 0.945, 0.99) instead of (0.85, 0.93, 0.99) (§4.1): one judgment informed by the
+   reconstruction (0.95 with the adjustment, 0.88 without), whose 2022–2025 episode was coded from some of the same signals.
+   Items 2 and 3 are drawn independently, although in the reconstruction faster recent growth goes with a deeper shortage today.
 4. **Pay readout** (§9.2), calibrated on the reconstructed market and 2001–2025 pay.
 5. **Unchanged:** the supply model, the AI and regulatory components, and the regime weights.
 
@@ -833,11 +873,17 @@ re-simulated from the same draws:
   yet, and because regulatory lags load on the AI-speed factor (−0.3), the non-event also counts as evidence against fast AI.
 * *No shortage today:* supply ÷ demand in 2026 drawn from 0.95–1.03 instead of 0.88–0.99, since the main prior rules out a
   balanced market today.
-* *No market adjustment:* shortages and surpluses persist until residency positions and entry respond, as in version 1.5 (with
-  version 1.6's other inputs, so the numbers differ from v1.5's published ones). The
+* *No market adjustment:* shortages and surpluses persist until residency positions and entry respond, as in version 1.5, but
+  with version 1.6's other inputs, which were calibrated with the adjustment on (so this is not a coherent v1.5 model; its 2045
+  shortage probability, {{pct(rb['structures']['no_adjustment']['2045']['p_short10'])}}, is inflated by them). The
   history test disfavors this structure (§6.3), but it shows how much the adjustment matters: the 2045 oversupply probability is
   {{pct(rb['structures']['no_adjustment']['2045']['p_over'])}} instead of {{pct(sm[2045]['p_oversupply'])}}, and a meaningful shortage
   {{pct(rb['structures']['no_adjustment']['2045']['p_short10'])}} instead of {{pct(sm[2045]['p_shortage_10'])}}.
+* *Surpluses not absorbed:* the market closes shortages as fitted but work does not flow back to radiologists in a surplus.
+  2045 oversupply {{pct(rb['structures']['shortage_only']['2045']['p_over'])}}, 2055 {{pct(rb['structures']['shortage_only']['2055']['p_over'])}}.
+* *Adjustment limit at most 15%,* the largest gap seen in 1995–2026: {{pct(rb['structures']['adj_cap15']['2045']['p_over'])}} in 2045.
+* *Larger adjustment:* speed and limit drawn from the wider fit (limit up to 50%): {{pct(rb['structures']['adj_wide']['2045']['p_over'])}}
+  in 2045.
 * *Transformative boost waits for regulation:* in the main model, the transformative regime raises assistive time-saving
   ceilings (interpretation up to 70%, drafting up to 90%) without passing the validation, FDA and payment pipeline that gates
   AI-first reading. That boost drives much of the transformative branch's near-certain oversupply in 2035. In this variant the
@@ -864,9 +910,9 @@ and AI-first reading adds the rest after 2045; without further AI only
 The qualitative conclusions survive every variant: oversupply risk is lower in 2035 than in 2045–2055,
 and regulation and adoption lags matter. The quantitative ones do not: the 2045 oversupply probability spans
 {{pct(rb['band']['2045']['single_lo'])}}–{{pct(rb['band']['2045']['single_hi'])}} across single changes and
-{{pct(rb['band']['2045']['lo'])}}–{{pct(rb['band']['2045']['hi'])}} including the corners, driven mostly by the AI and imaging-growth
-priors. The structural variants
-move it less, except that the Jevons result is fragile: with three times the new demand, a true Jevons paradox occurs in
+{{pct(rb['band']['2045']['lo'])}}–{{pct(rb['band']['2045']['hi'])}} including the corners. The largest single movers are the AI-progress
+priors and the market adjustment: removing it, or letting it absorb shortages but not surpluses, roughly doubles the 2045 figure,
+more than any other structural change. The Jevons result is also fragile: with three times the new demand, a true Jevons paradox occurs in
 {{pct(rb['structures']['open_demand']['2045']['p_jevons'])}} of futures in 2045. These bands are sensitivity ranges, not
 confidence intervals. They cover a chosen set of alternatives, not the full space of plausible structures (for example, a
 transformative-AI future that also creates large imaging-derived services needing little scanner time). Only the market
@@ -921,10 +967,13 @@ feed back into supply or demand.
   {{num(hist['pay']['beta_train']['p50'])}} (80%: {{num(hist['pay']['beta_train']['p10'])}}–{{num(hist['pay']['beta_train']['p90'])}}).
   For the held-out years 2022–2025 it predicts relative pay growth of
   {{f"{hist['pay']['validation'][0]['pred']['p50']:+.1f}"}}%/yr (80%: {{f"{hist['pay']['validation'][0]['pred']['p10']:+.1f}"}} to
-  {{f"{hist['pay']['validation'][0]['pred']['p90']:+.1f}"}}), against about +3%/yr observed [@doximity_2023; @doximity_2024;
-  @doximity_2025; @doximity_2026]: the right direction, but too small. The forward readout uses β refitted on all years (80%:
-  {{num(lab['beta'][0])}}–{{num(lab['beta'][1])}}) and lets relative pay drift back toward other physicians' pay by 5%–20% a year (a
-  judgment: fees, hours and entry respond to pay, and without this drift a long surplus would cut pay without limit).
+  {{f"{hist['pay']['validation'][0]['pred']['p90']:+.1f}"}}), against about +4%/yr observed in the years with a comparator
+  [@doximity_2023; @doximity_2025; @doximity_2026]: the right direction, but only about a third of the size. (The 2022–2025
+  job-market episode used to reconstruct supply ÷ demand is coded without pay data, so this check is not circular.) The forward
+  readout uses β refitted on all years (80%: {{num(lab['beta'][0])}}–{{num(lab['beta'][1])}}), fitted on imbalances of about ±10% and
+  extrapolated beyond them. It lets relative pay drift by 5%–20% a year toward a normal level, between today's and about 15%
+  below it (before the 2022–2025 premium); fees, hours and entry respond to pay, and without this drift a long surplus would cut
+  pay without limit. Both are judgments.
 * **The job market for new graduates**, compared with 2012–13. That was the last surplus: hiring was flat at about the number of
   graduates, with deficits for new graduates [@bluth_2014; @pfeifer_2017]. The reconstruction puts it at supply ÷ demand
   ≈{{num(lab['r_2012'])}}, so "meaningful oversupply" (1.10) is about twice that surplus.
@@ -933,8 +982,8 @@ feed back into supply or demand.
 
 ![Figure 17. Radiologist pay relative to other physicians, 2026 = 1 (left; median, 50% and 80% ranges), and the chance of a job market at least as weak as 2012–13 or of meaningful oversupply (right).](figures/fig17_pay_hiring.png)
 
-Median relative pay stays close to its 2026 level, rising while today's shortage lasts and easing afterward, but the range
-widens: by 2045 the 80% range runs from {{num(lab['by_year']['2045']['pay_p10'])}} to {{num(lab['by_year']['2045']['pay_p90'])}} times the
+Median relative pay rises while today's shortage lasts and then eases below its 2026 level as the shortage premium erodes,
+and the range widens: by 2045 the 80% range runs from {{num(lab['by_year']['2045']['pay_p10'])}} to {{num(lab['by_year']['2045']['pay_p90'])}} times the
 2026 level, with the deep falls in the transformative branch. In order of likelihood, AI risk would show up as:
 
 1. **Task composition** (near-certain). See §7.6.
@@ -984,10 +1033,12 @@ the job, the remaining work becomes more expert, which tends to support pay but 
   and uneven [@rula_2026; @zamani_2026].
 * **Pay is a readout, not an equilibrium.** $R$ drives a pay index calibrated on history (§9.2), but pay does not feed back into
   supply or demand, hours are not modeled separately, and fee policy (who keeps AI's time savings) is not modeled.
-* **The market adjustment is partly extrapolated.** Its speed and lower limit were fitted to imbalances of about ±10% (§6.3); its
-  upper limit is a judgment, AI could produce shifts several times larger, and the mechanism (turf, adoption pace, induced work)
-  is not identified. Without it the 2045 oversupply probability is {{pct(rb['structures']['no_adjustment']['2045']['p_over'])}}
-  instead of {{pct(sm[2045]['p_oversupply'])}} (§8.4).
+* **The headline depends on surpluses being absorbed.** The market adjustment's speed and limit are bounded by history only from
+  below (§4.7, §6.3); its surplus side rests mostly on one transition (2013–2018), and the mechanism in that direction is
+  assumed. If surpluses are not absorbed, the 2045 oversupply probability is
+  {{pct(rb['structures']['shortage_only']['2045']['p_over'])}} instead of {{pct(sm[2045]['p_oversupply'])}} (§8.4). Applying limits learned from
+  imbalances of about ±10% to AI-driven shifts several times larger is an extrapolation.
+* **Pay is underpredicted.** The pay readout predicted only about a third of the 2022–2025 relative pay surge on held-out years.
 * **The starting point is reconstructed, not measured.** The 2026 ratio (median 0.94) combines indirect market signals with a
   reconstruction from coded job-market episodes (§6.3). A milder starting shortage (0.97) raises the 2045 oversupply probability
   from about {{pct(sm[2045]['p_oversupply'])}} to {{pct(tor["Today's shortage (2026 S/D)"]['pOver2045_high'])}}.

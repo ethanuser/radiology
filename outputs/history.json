@@ -265,12 +265,11 @@
     ],
     "state": "Shortage",
     "split": "validate",
-    "evidence": "67% of practices understaffed (2022 survey); radiologist pay up 7.5% and 6.6% vs 3.7% and 2.0% for all physicians",
+    "evidence": "67% of radiologists said their practices were understaffed (2022 survey); practice turnover up to 8.5% (2022); record residency positions (coded without pay data, which test the pay readout)",
     "sources": [
      "dibble_2025",
-     "doximity_2025",
-     "doximity_2026",
-     "parikh_2026"
+     "parikh_2026",
+     "nrmp_2026"
     ],
     "p_prior": 0.17132666666666665,
     "p_train": 0.25188073455665727,
@@ -1165,12 +1164,11 @@
     ],
     "state": "Shortage",
     "split": "validate",
-    "evidence": "67% of practices understaffed (2022 survey); radiologist pay up 7.5% and 6.6% vs 3.7% and 2.0% for all physicians",
+    "evidence": "67% of radiologists said their practices were understaffed (2022 survey); practice turnover up to 8.5% (2022); record residency positions (coded without pay data, which test the pay readout)",
     "sources": [
      "dibble_2025",
-     "doximity_2025",
-     "doximity_2026",
-     "parikh_2026"
+     "parikh_2026",
+     "nrmp_2026"
     ],
     "p_prior": 0.10298,
     "p_train": 0.18942877636667244,
@@ -2729,9 +2727,9 @@
  },
  "pay": {
   "beta_train": {
-   "p10": 0.3378142836260071,
-   "p50": 0.48497679652917863,
-   "p90": 0.7401474721774814
+   "p10": 0.2936648555869761,
+   "p50": 0.4230274139209831,
+   "p90": 0.6660937302450816
   },
   "validation": [
    {
@@ -2739,20 +2737,20 @@
      2022,
      2025
     ],
-    "lo": 1.5,
-    "hi": 4.5,
+    "lo": 2.5,
+    "hi": 5.0,
     "pred": {
-     "p10": 0.5540816218936905,
-     "p50": 1.4224775196440531,
-     "p90": 2.7425724813342636
+     "p10": 0.49362358458496614,
+     "p50": 1.2464737418944483,
+     "p90": 2.445851022829356
     },
     "inside": false
    }
   ],
   "beta_all": {
-   "p10": 0.4086565131564508,
-   "p50": 0.5651338301314085,
-   "p90": 0.810891360195291
+   "p10": 0.4140748462194149,
+   "p50": 0.5870310249091912,
+   "p90": 0.8758980170791761
   }
  },
  "supply": {
@@ -2858,6 +2856,26 @@
     "prior": 0.19999999999999996
    }
   ]
+ },
+ "driver_sensitivity": {
+  "widen": 1.5,
+  "adjust": 0.3113041262273151,
+  "noadj": 0.5248600224546979
+ },
+ "asymmetry": {
+  "b_up": {
+   "p10": 0.06426635924311787,
+   "p50": 0.18100631650819418,
+   "p90": 0.27684419456411374
+  },
+  "b_down": {
+   "p10": 0.040939332968680874,
+   "p50": 0.16128274446494598,
+   "p90": 0.272645911437285
+  },
+  "brier_both": 0.3660018780665883,
+  "brier_surplus_only": 0.4280284232609641,
+  "brier_shortage_only": 0.652461657606361
  },
  "drivers_meta": {
   "demo": {

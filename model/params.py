@@ -159,9 +159,11 @@ PARAMS: list[Param] = [
       "beneficiary nearly doubled 2013-2023. Each end of the trend range is a single modality (CT up, nuclear medicine down), "
       "so a work-weighted claims-based figure is lower than CT's. Version 1.5 centred per-person growth at 0.6%/yr (σ 0.7). The "
       "history test (model/history.py) needs radiologist work per person to have grown about 2.2%/yr in 2022-2026 (80%: "
-      "1.1-2.9) to explain today's shortage, about 1.8%/yr after removing complexity growth. The centre, 1.2%/yr, weights the "
-      "two equally by precision; the spread is 1.5 times v1.5's because that width forecast best from past start years "
-      "(trained on 1995-2013, also better on 2015-2025). Growth decays toward ~0.2%/yr. The 'imaging restraint' prior set "
+      "1.1-2.9; about 1.8%/yr after removing complexity growth) to explain today's shortage, but that estimate is barely "
+      "narrower than the range it started from, shares sources with the claims-based view, and is about 0.5 points lower "
+      "without the market adjustment. The centre, 1.2%/yr, halfway between, is therefore a judgment informed by both. The "
+      "spread is 1.5 times v1.5's, a width that tied with 1.0 on the fitting episodes and did better on the held-out ones (wider "
+      "still did better there, but choosing on held-out years would leak). Growth decays toward ~0.2%/yr. The 'imaging restraint' prior set "
       "(near claims-based trends) and 'imaging growth' (the history estimate) bracket it.",
       {"z_dem": 0.7}),
     P("util_ginf", "demand", "Long-run per-capita utilization growth (asymptote)",
@@ -187,8 +189,10 @@ PARAMS: list[Param] = [
       "in 2038 (a projection, not today's gap), and the Neiman Institute calls the shortage 'fairly static'. Compensation rose "
       "6.6% in a year and DR positions keep expanding. Average exams read per radiologist-day were flat 2018-2024 (+0.6%) but the busiest quartile read 31% "
       "more, and practice turnover rose from 5.3% to 8.5% (2013-2022): a real but uneven, moderate shortage. The history "
-      "reconstruction (model/history.py), which fits the documented job market since 1995, puts 2026 at 0.95 (80%: 0.92-0.98); "
-      "v1.5's judgment was Triangular(0.85, 0.93, 0.99). This prior combines the two."),
+      "reconstruction (model/history.py), which fits the documented job market since 1995, puts 2026 at 0.95 (80%: 0.92-0.98) "
+      "with the market adjustment and 0.88 without it, and its 2022-2025 episode was coded from some of the same signals. "
+      "v1.5's judgment was Triangular(0.85, 0.93, 0.99); this prior is one judgment informed by that model-dependent "
+      "reconstruction, not an independent second estimate."),
 
     # ======================================= 2. AI CAPABILITY & ASSISTIVE PRODUCTIVITY =========================
     P("ai_u", "ai_capability", "AI progress speed (quantile → timeline multiplier M)",
@@ -388,8 +392,9 @@ PARAMS: list[Param] = [
 
     # ======================================= 6. MARKET ADJUSTMENT ==============================================
     P("adj_speed", "market", "Market adjustment speed: share of the remaining shortage or surplus closed each year",
-      "uniform", dict(lo=0.2, hi=0.55), "per year", "A", ["sunshine_2007", "levin_2011", "bhargavan_2009"],
-      "Fitted in the history test on the documented job market of 1995-2013 (80% range 0.19-0.55); with it, the held-out "
+      "uniform", dict(lo=0.2, hi=0.55), "per year", "S", ["sunshine_2007", "levin_2011", "bhargavan_2009"],
+      "The history test on the documented job market of 1995-2013 shows at least about 0.2 per year (80% range 0.19-0.55 under "
+      "a 0-0.6 prior); with a wider prior it allows up to about 0.7, so the upper end is a judgment. With it, the held-out "
       "2015-2025 episodes are predicted far better than without. The radiology job market has repeatedly self-corrected "
       "within a few years, faster than the training pipeline allows: work moved to non-radiologists while radiologists were "
       "scarce (their imaging grew twice as fast in 1998-2005), and radiologists' output per FTE rose 70% in 1992-2007 as PACS "

@@ -66,5 +66,5 @@
 | `resid_lag`: Information/perception lag before the pipeline reacts | Uniform(1, 3) | 1.2 / 2 / 2.8 | years | A | sharafinski_2016 |
 | `fear`: Applicant deterrence from visible AI progress (max fill-rate loss) | Uniform(0, 0.08) | 0.008 / 0.04 / 0.072 | share | A | nrmp_2026, reeder_2022 |
 | `fte_drift`: Drift in FTE per radiologist (part-time, generational preferences) | Normal(μ=-0.1, σ=0.15) | -0.292 / -0.1 / 0.0922 | %/yr | S |  |
-| `adj_speed`: Market adjustment speed: share of the remaining shortage or surplus closed each year | Uniform(0.2, 0.55) | 0.235 / 0.375 / 0.515 | per year | A | sunshine_2007, levin_2011, bhargavan_2009 |
+| `adj_speed`: Market adjustment speed: share of the remaining shortage or surplus closed each year | Uniform(0.2, 0.55) | 0.235 / 0.375 / 0.515 | per year | S | sunshine_2007, levin_2011, bhargavan_2009 |
 | `adj_max`: Largest cumulative market adjustment (share of radiologist work that can shift) | Uniform(0.08, 0.28) | 0.1 / 0.18 / 0.26 | share | S | levin_2011 |

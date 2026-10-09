@@ -50,7 +50,7 @@ tcap3_T0,0.0002,-0.0101,0.0004,0.0195,0.0007,0.0246,0.0000,0.0072,0.0003,-0.0450
 latent,0.0012,0.0421,0.0004,0.0337,0.0005,0.0336,0.0016,-0.0507,0.0001,-0.0143,0.0000,-0.0063,Latent demand currently rationed by scanner/technologist capacity,A,Latent (rationed) demand
 resid_lag,0.0000,-0.0009,0.0004,0.0154,0.0004,0.0145,0.0001,0.0078,0.0009,0.0278,0.0009,0.0148,Information/perception lag before the pipeline reacts,A,Pipeline reaction lag
 s_interp,0.0002,0.0130,0.0003,-0.0050,0.0005,-0.0095,0.0000,-0.0153,0.0003,0.0294,0.0007,0.0353,Task share: interp,A,Task share: interpretation
-adj_speed,0.0007,0.0224,0.0003,0.0220,0.0000,-0.0026,0.0004,-0.0123,0.0008,-0.0824,0.0000,-0.0355,Market adjustment speed: share of the remaining shortage or surplus closed each year,A,Market adjustment speed
+adj_speed,0.0007,0.0224,0.0003,0.0220,0.0000,-0.0026,0.0004,-0.0123,0.0008,-0.0824,0.0000,-0.0355,Market adjustment speed: share of the remaining shortage or surplus closed each year,S,Market adjustment speed
 elasticity,0.0003,-0.0223,0.0003,-0.0155,0.0002,-0.0156,0.0007,0.0301,0.0001,0.0116,0.0000,0.0028,Price elasticity of imaging demand,A,Price elasticity of imaging
 tcap4_T0,0.0003,0.0019,0.0002,0.0004,0.0004,0.0060,0.0000,0.0010,0.0000,0.0096,0.0001,-0.0003,Tier 4 (residual hardest work) capability year (M=1),S,Tier-4 capability year
 new_T0,0.0023,-0.0398,0.0002,-0.0033,0.0000,-0.0068,0.0024,0.0426,0.0001,-0.0214,0.0000,-0.0098,Midpoint year of new-application uptake (M=1),S,New-application timing

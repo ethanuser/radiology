@@ -26,6 +26,7 @@
       <a href="#story">Timeline</a>
       <a href="#careers">Careers</a>
       <a href="#ai">Why</a>
+      <a href="#market">Market</a>
       <a href="#uncertainty">How sure</a>
       <a href="#signposts">What to watch</a>
       <a href="#explore">Explore</a>
@@ -47,7 +48,7 @@
       <div>
         <div class="kicker">A probabilistic forecast · 2026 → 2066</div>
         <h1>Will AI take radiology jobs?</h1>
-        <p class="dek">We simulated <b data-v="F.n_sims" data-f="int">20,000</b> possible futures of the U.S. radiologist workforce, modeling
+        <p class="dek">We simulated <b data-v="F.n_drawn" data-f="int">20,000</b> possible futures of the U.S. radiologist workforce, modeling
           imaging demand, how much time AI saves, regulation, the new imaging AI creates, and the training pipeline. The forecast is for
           anyone considering, training in, or practicing diagnostic radiology.</p>
         <p class="byline">Version 1.6 · October 2026 · <a href="report.html">Full technical report</a> · <a href="https://github.com/ethanuser/radiology">Python model &amp; data</a> ·
@@ -80,7 +81,9 @@
     <h2>The short answer</h2>
     <p><b>Probably not. Today's shortage most likely eases into rough balance, and the chance of at least 10% more radiologists than the work
       needs stays modest: about <span data-v="SUM.2045.p_oversupply" data-f="pct"></span> in 2045 and <span data-v="SUM.2055.p_oversupply" data-f="pct"></span>
-      in 2055, mostly in futures with <a href="#term-regimes">transformative AI</a>.</b></p>
+      in 2055, mostly in futures with <a href="#term-regimes">transformative AI</a>.</b> That assumes the market absorbs surpluses the way history
+      suggests; if it absorbed shortages but not surpluses, the 2045 figure would be <span data-v="F.robust.structures.shortage_only.2045.p_over" data-f="pct"></span>
+      (<a href="#market">why</a>).</p>
     <p><b>The next decade.</b> The market will most likely be close to balance: slightly short until about 2030, slightly over after that. In 2035,
       <a href="#term-oversupply">meaningful oversupply</a> (<b data-v="SUM.2035.p_oversupply" data-f="pct"></b>) is more likely than a meaningful shortage
       (<b data-v="SUM.2035.p_shortage_10" data-f="pct"></b>), but both are unlikely.<a class="mlink" href="#m-market" title="Method: market adjustment">§</a></p>
@@ -91,17 +94,20 @@
       <li><b>AI saves <span data-v="X.time_saved.2045.p50" data-f="pct"></span> of radiologist time</b><br><span class="ink2">Drafting and measurement first,
         then <a href="#term-ai">AI-first reading</a> of simpler exams as regulation and payment allow (<a href="#ai">details</a>).</span></li>
       <li><b>New work AI creates gives back about <span data-v="JEV.2045.offset_p50" data-f="pct"></span> of that saving</b><br><span class="ink2">So demand
-        for radiologists ends up <span data-v="SUM.2045.demand_p50" data-f="gr"></span> above today (<a href="#jevons">details</a>).</span></li>
-      <li><b>Supply also grows about <span data-v="SUM.2045.supplyd_p50" data-f="gr"></span>, so the median future is near balance (<span data-v="SUM.2045.ratio_p50" data-f="x2"></span>)</b><br><span class="ink2">When
-        supply and demand drift apart, the market closes part of the gap each year: work shifts between radiologists and other doctors, and labor-saving tools
-        spread faster or slower, as in 1995–2025 (<a href="#history">how we know</a>). That absorbs moderate gaps but not the larger ones transformative AI
-        could cause.<a class="mlink" href="#m-market" title="Method: market adjustment">§</a></span></li>
+        for radiologists ends up <span data-v="SUM.2045.demand_p50" data-f="gr"></span> above today; this already includes the market adjustment in step 4
+        (<a href="#jevons">details</a>).</span></li>
+      <li><b>Supply grows faster, from <span data-v="F.series.Sd.p50.0" data-f="x2"></span> today to <span data-v="SUM.2045.supplyd_p50" data-f="x2"></span>, catching up with demand, so the
+        median future is near balance (<span data-v="SUM.2045.ratio_p50" data-f="x2"></span>)</b><br><span class="ink2">When supply and demand drift apart, the market closes part of the
+        gap each year: work shifts between radiologists and other doctors, and labor-saving tools spread faster or slower, as in 1995–2025
+        (<a href="#market">how we know</a>). Because the market can absorb gaps up to about <span data-v="F.adj_max.q50" data-f="pct"></span> of demand, a 10%+ surplus mostly
+        requires AI to remove more work than that, which happens mainly with transformative AI.<a class="mlink" href="#m-market" title="Method: market adjustment">§</a></span></li>
     </ol>
     <p><b>The risk rises until about 2055 and then levels off</b> (<span data-v="SUM.2055.p_oversupply" data-f="pct"></span> in 2055,
       <span data-v="SUM.2066.p_oversupply" data-f="pct"></span> in 2066). Nearly all of it comes from AI, most of it from transformative AI
-      (<a href="#ai-share">how much</a>). AI is unlikely to create more radiologist work than it saves (<a href="#jevons">why</a>).</p>
+      (<a href="#ai-share">how much</a>). AI is unlikely to create more radiologist work than it saves (<a href="#jevons">why</a>). A renewed meaningful shortage is
+      also possible (<span data-v="SUM.2045.p_shortage_10" data-f="pct"></span> in 2045, <span data-v="SUM.2066.p_shortage_10" data-f="pct"></span> in 2066), mostly where imaging per person grows fast.</p>
     <p><b>What it means.</b> People entering practice in the next decade will most likely start in a market close to balance. If a surplus comes,
-      it would most likely be felt as slower pay growth than other physicians and fewer openings for new graduates, not layoffs
+      it would most likely be felt as lower pay relative to other physicians and fewer openings for new graduates, not layoffs
       (<a href="#pay">pay and hiring</a>). <a href="#careers">By career stage →</a></p>
     <p><b>How sure.</b> Trust the direction more than the digits. The percentages show what follows from our assumptions; they are not odds with a
       track record. Under other defensible assumptions the 2045 figure ranges from <span data-v="F.robust.band.2045.lo" data-f="pct"></span> to
@@ -137,9 +143,11 @@
       <div class="gcard" id="term-market"><h4>Market adjustment</h4>
         <p>When radiologists are scarce, other doctors take on more of the reading and labor-saving tools spread faster; the model assumes the reverse
           when radiologists are plentiful. Each year about <span data-v="F.adj_speed.q50" data-f="pct"></span> of a gap closes (80% range
-          <span data-v="F.adj_speed.q10" data-f="pct"></span>–<span data-v="F.adj_speed.q90" data-f="pct"></span>), up to a limit of about
-          <span data-v="F.adj_max.q50" data-f="pct"></span> of demand (<span data-v="F.adj_max.q10" data-f="pct"></span>–<span data-v="F.adj_max.q90" data-f="pct"></span>), as fitted to
-          radiology's job market since 1995 (<a href="#history">details</a>). In effect it pulls supply ÷ demand back toward 1, but only so far. Demand figures include it.</p></div>
+          <span data-v="F.adj_speed.q10" data-f="pct"></span>–<span data-v="F.adj_speed.q90" data-f="pct"></span>), a speed fitted to radiology's job market since 1995. History shows the market
+          can absorb a gap of at least about 10% of demand; our central limit of about <span data-v="F.adj_max.q50" data-f="pct"></span>
+          (range <span data-v="F.adj_max.q10" data-f="pct"></span>–<span data-v="F.adj_max.q90" data-f="pct"></span>) is partly judgment, and the evidence that surpluses are absorbed rests
+          mostly on one recovery, 2013–2018 (<a href="#market">details</a>). In effect it pulls supply ÷ demand
+          back toward 1, but only so far. Demand figures include it.</p></div>
       <div class="gcard" id="term-ai"><h4>AI-assisted vs AI-first reading</h4>
         <p><b>AI-assisted</b>: the radiologist reads; AI drafts, measures and flags. <b>AI-first</b>: AI reads and reports first; a radiologist audits,
           signs or handles escalations, which in the main model still takes about a fifth of the usual time on average (spot checks, escalations and
@@ -148,10 +156,8 @@
         <p>How fast general AI improves is the largest unknown, so each future falls into one of four regimes: <b>Stall</b>
           (<span data-v="F.regimes.weights.0" data-f="pct"></span> of futures: radiology AI takes 1.6–3 times as long as under Trend), <b>Trend</b> (<span data-v="F.regimes.weights.1" data-f="pct"></span>:
           today's pace), <b>Fast</b> (<span data-v="F.regimes.weights.2" data-f="pct"></span>: about twice as fast), and <b>Transformative AI</b> (<span data-v="F.regimes.weights.3" data-f="pct"></span>:
-          AI eventually does nearly all of a radiologist's cognitive work). The weights are judgment calls; change them in the <a href="#explore">explorer</a>.</p></div>
-      <div class="gcard" id="term-tiers"><h4>Tiers of exam difficulty</h4>
-        <p>Four groups of exams that AI could read first, one after another: <b>1</b> normal radiographs and negative screens, <b>2</b> other
-          radiographs and screening, <b>3</b> most CT and MRI, <b>4</b> the hardest remaining work (<a href="#tiers-detail">details</a>).</p></div>
+          AI eventually does nearly all of a radiologist's cognitive work). The weights are judgment calls, shown after removing futures already contradicted by
+          events; change them in the <a href="#explore">explorer</a>.</p></div>
     </div>
   </div>
 </section>
@@ -194,9 +200,10 @@
             calls the five-year potential,<sup class="cite" data-ref="langlotz_2025"></sup> because adopting tools takes years even after they work.<sup class="cite" data-ref="lehman_2015"></sup><a class="mlink" href="#m-ai" title="Method: adoption">§</a></p>
           <p>Measured against 2026 demand, <a href="#term-demand">demand</a> is <b data-v="SUM.2030.demand_p50" data-f="x2"></b> and supply
             <b data-v="SUM.2030.supplyd_p50" data-f="x2"></b>, so the shortage has mostly eased: supply ÷ demand is <b data-v="SUM.2030.ratio_p50" data-f="x2"></b>.
-            Demand dips slightly below today's because, while radiologists are scarce, some work shifts to other doctors and AI tools spread faster.
+            Demand dips slightly because AI saves about <span data-v="X.time_saved.2030.p50" data-f="pct"></span> of time and, while radiologists are scarce, some work
+            shifts to other doctors. Unlike workforce projections, which leave out AI and assume work cannot shift, the model includes both.
             Meaningful oversupply in 2030 is <b data-v="SUM.2030.p_oversupply" data-f="pct"></b> likely.<a class="mlink" href="#m-market" title="Method: market adjustment">§</a></p>
-          <div class="callout">AI that reports normal chest X-rays on its own (<a href="#term-tiers">tier 1</a>) is already approved in Europe.<sup class="cite" data-ref="oxipit_2022"></sup>
+          <div class="callout">AI that reports normal chest X-rays on its own (<a href="#tiers-detail">tier 1</a>) is already approved in Europe.<sup class="cite" data-ref="oxipit_2022"></sup>
             In the median future the FDA authorizes such AI-first reading around 2029, but payment and liability acceptance take until the early 2030s.<a class="mlink" href="#m-pipeline" title="Method: regulatory pipeline">§</a></div>
           <p class="stage-note sans small" data-year="2030" hidden></p>
         </article>
@@ -227,12 +234,12 @@
           <p>In the median future, AI-first reading of most CT and MRI (tier 3) becomes payable in the early 2050s. The AI-first share is
             <b data-v="SUM.2055.autonomous_p50" data-f="pct"></b>, with a very wide range (<span data-v="SUM.2055.autonomous_p10" data-f="pct"></span>–<span data-v="SUM.2055.autonomous_p90" data-f="pct"></span>).</p>
           <p>Median supply ÷ demand is <b data-v="SUM.2055.ratio_p50" data-f="x2"></b>. Meaningful oversupply
-            has a <b data-v="SUM.2055.p_oversupply" data-f="pct"></b> chance, and demand below half of today a <b data-v="SUM.2055.p_demand_below_50" data-f="pct"></b> chance.</p>
+            has a <b data-v="SUM.2055.p_oversupply" data-f="pct"></b> chance and a meaningful shortage a <b data-v="SUM.2055.p_shortage_10" data-f="pct"></b> chance.</p>
           <p class="stage-note sans small" data-year="2055" hidden></p>
         </article>
         <article class="chapter" data-year="2066" data-tag="A different job">
           <div class="yearlabel">2066</div>
-          <h3>A different job; too many radiologists mainly if AI was transformative</h3>
+          <h3>A different job</h3>
           <p>The median AI-first share is <b data-v="SUM.2066.autonomous_p50" data-f="pct"></b>, yet AI saves only about <b data-v="X.time_saved.2066.p50" data-f="pct"></b>
             of radiologist time: interpretation and report drafting are about 60% of the job, and AI-first reads still need audit or sign-off.</p>
           <p>The market absorbs moderate gaps. Where AI moved very fast, the gap is too large to absorb, and residency programs cut back only after several
@@ -265,31 +272,34 @@
     <p class="lede">When you enter practice determines which part of the forecast matters to you. Pick your stage <a href="#you">above</a> to highlight your row.</p>
     <div class="tablewrap"><table id="stageTable"></table></div>
     <p class="sans small muted">*Assumes a 1-year fellowship (most U.S. radiologists do one); subtract a year without it, and add one for each gap or research
-      year. Each column is the chance in that one year. Oversupply is near zero for anyone starting before about 2030, because the model starts from a shortage,
-      a gap of about <span data-v="F.ratio0_gap" data-f="pct"></span>; that gap is smaller than the 10% cutoff for "meaningful", so meaningful shortage at the start is rare. Each figure can move by
+      year. Each column is the chance in that one year. Oversupply is near zero for anyone starting before about 2030, because the model starts from a shortage.
+      Today's shortage is smaller than the 10% cutoff for "meaningful", so meaningful shortage at the start is rare. Each figure can move by
       roughly 10–25 points under other defensible assumptions (<a href="#uncertainty">How sure?</a>).</p>
     <div class="callout sans" id="practicing" style="font-size:15.5px"><b>Already practicing?</b> Your horizon is the years to retirement. About 2.5% of
       radiologists retire or leave each year,<sup class="cite" data-ref="rula_2026"></sup> so a slow fall in demand is absorbed by hiring fewer new graduates.
-      Demand falls faster than that 2.5% a year at some point in <span data-v="X.displacement.p_any_decline_faster_than_attrition_2035_2066" data-f="pct"></span> of futures, nearly
+      Demand falls faster than that 2.5% a year at some point between 2035 and 2066 in <span data-v="X.displacement.p_any_decline_faster_than_attrition_2035_2066" data-f="pct"></span> of futures, nearly
       all with transformative AI. But new graduates keep arriving, so oversupply can grow even when demand is flat: severe oversupply (25% or more too
-      many radiologists) lasting five or more years occurs in <span data-v="X.displacement.p_sustained_severe_surplus" data-f="pct"></span> of futures.</div>
+      many radiologists) lasting five or more years at some point before 2066 occurs in <span data-v="X.displacement.p_sustained_severe_surplus" data-f="pct"></span> of futures.</div>
     <h3>How the job changes</h3>
     <ol class="margins">
       <li><b>What the job involves</b><span class="lik">follows most directly from our task assumptions</span><br><span class="ink2">Drafting, measurement and protocoling shrink; consultation, procedures and AI oversight grow (see <a href="#day">How a radiologist's day changes</a>).</span></li>
       <li><b>Workload intensity</b><span class="lik">likely while short</span><br><span class="ink2">In shortage futures, time saved becomes more studies per hour rather than shorter days.<sup class="cite" data-ref="zamani_2026"></sup></span></li>
     </ol>
+    <p class="sans small ink2"><b>Skills that are harder to automate, by assumption.</b> The model assumes procedures (median AI time-saving ceiling ≈7%)
+      and consultation (≈24%) are the least automatable tasks; this is an input, not a finding.</p>
     <h3 id="pay">How a surplus or shortage would be felt: pay and hiring</h3>
     <p class="sans small ink2">This section translates the supply ÷ demand forecast into pay and hiring, using how radiologists' pay moved in past shortages and
       surpluses. It is not a separate forecast of wages. Radiologists' pay rose faster than other physicians' while they were scarce (2001–2006, 2022–2025) and fell
       behind while they were plentiful (2007–2014).<sup class="cite" data-ref="mgma_2007,mgma_2011,amga_2015,doximity_2025,doximity_2026"></sup> Fitted to 2001–2014,
-      that pattern predicted the direction of the 2022–2025 pay surge but understated its size.<a class="mlink" href="#m-pay" title="Method: pay">§</a></p>
+      that pattern predicted the direction of the 2022–2025 pay surge but only about a third of its size, so treat these figures as rough.<a class="mlink" href="#m-pay" title="Method: pay">§</a></p>
     <div class="two">
       <div class="chart-card"><div class="title">Radiologist pay relative to other physicians</div><div class="subtitle">Ratio of radiologists' pay to other physicians' pay, 2026 = 1. Median with 50% and 80% ranges.
         Shows only the effect of shortage or surplus, not fee changes.</div><div id="payChart" class="chart"></div></div>
       <div class="card sans" style="font-size:15px;align-self:start;margin-top:22px">
-        <p>In 2045, radiologists' pay relative to other physicians' is a median <b data-v="LAB.by_year.2045.pay_p50" data-f="x2"></b> times today's ratio (80% range
-          <span data-v="LAB.by_year.2045.pay_p10" data-f="x2"></span>–<span data-v="LAB.by_year.2045.pay_p90" data-f="x2"></span>). It is at least 10% lower in
-          <b data-v="LAB.by_year.2045.p_pay_down10" data-f="pct"></b> of futures and at least 10% higher in <b data-v="LAB.by_year.2045.p_pay_up10" data-f="pct"></b>.
+        <p>By 2045, in the median future, radiologists' pay relative to other physicians is about <b data-v="F.pay45_change" data-f="pct"></b> lower than today, as the
+          premium built up during today's shortage erodes. It is at
+          least 10% lower in <b data-v="LAB.by_year.2045.p_pay_down10" data-f="pct"></b> of futures, and in the worst tenth about <span data-v="LAB.by_year.2045.pay_p10" data-f="x2"></span> times
+          today's relative level; it is at least 10% higher in <b data-v="LAB.by_year.2045.p_pay_up10" data-f="pct"></b>.
           Pay reacts to any lasting surplus, not only a meaningful one, so it falls more often than meaningful oversupply occurs.</p>
         <p>A job market for new graduates at least as weak as 2012–13, when hiring was flat and new graduates struggled to find jobs,<sup class="cite" data-ref="bluth_2014,pfeifer_2017"></sup>
           has a <b data-v="LAB.by_year.2045.p_weak_hiring" data-f="pct"></b> chance in 2045. In other AI-exposed jobs, early-career employment fell first.<sup class="cite" data-ref="canaries_2025"></sup>
@@ -300,8 +310,7 @@
           if Medicare and insurers cut fees in proportion, payers keep the gain.</p>
       </div>
     </div>
-    <p class="sans small ink2"><b>Skills that are harder to automate, by assumption.</b> The model assumes procedures (median AI time-saving ceiling ≈7%)
-      and consultation (≈24%) are the least automatable tasks; this is an input, not a finding.</p>
+
   </div>
 </section>
 
@@ -363,34 +372,19 @@
   </div>
 </section>
 
-<!-- =========================================================== HOW SURE -->
-<section class="block" id="uncertainty">
+<!-- =========================================================== MARKET ADJUSTMENT & HISTORY -->
+<section class="block" id="market">
   <div class="wrap">
-    <h2>How sure?</h2>
-    <p class="lede">The real uncertainty is in our assumptions and model design, so the table re-runs the forecast under other defensible choices.
-      Version 1.5 put the 2045 figure at 42%. Two changes driven by the <a href="#history">history test</a> bring it to <span data-v="SUM.2045.p_oversupply" data-f="pct"></span>:
-      faster recent imaging growth and a milder starting shortage together take it to <span data-v="F.robust.structures.no_adjustment.2045.p_over" data-f="pct"></span> (the
-      "no market adjustment" row), and the market adjustment does the rest.</p>
-    <div class="tablewrap"><table id="robustTable"></table></div>
-    <div class="narrow" style="margin:0">
-      <p><b>What holds and what doesn't.</b> The direction holds in every row: oversupply risk is lower in 2035 than later and comes mostly from transformative
-        AI. The exact numbers do not: the 2045 figure ranges from <span data-v="F.robust.band.2045.lo" data-f="pct"></span> to <span data-v="F.robust.band.2045.hi" data-f="pct"></span>, mostly because of
-        assumptions about AI speed, imaging growth and the market adjustment. These ranges cover a chosen set of alternatives, not every plausible future.</p>
-      <p id="ai-share"><b>How much of the risk is AI?</b> Nearly all of it. With no further radiology AI, today's shortage would persist (a meaningful shortage in
-        <span data-v="F.robust.structures.no_ai.2045.p_short10" data-f="pct"></span> of futures in 2045) and oversupply would be rare
-        (<span data-v="F.robust.structures.no_ai.2045.p_over" data-f="pct"></span> in 2045, <span data-v="F.robust.structures.no_ai.2055.p_over" data-f="pct"></span> in 2055). Until about 2040
-        the risk comes almost entirely from assistive tools, which need no new FDA approval; in the transformative regime these alone save enough time to cause a
-        surplus. AI-first reading adds the rest from the 2040s.</p>
-      <p><b>The starting point is reconstructed, not measured.</b> Today's balance (≈<span data-v="F.series.R.p50.0" data-f="x2"></span>) combines market signals with the
-        reconstruction below. With no shortage today, the 2045 oversupply chance would be
-        <span data-v="F.robust.structures.no_shortage_today.2045.p_over" data-f="pct"></span> (<a href="#robust-no_shortage_today">row above</a>).</p>
-    </div>
+    <h2>Why: the market adjusts</h2>
+    <p class="lede">Training a radiologist takes years, but radiology's job market has repeatedly closed shortages and surpluses within a few years: other doctors
+      read more while radiologists were scarce, and labor-saving tools spread faster.<sup class="cite" data-ref="levin_2011,bhargavan_2009,sunshine_2007"></sup> Version 1.6 adds
+      this <a href="#term-market">market adjustment</a> and tests it against radiology's own history.</p>
     <h3 id="history">Testing against radiology's own history</h3>
     <div class="narrow" style="margin:0">
       <p>We reconstructed radiology's job market from 1995 to 2026 from published growth in imaging, productivity and the workforce, and compared it with eight
         documented episodes, such as the mid-1990s glut, the 2000 shortage, the 2012–13 surplus for new graduates and today's shortage, each recorded at the time
         in job ads, workforce surveys and pay.<sup class="cite" data-ref="forman_2000,sunshine_2007,meghea_2005,bluth_2014,dibble_2025"></sup> To make the test fair, we tuned the model only
-        on 1995–2013, then checked whether it predicted 2015–2025 without having seen those years.<a class="mlink" href="#m-market" title="Method: market adjustment">§</a></p>
+        on 1995–2013, then checked whether it predicted 2015–2025 without having seen those years.<a class="mlink" href="#m-validation" title="Method: validation">§</a></p>
     </div>
     <div class="chart-card">
       <div class="title">Supply ÷ demand, reconstructed, against the documented job market</div>
@@ -401,19 +395,50 @@
     </div>
     <div class="narrow" style="margin:0">
       <p><b>What we learned.</b> The earlier model tracked supply and demand with no way for the market to respond. It matched 1995–2013 but predicted a
-        surplus through the 2010s; in fact the market recovered by 2016 and was short by 2022. With the market adjustment, tuned only on 1995–2013, the error
-        on the test years was less than half as large (Brier score <span data-v="H.brier.adjust" data-f="x2"></span> vs <span data-v="H.brier.noadj" data-f="x2"></span>, where 0 is perfect).
-        Version 1.6 therefore:</p>
+        surplus through the 2010s; in fact the market recovered by 2016 and was short by 2022. With the market adjustment, tuned only on 1995–2013, the error on
+        the test years was less than half as large, mostly because it pulls the market back toward balance. History shows the adjustment is at least
+        moderately fast and can absorb a gap of at least about 10% of demand, but cannot say how fast or large it could get, because past gaps never exceeded
+        about 15%; the upper ends we use are judgments. Its evidence for absorbing surpluses rests mostly on one recovery (2013–2018), and how the work flows
+        back to radiologists in a surplus is assumed rather than observed. If the market absorbed shortages but not surpluses, the 2045 oversupply chance would
+        be <span data-v="F.robust.structures.shortage_only.2045.p_over" data-f="pct"></span>.</p>
+      <p><b>One caution:</b> on the test years, our forecasts did no better than simply assuming a balanced market. That guess can say nothing about AI, which
+        is why we model it, but treat the long-range numbers as reasoned judgment, not a proven track record (<a href="report.html#sec-history">full test</a>).</p>
+      <h3 id="changes">What this changed</h3>
+      <p>Version 1.5 put the 2045 oversupply chance at 42%. Three changes driven by this history bring it to <span data-v="SUM.2045.p_oversupply" data-f="pct"></span>:</p>
       <ul>
-        <li>adds the market adjustment;</li>
-        <li>assumes faster recent imaging growth (1.2% a year per person), as the history requires;</li>
-        <li>widens the range for future imaging growth by 1.5 times, the width that forecast best from 2000, 2005, 2010 and 2016.</li>
+        <li>recent imaging growth per person rises from 0.6% to 1.2% a year, halfway between claims data and the about 1.8% the history implies, with a 1.5 times wider
+          range because that width forecast best from past start years;</li>
+        <li>today's shortage is slightly milder, as reconstructed;</li>
+        <li>the market adjustment is added.</li>
       </ul>
-      <p>History shows the adjustment is at least about 10% of demand but cannot say how large it could get, because past gaps never exceeded about 15%; the
-        upper end we use is a judgment. One caution: on the test years, our forecasts did no better than simply assuming a balanced market. That guess can say
-        nothing about AI, which is why we model it, but treat the long-range numbers as reasoned judgment, not a proven track record
-        (<a href="report.html#sec-history">full test</a>).</p>
-      <p id="backtest"><b>Other jobs.</b> Run from 2016 for software developers, interpreters and translators, and medical transcriptionists, a simplified version of this method put every 2025 outcome inside its ranges, but a simple
+      <p>Removing the market adjustment while keeping the other two gives <span data-v="F.robust.structures.no_adjustment.2045.p_over" data-f="pct"></span> (the "no market
+        adjustment" row under <a href="#uncertainty">How sure?</a>). That split is approximate, because the first two were themselves estimated with the adjustment on.</p>
+    </div>
+  </div>
+</section>
+
+<!-- =========================================================== HOW SURE -->
+<section class="block" id="uncertainty">
+  <div class="wrap">
+    <h2>How sure?</h2>
+    <p class="lede">The real uncertainty is in our assumptions and model design, so the table re-runs the forecast under other defensible choices.</p>
+    <div class="tablewrap"><table id="robustTable"></table></div>
+    <div class="narrow" style="margin:0">
+      <p><b>What holds and what doesn't.</b> The direction holds in every row: oversupply risk is lower in 2035 than later and comes mostly from transformative
+        AI. The exact numbers do not: the 2045 figure ranges from <span data-v="F.robust.band.2045.lo" data-f="pct"></span> to <span data-v="F.robust.band.2045.hi" data-f="pct"></span>, mostly because of
+        assumptions about AI speed, imaging growth and the market adjustment. These ranges cover a chosen set of alternatives, not every plausible future.</p>
+      <p id="ai-share"><b>How much of the risk is AI?</b> Nearly all of it, and about <span data-v="F.tai_share_2045" data-f="pct"></span> of the 2045 risk comes from the
+        transformative-AI regime. With no further radiology AI, today's shortage would persist (a meaningful shortage in
+        <span data-v="F.robust.structures.no_ai.2045.p_short10" data-f="pct"></span> of futures in 2045) and oversupply would be rare
+        (<span data-v="F.robust.structures.no_ai.2045.p_over" data-f="pct"></span> in 2045, <span data-v="F.robust.structures.no_ai.2055.p_over" data-f="pct"></span> in 2055). By what AI does
+        rather than how fast it improves: until about 2040 nearly all the risk comes from assistive tools, which need no new FDA approval and, in the
+        transformative regime, alone save enough time to cause a surplus; AI-first reading adds the rest from the 2040s.</p>
+      <p><b>The starting point is reconstructed, not measured.</b> Today's balance (≈<span data-v="F.series.R.p50.0" data-f="x2"></span>) combines market signals with the
+        <a href="#history">history reconstruction</a>. With little or no shortage today, the 2045 oversupply chance would be
+        <span data-v="F.robust.structures.no_shortage_today.2045.p_over" data-f="pct"></span> (<a href="#robust-no_shortage_today">row above</a>).</p>
+    </div>
+    <div class="narrow" style="margin:0">
+      <p id="backtest"><b>Backtest on other jobs.</b> Run from 2016 for software developers, interpreters and translators, and medical transcriptionists, a simplified version of this method put every 2025 outcome inside its ranges, but a simple
         average of the official Bureau of Labor Statistics projection and the past trend was more accurate: our AI adjustment over-predicted job losses in medical
         transcription.<sup class="cite" data-ref="bls_ooh_2008_mt,bls_ooh_2018_mt,bls_ooh_2026_mt,frey_osborne_2013"></sup> (<a href="report.html#sec-backtest">details</a>;
         <a href="report.html#sec-approaches">why a structured model</a>)</p>
@@ -513,7 +538,7 @@
       reader study,<sup class="cite" data-ref="hong_2025"></sup> and no significant pooled saving in real-world deployments.<sup class="cite" data-ref="wenderott_2024,liu_2026"></sup>
       AI also adds oversight work.<sup class="cite" data-ref="humlum_2025"></sup> Adoption speeds up while there is a shortage. <a href="report.html#sec-ai">Report §4.2</a></p>
     <h3 id="m-pipeline">Regulation and adoption</h3>
-    <p>Each of the four <a href="#term-tiers">tiers</a> must pass validation, FDA authorization, and liability and payment acceptance before AI-first reading
+    <p>Each of the four <a href="#tiers-detail">tiers</a> must pass validation, FDA authorization, and liability and payment acceptance before AI-first reading
       can begin, and an AI-first study still needs about a fifth of the radiologist's time for audit and sign-off (far less in the transformative-AI regime).
       Lags are anchored on MASAI (~5 years),<sup class="cite" data-ref="gommers_2026"></sup> the scarcity of clinical validation,<sup class="cite" data-ref="chouffani_2024"></sup>
       autonomous retinal AI (3 years from FDA to payment),<sup class="cite" data-ref="abramoff_2018"></sup> liability research,<sup class="cite" data-ref="mello_2024,bernstein_2025"></sup>
@@ -533,13 +558,13 @@
     <p>Each year about <span data-v="F.adj_speed.q50" data-f="pct"></span> of the remaining gap between supply and demand closes (80% range
       <span data-v="F.adj_speed.q10" data-f="pct"></span>–<span data-v="F.adj_speed.q90" data-f="pct"></span>) as work shifts between radiologists and other doctors and labor-saving tools
       spread faster or slower, up to a limit of about <span data-v="F.adj_max.q50" data-f="pct"></span> of demand (<span data-v="F.adj_max.q10" data-f="pct"></span>–<span data-v="F.adj_max.q90" data-f="pct"></span>).
-      The speed and the lower end of the limit come from radiology's job market in 1995–2013, checked on 2015–2025; the upper end is a judgment
-      (<a href="#history">How sure?</a>).<sup class="cite" data-ref="sunshine_2007,levin_2011,bhargavan_2009"></sup> Beyond the limit, a gap persists until residency
+      History bounds both only from below (fitted on 1995–2013, checked on 2015–2025); the upper ends are judgments
+      (<a href="#history">history test</a>).<sup class="cite" data-ref="sunshine_2007,levin_2011,bhargavan_2009"></sup> Beyond the limit, a gap persists until residency
       positions respond. <a href="report.html#sec-market">Report §4.7</a></p>
     <h3 id="m-pay">Pay readout</h3>
     <p>Radiologist pay relative to other physicians changes each year in proportion to the imbalance (β ≈ <span data-v="LAB.beta.0" data-f="x2"></span>–<span data-v="LAB.beta.1" data-f="x2"></span>
-      per unit of log supply ÷ demand; fitted to 2001–2014, checked on 2022–2025, then refitted on all years), and drifts back toward other physicians' pay by 5–20% a
-      year (a judgment). It does not feed back
+      per unit of log supply ÷ demand; fitted to 2001–2014, checked on 2022–2025, then refitted on all years), and drifts by 5–20% a year toward a normal level
+      between today's and about 15% below it, before the recent shortage premium (both judgments). It does not feed back
       into supply or demand. <a href="report.html#sec-margins">Report §9.2</a></p>
     <h3 id="m-uncertainty">Uncertainty and regimes</h3>
     <p><span data-v="F.n_params" data-f="int"></span> uncertain inputs are drawn from explicit distributions and correlated through three shared factors: AI progress,

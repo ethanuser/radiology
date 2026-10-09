@@ -28,6 +28,9 @@
   F.adj_speed = F.params.find((p) => p.name === "adj_speed");
   F.adj_max = F.params.find((p) => p.name === "adj_max");
   F.hour_gain_2045 = 1 / (1 - F.extra.time_saved["2045"].p50) - 1; // earnings per hour at fixed fees per exam
+  F.pay45_change = 1 - F.extra.labor.by_year["2045"].pay_p50; // median fall in pay relative to other physicians
+  // share of the 2045 oversupply risk that comes from the transformative-AI regime
+  F.tai_share_2045 = 1 - F.extra.non_tai.weight * F.extra.non_tai["2045"].p_over / SUM[2045].p_oversupply;
   const H = F.history;
   H.episode = Object.fromEntries(H.episodes.map((e) => [e.key, e]));
   // how much narrower the 2045 demand range gets if the judgment-call inputs were known exactly
@@ -584,7 +587,7 @@
     const row = (v, kind, key) => `<tr id="robust-${key}"><td>${v.label}${kind ? `<div class="muted small">${kind}</div>` : ""}</td>` +
       ys.map((y) => `<td class="num">${fmt.pct(v[y].p_over)}</td>`).join("") + "</tr>";
     const pri = Object.entries(R.priors).map(([k, v]) => row(v, k === "main" ? "main model" : v.note, k)).join("");
-    const SHOW = ["no_adjustment", "no_shortage_today", "tier1_2022"];
+    const SHOW = ["shortage_only", "no_adjustment", "no_shortage_today", "tier1_2022"];
     const designs = Object.entries(R.structures).filter(([k, v]) => k !== "base" && !v.counterfactual);
     const hidden = designs.filter(([k]) => !SHOW.includes(k));
     const st = designs.filter(([k]) => SHOW.includes(k)).map(([k, v]) => row(v, v.detail, k)).join("") +

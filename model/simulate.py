@@ -100,7 +100,10 @@ STRUCTURES = {
     "payer_pushback": "Payers' AI blocks twice as many scans; twice as many reads shift to other doctors",
     "uncapped_new_uses": "New uses such as screening existing scans are not limited by scanner capacity",
     "tai_gated": "Transformative AI's extra time savings must also wait for regulation and adoption",
-    "no_adjustment": "Shortages and surpluses persist until residency positions and entry respond, as in version 1.5",
+    "no_adjustment": "Market adjustment removed (v1.5's design) but v1.6's other inputs kept; those were calibrated with the adjustment on",
+    "shortage_only": "The market absorbs shortages as fitted but not surpluses: work does not flow back to radiologists",
+    "adj_cap15": "Adjustment limit capped at 15% of demand, the largest gap seen in 1995-2026",
+    "adj_wide": "Adjustment speed and limit drawn from the wider fit (limit up to 50% of demand)",
     # counterfactuals (not alternatives): how much of the risk comes from AI at all
     "assistive_only": "AI helps radiologists read but never reads first",
     "no_ai": "Radiology AI frozen at its 2026 level (other diagnostics such as AI-ECG still displace some imaging)",
@@ -356,6 +359,14 @@ def simulate_supply(s: dict, D: np.ndarray, P: np.ndarray, structure: str = "bas
     adjusting = "adj_speed" in s and structure != "no_adjustment"
     adj_speed = np.asarray(s["adj_speed"]) if adjusting else None
     adj_max = np.asarray(s["adj_max"]) if adjusting else None
+    adj_up = adj_max  # how far work can flow to radiologists in a surplus
+    if adjusting and structure == "shortage_only":
+        adj_up = np.zeros(n)
+    elif adjusting and structure == "adj_cap15":
+        adj_max = adj_up = np.minimum(adj_max, 0.15)
+    elif adjusting and structure == "adj_wide":  # rescale U(0.08, 0.28) to U(0.08, 0.5) and U(0.2, 0.55) to U(0.2, 0.8)
+        adj_max = adj_up = 0.08 + (adj_max - 0.08) * (0.42 / 0.20)
+        adj_speed = 0.2 + (adj_speed - 0.2) * (0.6 / 0.35)
     adj = np.zeros(n)
     adj_t = np.zeros((n, T))
 
@@ -378,7 +389,7 @@ def simulate_supply(s: dict, D: np.ndarray, P: np.ndarray, structure: str = "bas
         elif adj_speed is not None:
             # market adjustment: each year a share of the remaining imbalance is closed by work moving between radiologists
             # and others and by the pace of labour-saving change, up to a cumulative limit (history test, model/history.py)
-            adj = np.clip(adj - adj_speed * lnratio[:, i - 1], -adj_max, adj_max)
+            adj = np.clip(adj - adj_speed * lnratio[:, i - 1], -adj_max, adj_up)
             D_abs[:, i] = D_struct_abs[:, i] * np.exp(adj)
         lnratio[:, i] = np.log(D_abs[:, i] / S_fte[:, i])
         adj_t[:, i] = adj

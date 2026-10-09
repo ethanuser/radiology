@@ -55,7 +55,7 @@ s_interp,0.0000,0.0087,0.0001,-0.0064,0.0004,-0.0119,0.0000,-0.0104,0.0001,0.026
 new_width,0.0001,-0.0042,0.0000,0.0008,0.0000,0.0016,0.0001,0.0174,0.0000,0.0070,0.0000,-0.0021,New-application S-curve width,S,New-application ramp
 adj_max,0.0006,-0.0643,0.0000,-0.0245,0.0002,-0.0036,0.0006,0.0433,0.0000,0.0150,0.0002,-0.0083,Largest cumulative market adjustment (share of radiologist work that can shift),S,Market adjustment limit
 resid_gamma,0.0000,0.0014,0.0000,0.0092,0.0000,-0.0012,0.0000,0.0067,0.0000,-0.0062,0.0000,-0.0105,Residency-position response to market signal (elasticity to ln D/S),A,Residency responsiveness
-adj_speed,0.0010,0.0263,0.0000,0.0211,0.0000,0.0003,0.0006,-0.0176,0.0000,-0.0692,0.0000,-0.0292,Market adjustment speed: share of the remaining shortage or surplus closed each year,A,Market adjustment speed
+adj_speed,0.0010,0.0263,0.0000,0.0211,0.0000,0.0003,0.0006,-0.0176,0.0000,-0.0692,0.0000,-0.0292,Market adjustment speed: share of the remaining shortage or surplus closed each year,S,Market adjustment speed
 tcap4_T0,0.0000,0.0022,0.0000,0.0027,0.0000,0.0064,0.0000,0.0000,0.0000,0.0051,0.0000,-0.0010,Tier 4 (residual hardest work) capability year (M=1),S,Tier-4 capability year
 tcap3_T0,0.0001,-0.0150,0.0000,0.0087,0.0000,0.0117,0.0000,0.0129,0.0000,-0.0290,0.0000,-0.0267,Tier 3 technical capability year (M=1),S,Tier-3 capability year
 s_admin,0.0000,-0.0135,0.0000,-0.0108,0.0000,-0.0063,0.0000,0.0154,0.0000,0.0016,0.0000,-0.0096,Task share: admin,A,Task share: administration

@@ -110,6 +110,7 @@ def headline_table():
         ("P(demand < 50% of 2026)", [pct(sm[y]["p_demand_below_50"]) for y in YEARS5]),
         ("P(supply > demand)", [pct(sm[y]["p_supply_exceeds_demand"]) for y in YEARS5]),
         ("**P(meaningful oversupply: S/D > 1.10)**", [pct(sm[y]["p_oversupply"]) for y in YEARS5]),
+        ("  P(gap of 10%+ before the market adjustment)", [pct(sm[y]["p_oversupply_pre"]) for y in YEARS5]),
         ("P(severe oversupply: S/D > 1.25)", [pct(sm[y]["p_severe_oversupply"]) for y in YEARS5]),
         ("P(shortage worse than 10%: S/D < 0.90)", [pct(sm[y]["p_shortage_10"]) for y in YEARS5]),
     ]
@@ -234,7 +235,7 @@ def history_scores_md():
     names = {"v15": "Version 1.5 rules (no market adjustment, v1.5 spreads)",
              hist["past"]["trained"]: f"History-trained rules (market adjustment fitted to 1995–2013; spreads × {hist['past']['best_width']:g})",
              "persistence": "Persistence: today's balance drifts at random (2%/yr)", "balanced": "Always balanced (supply ÷ demand ≈ 1 ± 6%)"}
-    rows = ["| Forecasting rule | Training episodes (≤2013) | Held-out episodes (2015–2025) |", "|---|---|---|"]
+    rows = ["| Forecasting rule | Fitting episodes (≤2013; in-sample for the trained rules) | Held-out episodes (2015–2025) |", "|---|---|---|"]
     for k, lab_ in names.items():
         s = hist["past"]["scores"][k]
         rows.append(f"| {lab_} | {num(s['train'])} | {num(s['validate'])} |")

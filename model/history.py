@@ -1,8 +1,9 @@
 """Radiology's own history, 1995-2026: a test of the model's accounting and forecasting rules, the calibration of the
 market adjustment, and the reconstruction of today's supply/demand balance.
 
-All choices below were fixed before scoring. The evidence is split by time: job-market episodes up to 2013 are *training*;
-episodes from 2015 on are *validation* and are not used to fit anything that is then scored on them.
+The evidence is split by time: job-market episodes up to 2013 are *training*; episodes from 2015 on are *validation* and are
+not used to fit anything that is then scored on them. The driver ranges and episode bands were set in 2026, after the
+outcomes were known, so only the time split guards against fitting to the held-out years.
 
 1. Supply check. The model's cohort machinery, run backward, against measured headcount growth and exit rates.
 2. Reconstruction. Supply ÷ demand evolves by accounting,
@@ -84,8 +85,9 @@ EPISODES = [
          evidence="1,434-1,861 hires in 2017 against ≈1,200 graduates; a 'positive picture' for job seekers",
          sources=["bender_2019"]),
     dict(key="y2023", years=(2022, 2025), band=(0.85, 0.97), state="Shortage", split="validate",
-         evidence="67% of practices understaffed (2022 survey); radiologist pay up 7.5% and 6.6% vs 3.7% and 2.0% for all "
-                  "physicians", sources=["dibble_2025", "doximity_2025", "doximity_2026", "parikh_2026"]),
+         evidence="67% of radiologists said their practices were understaffed (2022 survey); practice turnover up to 8.5% (2022); "
+                  "record residency positions (coded without pay data, which test the pay readout)",
+         sources=["dibble_2025", "parikh_2026", "nrmp_2026"]),
 ]
 SOFT = 0.01  # softness of band edges (supply ÷ demand units)
 
@@ -97,12 +99,13 @@ EXIT_RATES = [dict(year=2014, rate=0.011, split="train"), dict(year=2019, rate=0
 
 # Radiologist pay growth minus all-physician (or specialist) pay growth, %/yr (range)
 PAY = [dict(years=(2001, 2006), lo=0.5, hi=3.0, split="train", sources=["mgma_2007", "mgma_2009"],
-            note="radiology ≈+5%/yr; specialists ≈+2-4%/yr"),
-       dict(years=(2007, 2014), lo=-3.0, hi=-0.5, split="train", sources=["mgma_2009", "mgma_2011", "amga_2015"],
-            note="radiology +5.5% in total over 2006-2010 and -1.6% in 2010, +1.6% in 2014 vs +5.9% for medical specialties"),
-       dict(years=(2022, 2025), lo=1.5, hi=4.5, split="validate",
-            sources=["doximity_2023", "doximity_2024", "doximity_2025", "doximity_2026"],
-            note="radiology +1.6%, +5.6%, +7.5%, +6.6% vs all physicians -2.4% (2022), +3.7% (2024), +2.0% (2025)")]
+            note="radiology about +5%/yr over five years; specialists +1.7% in 2006 and +2.2% in 2008, the years reported"),
+       dict(years=(2009, 2014), lo=-3.0, hi=-0.5, split="train", sources=["mgma_2011", "amga_2015"],
+            note="radiology -1.6% in 2010 vs +4% to +6% for other specialties; +1.6% in 2014 vs +5.9% for medical specialties"),
+       dict(years=(2022, 2025), lo=2.5, hi=5.0, split="validate",
+            sources=["doximity_2023", "doximity_2025", "doximity_2026"],
+            note="radiology minus all physicians: +4.0 points (2022), +3.8 (2024), +4.6 (2025); 2023 has no comparator in "
+                 "the cited sources")]
 
 ORIGINS = (2000, 2005, 2010, 2016)
 WIDTHS = (0.75, 1.0, 1.5, 2.0)
@@ -348,8 +351,8 @@ def past_forecasts(rec: dict, horizon: int = 16) -> dict:
 # ------------------------------------------------------------------------------------------------ 4. pay
 def pay_fit(rec: dict, n_draws: int = 4000, seed: int = 3) -> dict:
     """beta in d ln(relative pay)/dt = -beta ln R(t-1), by weighted least squares across pay eras, per reconstruction draw.
-    Supply ÷ demand comes from the reconstruction with all job-market episodes (which are not pay data); beta is fitted on
-    the training pay eras and checked on the held-out ones, then refitted on all eras for use in model/labor.py."""
+    Supply ÷ demand comes from the reconstruction with all job-market episodes, which are coded without pay data; beta is
+    fitted on the training pay eras and checked on the held-out one, then refitted on all eras for use in model/labor.py."""
     rng = np.random.default_rng(seed)
     R = rec["_R"][rng.choice(len(rec["_w_all"]), size=n_draws, p=rec["_w_all"])]
     lag_mean = lambda a, b: -np.log(R[:, (YH >= a - 1) & (YH <= b - 1)]).mean(axis=1)  # noqa: E731
@@ -372,6 +375,53 @@ def pay_fit(rec: dict, n_draws: int = 4000, seed: int = 3) -> dict:
     return out
 
 
+def driver_sensitivity(n: int = 300_000, widen: float = 1.5) -> dict:
+    """Held-out Brier scores with every driver range widened by `widen` around its midpoint: is the gain from the market
+    adjustment an artefact of driver ranges set too narrow?"""
+    global DRIVERS
+    saved = DRIVERS
+    DRIVERS = {k: [(a, b, (lo + hi) / 2 - widen * (hi - lo) / 2, (lo + hi) / 2 + widen * (hi - lo) / 2) for a, b, lo, hi in v]
+               for k, v in saved.items()}
+    try:
+        out = {"widen": widen, "adjust": reconstruct(n=n)["brier_validation"]["train"],
+               "noadj": reconstruct(n=n, adjust=False)["brier_validation"]["train"]}
+    finally:
+        DRIVERS = saved
+    return out
+
+
+def asymmetry(n: int = 300_000, seed: int = 1995) -> dict:
+    """Can history tell surplus-side from shortage-side adjustment? Separate limits for each direction, fitted on the
+    training episodes; also the held-out Brier score with only one direction allowed."""
+    rng = np.random.default_rng(seed)
+    r0 = rng.uniform(*R_1995, n)
+    g = _growth(_rates(rng, n))
+    lam = rng.uniform(*LAM, n)
+    b_up, b_down = rng.uniform(*BOUND, n), rng.uniform(*BOUND, n)
+
+    def path(up, down):
+        lnR = np.zeros(g.shape)
+        lnR[:, 0] = np.log(r0)
+        lnS, A = lnR[:, 0].copy(), np.zeros(n)
+        for j in range(1, g.shape[1]):
+            A = np.clip(A + lam * lnR[:, j - 1], -down, up)
+            lnS = lnS + g[:, j]
+            lnR[:, j] = lnS - A
+        return np.exp(lnR)
+
+    train = [e for e in EPISODES if e["split"] == "train"]
+    val = [e for e in EPISODES if e["split"] == "validate"]
+
+    def brier(R):
+        w = _weights(R, train)
+        return float(np.mean([(1 - (w * (_band_lik(_episode_mean(R, e["years"]), e["band"]) > 0.5)).sum()) ** 2 for e in val]))
+
+    R = path(b_up, b_down)
+    w = _weights(R, train)
+    return dict(b_up=_wq(b_up, w), b_down=_wq(b_down, w), brier_both=brier(R),
+                brier_surplus_only=brier(path(b_up, np.zeros(n))), brier_shortage_only=brier(path(np.zeros(n), b_down)))
+
+
 def identification(n: int = 300_000) -> dict:
     """Does history bound the adjustment from above? Refit with wider priors (speed 0-0.8, limit 0-0.5) and compare the weight
     on each range of the limit with its prior share: a ratio near 1 means the data are silent there."""
@@ -391,4 +441,5 @@ def run() -> dict:
     sup = supply_check()
     sup["refit"] = supply_refit()
     return dict(reconstruction=strip(rec), no_adjustment=strip(rec0), past=past, pay=pay, supply=sup, wide=identification(),
+                driver_sensitivity=driver_sensitivity(), asymmetry=asymmetry(),
                 drivers_meta={k: dict(label=DRIVER_LABELS[k], sources=DRIVER_SOURCES[k], eras=v) for k, v in DRIVERS.items()})

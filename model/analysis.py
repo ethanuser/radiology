@@ -50,6 +50,8 @@ def summary_table(o: dict, years=REPORT_YEARS) -> pd.DataFrame:
         row["p_demand_below_50"] = (D < 0.5).mean()
         row["p_supply_exceeds_demand"] = (R > 1.0).mean()
         row["p_oversupply"] = (R > OVERSUPPLY).mean()
+        # before the market adjustment: the gap that had to be closed by work shifting to radiologists or slower AI uptake
+        row["p_oversupply_pre"] = (R * np.exp(o["adj"][:, i]) > OVERSUPPLY).mean()
         row["p_severe_oversupply"] = (R > SEVERE).mean()
         row["p_shortage_10"] = (R < 0.9).mean()
         row["time_saved_p50"] = np.median(1 - 1 / P)
