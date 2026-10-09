@@ -103,7 +103,8 @@ STRUCTURES = {
     "no_adjustment": "Market adjustment removed (v1.5's design) but v1.6's other inputs kept; those were calibrated with the adjustment on",
     "shortage_only": "The market absorbs shortages as fitted but not surpluses: work does not flow back to radiologists",
     "adj_cap15": "Adjustment limit capped at 15% of demand, the largest gap seen in 1995-2026",
-    "adj_wide": "Adjustment speed and limit drawn from the wider fit (limit up to 50% of demand)",
+    "adj_wide": "Adjustment speed and limit as in the fit with wider priors (limit up to 50% of demand)",
+    "adj_start": "The adjustment starts from the reconstruction's 2026 state instead of zero (less room to absorb a surplus if work already moved to radiologists)",
     # counterfactuals (not alternatives): how much of the risk comes from AI at all
     "assistive_only": "AI helps radiologists read but never reads first",
     "no_ai": "Radiology AI frozen at its 2026 level (other diagnostics such as AI-ECG still displace some imaging)",
@@ -364,10 +365,12 @@ def simulate_supply(s: dict, D: np.ndarray, P: np.ndarray, structure: str = "bas
         adj_up = np.zeros(n)
     elif adjusting and structure == "adj_cap15":
         adj_max = adj_up = np.minimum(adj_max, 0.15)
-    elif adjusting and structure == "adj_wide":  # rescale U(0.08, 0.28) to U(0.08, 0.5) and U(0.2, 0.55) to U(0.2, 0.8)
-        adj_max = adj_up = 0.08 + (adj_max - 0.08) * (0.42 / 0.20)
-        adj_speed = 0.2 + (adj_speed - 0.2) * (0.6 / 0.35)
+    elif adjusting and structure == "adj_wide":  # medians of the wide-prior fit: limit 0.29 vs 0.18, speed 0.47 vs 0.38
+        adj_max = adj_up = np.minimum(adj_max * 1.6, 0.5)
+        adj_speed = np.minimum(adj_speed * 1.24, 0.8)
     adj = np.zeros(n)
+    if adjusting and structure == "adj_start":  # reconstruction's 2026 state: median +0.02, 80% -0.08 to +0.12
+        adj = np.clip(np.random.default_rng(29).normal(0.02, 0.078, n), -adj_max, adj_up)
     adj_t = np.zeros((n, T))
 
     for year in range(SUPPLY_START + 1, 2067):

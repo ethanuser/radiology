@@ -110,7 +110,7 @@ def headline_table():
         ("P(demand < 50% of 2026)", [pct(sm[y]["p_demand_below_50"]) for y in YEARS5]),
         ("P(supply > demand)", [pct(sm[y]["p_supply_exceeds_demand"]) for y in YEARS5]),
         ("**P(meaningful oversupply: S/D > 1.10)**", [pct(sm[y]["p_oversupply"]) for y in YEARS5]),
-        ("  P(gap of 10%+ before the market adjustment)", [pct(sm[y]["p_oversupply_pre"]) for y in YEARS5]),
+        ("  P(surplus of 10%+ before the market adjustment)", [pct(sm[y]["p_oversupply_pre"]) for y in YEARS5]),
         ("P(severe oversupply: S/D > 1.25)", [pct(sm[y]["p_severe_oversupply"]) for y in YEARS5]),
         ("P(shortage worse than 10%: S/D < 0.90)", [pct(sm[y]["p_shortage_10"]) for y in YEARS5]),
     ]

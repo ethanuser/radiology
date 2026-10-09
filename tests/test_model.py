@@ -117,10 +117,9 @@ def test_history_calibration_matches_model():
     """Numbers transferred by hand from the history test into params.py and labor.py must match the history fit."""
     from model import history, labor
     rec = history.reconstruct(n=120_000)
-    lo, hi = PARAM_INDEX["adj_speed"].args["lo"], PARAM_INDEX["adj_speed"].args["hi"]
-    assert abs(rec["lam_train"]["p10"] - lo) < 0.04 and abs(rec["lam_train"]["p90"] - hi) < 0.04
-    lo, hi = PARAM_INDEX["adj_max"].args["lo"], PARAM_INDEX["adj_max"].args["hi"]
-    assert abs(rec["b_train"]["p10"] - lo) < 0.03 and abs(rec["b_train"]["p90"] - hi) < 0.03
+    for name, post in (("adj_speed", rec["lam_train"]), ("adj_max", rec["b_train"])):
+        q = PARAM_INDEX[name].quantiles((0.1, 0.5, 0.9))
+        assert all(abs(a - post[k]) < 0.03 for a, k in zip(q, ("p10", "p50", "p90"))), name
     q = rec["ratio2026_all"]
     assert 0.88 <= q["p10"] and q["p90"] <= 0.99  # the 2026 prior's range covers the reconstruction
     y12 = next(e for e in rec["episodes"] if e["key"] == "y2012")
@@ -167,6 +166,11 @@ def test_alternative_structures():
     assert np.median(pay["D"][:, -1]) <= np.median(base["D"][:, -1])
     unord = simulate(s, structure="unordered")
     assert np.isfinite(unord["D"]).all()
+    # market-adjustment variants: bounds respected and oversupply ranked as expected
+    so, cap, wide = (simulate(s, structure=k) for k in ("shortage_only", "adj_cap15", "adj_wide"))
+    assert (so["adj"] <= 1e-12).all() and (np.abs(cap["adj"]) <= 0.15 + 1e-12).all()
+    p = {k: (o["R"][:, 2045 - 2026] > 1.10).mean() for k, o in (("wide", wide), ("base", base), ("cap", cap), ("so", so))}
+    assert p["wide"] <= p["base"] <= p["cap"] <= p["so"]
 
 
 def test_prior_reweighting_main_is_identity():

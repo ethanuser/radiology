@@ -117,6 +117,7 @@ STRUCT_SHORT = {"base": "Main model", "no_signoff": "No radiologist on AI-first 
                 "uncapped_new_uses": "New uses not capped by scanners", "no_shortage_today": "Little or no shortage today",
                 "tai_gated": "Transformative boost waits for regulation", "no_adjustment": "No market adjustment (other v1.6 inputs kept)", "shortage_only": "Surpluses not absorbed",
                 "adj_cap15": "Adjustment limit at most 15%", "adj_wide": "Larger adjustment (limit up to 50%)",
+                "adj_start": "Adjustment starts from its reconstructed 2026 state",
                 "assistive_only": "Assistive AI only", "no_ai": "No further radiology AI"}
 
 

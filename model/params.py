@@ -392,17 +392,20 @@ PARAMS: list[Param] = [
 
     # ======================================= 6. MARKET ADJUSTMENT ==============================================
     P("adj_speed", "market", "Market adjustment speed: share of the remaining shortage or surplus closed each year",
-      "uniform", dict(lo=0.2, hi=0.55), "per year", "S", ["sunshine_2007", "levin_2011", "bhargavan_2009"],
-      "The history test on the documented job market of 1995-2013 shows at least about 0.2 per year (80% range 0.19-0.55 under "
-      "a 0-0.6 prior); with a wider prior it allows up to about 0.7, so the upper end is a judgment. With it, the held-out "
+      "normal", dict(mu=0.44, sd=0.18, lo=0.0, hi=0.6), "per year", "S", ["sunshine_2007", "levin_2011", "bhargavan_2009"],
+      "A truncated normal matching the 10th, 50th and 90th percentiles of the history test's fit to the documented job market of "
+      "1995-2013 (0.20, 0.40, 0.55, under a 0-0.6 prior). History disfavours slow adjustment (below about 0.2 per year) but with a wider prior allows up to about 0.7, so "
+      "the cut at 0.6 is a judgment. With it, the held-out "
       "2015-2025 episodes are predicted far better than without. The radiology job market has repeatedly self-corrected "
       "within a few years, faster than the training pipeline allows: work moved to non-radiologists while radiologists were "
       "scarce (their imaging grew twice as fast in 1998-2005), and radiologists' output per FTE rose 70% in 1992-2007 as PACS "
       "and teleradiology spread. The reverse flows during surpluses are assumed, not observed directly."),
     P("adj_max", "market", "Largest cumulative market adjustment (share of radiologist work that can shift)",
-      "uniform", dict(lo=0.08, hi=0.28), "share", "S", ["levin_2011"],
-      "The history test (1995-2013) rules out a weak adjustment (limits below about 0.08-0.10 get little weight) but cannot bound "
-      "it from above, because past imbalances never exceeded about 10-15%; the upper end, 0.28, is a judgment. Beyond the limit, imbalances are not absorbed: "
+      "normal", dict(mu=0.215, sd=0.105, lo=0.0, hi=0.3), "share", "S", ["levin_2011"],
+      "A truncated normal matching the 10th, 50th and 90th percentiles of the history test's fit to 1995-2013 (0.08, 0.19, 0.28, "
+      "under a 0-0.3 prior). History disfavours a weak "
+      "adjustment (about 10% of the weight below 0.08, against a prior share of 27%) but cannot bound it from above, because past "
+      "imbalances never exceeded about 10-15%; the cut at 0.3 is a judgment. Beyond the limit, imbalances are not absorbed: "
       "AI-driven changes larger than the historical swings still show up as shortage or surplus."),
 ]
 
